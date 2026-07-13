@@ -5,7 +5,6 @@ import { RefineKbar, RefineKbarProvider } from "@refinedev/kbar";
 import {
   ErrorComponent,
   RefineSnackbarProvider,
-  ThemedLayout,
   useNotificationProvider,
 } from "@refinedev/mui";
 
@@ -17,7 +16,6 @@ import routerProvider, {
   UnsavedChangesNotifier,
 } from "@refinedev/react-router";
 import { BrowserRouter, Outlet, Route, Routes } from "react-router";
-import { Header } from "./components/header";
 import { ColorModeContextProvider } from "./contexts/color-mode";
 import {
   BlogPostCreate,
@@ -32,11 +30,11 @@ import {
   CategoryShow,
 } from "./pages/categories";
 import { dataProvider } from "./providers/data";
+import { AdminMasterLayout } from "./components/layout";
 
 function App() {
   return (
     <BrowserRouter>
-      <GitHubBanner />
       <RefineKbarProvider>
         <ColorModeContextProvider>
           <CssBaseline />
@@ -78,9 +76,9 @@ function App() {
                 <Routes>
                   <Route
                     element={
-                      <ThemedLayout Header={() => <Header sticky />}>
+                      <AdminMasterLayout>
                         <Outlet />
-                      </ThemedLayout>
+                      </AdminMasterLayout>
                     }
                   >
                     <Route
@@ -107,7 +105,6 @@ function App() {
                 <UnsavedChangesNotifier />
                 <DocumentTitleHandler />
               </Refine>
-              <DevtoolsPanel />
             </DevtoolsProvider>
           </RefineSnackbarProvider>
         </ColorModeContextProvider>

@@ -1,0 +1,69 @@
+{
+  "metrics": {
+    "totalUsers": {
+      "value": 40689,
+      "trend": 8.5,
+      "trendType": "up",
+      "trendLabel": "Up from yesterday"
+    },
+    "totalOrders": {
+      "value": 10293,
+      "trend": 1.3,
+      "trendType": "up",
+      "trendLabel": "Up from past week"
+    },
+    "totalSales": {
+      "value": 89000,
+      "trend": -4.3,
+      "trendType": "down",
+      "trendLabel": "Down from yesterday"
+    },
+    "totalPending": {
+      "value": 2040,
+      "trend": 1.8,
+      "trendType": "up",
+      "trendLabel": "Up from yesterday"
+    }
+  },
+  "salesData": [
+    { "month": "Jan", "sales": 5000 },
+    { "month": "Feb", "sales": 10000 },
+    { "month": "Mar", "sales": 20000 },
+    { "month": "Apr", "sales": 25000 },
+    { "month": "May", "sales": 40000 },
+    { "month": "Jun", "sales": 55000 },
+    { "month": "Jul", "sales": 64364 }
+  ],
+  "deals": [
+    {
+      "id": 1,
+      "productName": "Apple Watch",
+      "image": "https://images.unsplash.com/photo-1546868871-7041f2a55e12?auto=format&fit=crop&w=100&h=100&q=80",
+      "location": "6096 Marjolaine Landing",
+      "dateTime": "12.09.2026 - 12.53 PM",
+      "piece": 423,
+      "amount": 34295,
+      "status": "Delivered"
+    },
+    {
+      "id": 2,
+      "productName": "Apple Watch",
+      "image": "https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=100&h=100&q=80",
+      "location": "6096 Marjolaine Landing",
+      "dateTime": "12.09.2026 - 12.53 PM",
+      "piece": 423,
+      "amount": 34295,
+      "status": "Pending"
+    },
+    {
+      "id": 3,
+      "productName": "Apple Watch",
+      "image": "https://images.unsplash.com/photo-1579586337278-3befd40fd17a?auto=format&fit=crop&w=100&h=100&q=80",
+      "location": "6096 Marjolaine Landing",
+      "dateTime": "12.09.2026 - 12.53 PM",
+      "piece": 423,
+      "amount": 34295,
+      "status": "Rejected"
+    }
+  ]
+}

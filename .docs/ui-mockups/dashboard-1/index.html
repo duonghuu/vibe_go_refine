@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DashStack - Admin Dashboard</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Nunito Sans"', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#4880FF',
+                        dark: '#202224',
+                        muted: '#606060',
+                        lightbg: '#F5F6FA',
+                        success: '#00B69B',
+                        danger: '#F93C65',
+                        warning: '#FCBE2D',
+                    }
+                }
+            }
+        }
+    </script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        body {
+            background-color: #F5F6FA;
+        }
+        /* Custom scrollbar for sidebar */
+        .sidebar-scroll::-webkit-scrollbar {
+            width: 4px;
+        }
+        .sidebar-scroll::-webkit-scrollbar-thumb {
+            background-color: #E0E0E0;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body class="text-dark antialiased flex h-screen overflow-hidden">
+
+    <!-- Sidebar -->
+    <aside class="w-60 bg-white border-r border-gray-100 flex flex-col h-full shrink-0 z-20">
+        <!-- Logo -->
+        <div class="h-[70px] flex items-center justify-center border-b border-gray-100">
+            <h1 class="text-[20px] font-extrabold tracking-tight">
+                <span class="text-primary">Dash</span><span class="text-dark">Stack</span>
+            </h1>
+        </div>
+
+        <!-- Navigation -->
+        <div class="flex-1 overflow-y-auto sidebar-scroll py-4">
+            <nav class="px-4 space-y-1">
+                <!-- Dashboard Active -->
+                <a href="#" class="flex items-center gap-4 px-4 py-3 bg-primary text-white rounded-xl mb-2">
+                    <i class="fa-solid fa-chart-pie w-5 text-center text-lg"></i>
+                    <span class="font-semibold text-[14px]">Dashboard</span>
+                </a>
+                
+                <a href="#" class="flex items-center gap-4 px-4 py-3 text-dark hover:bg-gray-50 rounded-xl transition-colors">
+                    <i class="fa-solid fa-box w-5 text-center text-lg opacity-70"></i>
+                    <span class="font-semibold text-[14px] opacity-70">Products</span>
+                </a>
+                <a href="#" class="flex items-center gap-4 px-4 py-3 text-dark hover:bg-gray-50 rounded-xl transition-colors">
+                    <i class="fa-regular fa-heart w-5 text-center text-lg opacity-70"></i>
+                    <span class="font-semibold text-[14px] opacity-70">Favorites</span>
+                </a>
+                <a href="#" class="flex items-center gap-4 px-4 py-3 text-dark hover:bg-gray-50 rounded-xl transition-colors">
+                    <i class="fa-regular fa-message w-5 text-center text-lg opacity-70"></i>
+                    <span class="font-semibold text-[14px] opacity-70">Inbox</span>
+                </a>
+                <a href="#" class="flex items-center gap-4 px-4 py-3 text-dark hover:bg-gray-50 rounded-xl transition-colors">
+                    <i class="fa-solid fa-list-check w-5 text-center text-lg opacity-70"></i>
+                    <span class="font-semibold text-[14px] opacity-70">Order Lists</span>
+                </a>
+                <a href="#" class="flex items-center gap-4 px-4 py-3 text-dark hover:bg-gray-50 rounded-xl transition-colors">
+                    <i class="fa-solid fa-cubes w-5 text-center text-lg opacity-70"></i>
+                    <span class="font-semibold text-[14px] opacity-70">Product Stock</span>
+                </a>
+
+                <div class="pt-6 pb-2 px-4">
+                    <p class="text-[12px] font-bold text-dark opacity-60 tracking-wider">PAGES</p>
+                </div>
+
+                <a href="#" class="flex items-center gap-4 px-4 py-3 text-dark hover:bg-gray-50 rounded-xl transition-colors">
+                    <i class="fa-solid fa-tag w-5 text-center text-lg opacity-70"></i>
+                    <span class="font-semibold text-[14px] opacity-70">Pricing</span>
+                </a>
+                <a href="#" class="flex items-center gap-4 px-4 py-3 text-dark hover:bg-gray-50 rounded-xl transition-colors">
+                    <i class="fa-regular fa-calendar w-5 text-center text-lg opacity-70"></i>
+                    <span class="font-semibold text-[14px] opacity-70">Calendar</span>
+                </a>
+                <a href="#" class="flex items-center gap-4 px-4 py-3 text-dark hover:bg-gray-50 rounded-xl transition-colors">
+                    <i class="fa-solid fa-clipboard-list w-5 text-center text-lg opacity-70"></i>
+                    <span class="font-semibold text-[14px] opacity-70">To-Do</span>
+                </a>
+                <a href="#" class="flex items-center gap-4 px-4 py-3 text-dark hover:bg-gray-50 rounded-xl transition-colors">
+                    <i class="fa-regular fa-address-book w-5 text-center text-lg opacity-70"></i>
+                    <span class="font-semibold text-[14px] opacity-70">Contact</span>
+                </a>
+                <a href="#" class="flex items-center gap-4 px-4 py-3 text-dark hover:bg-gray-50 rounded-xl transition-colors">
+                    <i class="fa-solid fa-file-invoice w-5 text-center text-lg opacity-70"></i>
+                    <span class="font-semibold text-[14px] opacity-70">Invoice</span>
+                </a>
+                <a href="#" class="flex items-center gap-4 px-4 py-3 text-dark hover:bg-gray-50 rounded-xl transition-colors">
+                    <i class="fa-solid fa-layer-group w-5 text-center text-lg opacity-70"></i>
+                    <span class="font-semibold text-[14px] opacity-70">UI Elements</span>
+                </a>
+                <a href="#" class="flex items-center gap-4 px-4 py-3 text-dark hover:bg-gray-50 rounded-xl transition-colors">
+                    <i class="fa-solid fa-users w-5 text-center text-lg opacity-70"></i>
+                    <span class="font-semibold text-[14px] opacity-70">Team</span>
+                </a>
+                <a href="#" class="flex items-center gap-4 px-4 py-3 text-dark hover:bg-gray-50 rounded-xl transition-colors">
+                    <i class="fa-solid fa-table w-5 text-center text-lg opacity-70"></i>
+                    <span class="font-semibold text-[14px] opacity-70">Table</span>
+                </a>
+
+                <div class="my-4 border-t border-gray-100"></div>
+
+                <a href="#" class="flex items-center gap-4 px-4 py-3 text-dark hover:bg-gray-50 rounded-xl transition-colors">
+                    <i class="fa-solid fa-gear w-5 text-center text-lg opacity-70"></i>
+                    <span class="font-semibold text-[14px] opacity-70">Settings</span>
+                </a>
+                <a href="#" class="flex items-center gap-4 px-4 py-3 text-dark hover:bg-gray-50 rounded-xl transition-colors">
+                    <i class="fa-solid fa-right-from-bracket w-5 text-center text-lg opacity-70"></i>
+                    <span class="font-semibold text-[14px] opacity-70">Logout</span>
+                </a>
+            </nav>
+        </div>
+    </aside>
+
+    <!-- Main Content Wrapper -->
+    <div class="flex-1 flex flex-col h-full overflow-hidden">
+        
+        <!-- Top Bar -->
+        <header class="h-[70px] bg-white flex items-center justify-between px-8 shrink-0 z-10">
+            <!-- Search -->
+            <div class="flex items-center">
+                <i class="fa-solid fa-bars text-xl text-dark opacity-70 cursor-pointer mr-6"></i>
+                <div class="relative w-[388px]">
+                    <div class="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                        <i class="fa-solid fa-search text-gray-400"></i>
+                    </div>
+                    <input type="text" placeholder="Search" class="block w-full pl-11 pr-4 py-2.5 bg-[#F5F6FA] border border-[#D5D5D5] rounded-full text-sm placeholder-gray-400 focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-colors">
+                </div>
+            </div>
+
+            <!-- Right Actions -->
+            <div class="flex items-center gap-6">
+                <!-- Notifications -->
+                <button class="relative text-dark opacity-70 hover:opacity-100 transition-opacity">
+                    <i class="fa-regular fa-bell text-xl"></i>
+                    <span class="absolute -top-1 -right-1 flex h-4 w-4 items-center justify-center rounded-full bg-danger text-[10px] font-bold text-white">6</span>
+                </button>
+
+                <!-- Language -->
+                <button class="flex items-center gap-2 hover:bg-gray-50 py-2 px-3 rounded-lg transition-colors">
+                    <img src="https://flagcdn.com/w40/gb.png" alt="English" class="w-7 h-5 rounded object-cover shadow-sm">
+                    <span class="text-sm font-semibold text-[#646464]">English</span>
+                    <i class="fa-solid fa-chevron-down text-xs text-gray-400 ml-1"></i>
+                </button>
+
+                <!-- Profile -->
+                <button class="flex items-center gap-3 hover:bg-gray-50 p-1 pr-3 rounded-full transition-colors border border-transparent hover:border-gray-100">
+                    <img src="https://ui-avatars.com/api/?name=Moni+Roy&background=4880FF&color=fff" alt="Moni Roy" class="w-11 h-11 rounded-full object-cover">
+                    <div class="text-left hidden sm:block">
+                        <p class="text-[14px] font-bold text-[#404040] leading-tight">Moni Roy</p>
+                        <p class="text-[12px] font-semibold text-[#565656] leading-tight mt-0.5">Admin</p>
+                    </div>
+                    <i class="fa-solid fa-chevron-down text-xs text-gray-400 ml-2"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content Scrollable -->
+        <main class="flex-1 overflow-y-auto p-8">
+            <h2 class="text-[32px] font-bold text-dark mb-8 tracking-tight">Dashboard</h2>
+
+            <!-- Stats Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6 mb-8">
+                <!-- Total User -->
+                <div class="bg-white rounded-[14px] p-6 shadow-[6px_6px_54px_0px_rgba(0,0,0,0.05)]">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <p class="text-[16px] font-semibold text-dark opacity-70 mb-2">Total User</p>
+                            <h3 class="text-[28px] font-bold text-dark">40,689</h3>
+                        </div>
+                        <div class="w-[60px] h-[60px] rounded-2xl bg-primary/10 flex items-center justify-center text-primary text-2xl">
+                            <i class="fa-solid fa-users"></i>
+                        </div>
+                    </div>
+                    <div class="flex items-center text-sm font-semibold mt-6">
+                        <i class="fa-solid fa-arrow-trend-up text-success mr-2"></i>
+                        <span class="text-success mr-1">8.5%</span>
+                        <span class="text-muted font-normal">Up from yesterday</span>
+                    </div>
+                </div>
+
+                <!-- Total Order -->
+                <div class="bg-white rounded-[14px] p-6 shadow-[6px_6px_54px_0px_rgba(0,0,0,0.05)]">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <p class="text-[16px] font-semibold text-dark opacity-70 mb-2">Total Order</p>
+                            <h3 class="text-[28px] font-bold text-dark">10293</h3>
+                        </div>
+                        <div class="w-[60px] h-[60px] rounded-2xl bg-warning/10 flex items-center justify-center text-warning text-2xl">
+                            <i class="fa-solid fa-box-open"></i>
+                        </div>
+                    </div>
+                    <div class="flex items-center text-sm font-semibold mt-6">
+                        <i class="fa-solid fa-arrow-trend-up text-success mr-2"></i>
+                        <span class="text-success mr-1">1.3%</span>
+                        <span class="text-muted font-normal">Up from past week</span>
+                    </div>
+                </div>
+
+                <!-- Total Sales -->
+                <div class="bg-white rounded-[14px] p-6 shadow-[6px_6px_54px_0px_rgba(0,0,0,0.05)]">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <p class="text-[16px] font-semibold text-dark opacity-70 mb-2">Total Sales</p>
+                            <h3 class="text-[28px] font-bold text-dark">$89,000</h3>
+                        </div>
+                        <div class="w-[60px] h-[60px] rounded-2xl bg-success/10 flex items-center justify-center text-success text-2xl">
+                            <i class="fa-solid fa-chart-line"></i>
+                        </div>
+                    </div>
+                    <div class="flex items-center text-sm font-semibold mt-6">
+                        <i class="fa-solid fa-arrow-trend-down text-danger mr-2"></i>
+                        <span class="text-danger mr-1">4.3%</span>
+                        <span class="text-muted font-normal">Down from yesterday</span>
+                    </div>
+                </div>
+
+                <!-- Total Pending -->
+                <div class="bg-white rounded-[14px] p-6 shadow-[6px_6px_54px_0px_rgba(0,0,0,0.05)]">
+                    <div class="flex justify-between items-start mb-4">
+                        <div>
+                            <p class="text-[16px] font-semibold text-dark opacity-70 mb-2">Total Pending</p>
+                            <h3 class="text-[28px] font-bold text-dark">2040</h3>
+                        </div>
+                        <div class="w-[60px] h-[60px] rounded-2xl bg-danger/10 flex items-center justify-center text-danger text-2xl">
+                            <i class="fa-solid fa-clock-rotate-left"></i>
+                        </div>
+                    </div>
+                    <div class="flex items-center text-sm font-semibold mt-6">
+                        <i class="fa-solid fa-arrow-trend-up text-success mr-2"></i>
+                        <span class="text-success mr-1">1.8%</span>
+                        <span class="text-muted font-normal">Up from yesterday</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Charts & Tables Section -->
+            <div class="space-y-8">
+                <!-- Sales Details (Placeholder for Graph) -->
+                <div class="bg-white rounded-[14px] p-8 shadow-[6px_6px_54px_0px_rgba(0,0,0,0.05)]">
+                    <div class="flex justify-between items-center mb-8">
+                        <h3 class="text-[24px] font-bold text-dark">Sales Details</h3>
+                        <button class="border border-[#D5D5D5] rounded py-1 px-3 flex items-center gap-2 text-sm font-semibold text-dark opacity-70 hover:bg-gray-50 transition-colors">
+                            October
+                            <i class="fa-solid fa-chevron-down text-[10px]"></i>
+                        </button>
+                    </div>
+                    
+                    <div class="relative h-[300px] w-full flex items-end justify-between px-4 pb-8 border-b border-gray-100">
+                        <!-- Y-Axis Labels -->
+                        <div class="absolute left-0 top-0 bottom-8 flex flex-col justify-between text-xs font-semibold text-dark opacity-40">
+                            <span>100%</span>
+                            <span>80%</span>
+                            <span>60%</span>
+                            <span>40%</span>
+                            <span>20%</span>
+                        </div>
+                        
+                        <!-- Graph Lines Mockup (Using simple divs to represent the curved area chart in figma) -->
+                        <div class="absolute inset-0 left-10 bottom-8 flex items-end">
+                            <div class="w-full h-[60%] bg-gradient-to-t from-primary/20 to-transparent rounded-t-full border-t-[3px] border-primary relative">
+                                <!-- Tooltip Mockup -->
+                                <div class="absolute top-0 left-1/2 -translate-x-1/2 -translate-y-full mb-2 bg-dark text-white text-xs font-bold py-1 px-3 rounded shadow-lg whitespace-nowrap">
+                                    64,364.77
+                                </div>
+                                <div class="absolute top-0 left-1/2 -translate-x-1/2 w-3 h-3 bg-white border-[3px] border-primary rounded-full"></div>
+                            </div>
+                        </div>
+
+                        <!-- X-Axis Labels -->
+                        <div class="absolute bottom-0 left-10 right-0 flex justify-between text-xs font-semibold text-dark opacity-40">
+                            <span>5k</span>
+                            <span>10k</span>
+                            <span>15k</span>
+                            <span>20k</span>
+                            <span>25k</span>
+                            <span>30k</span>
+                            <span>35k</span>
+                            <span>40k</span>
+                            <span>45k</span>
+                            <span>50k</span>
+                            <span>55k</span>
+                            <span>60k</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Deals Details Table -->
+                <div class="bg-white rounded-[14px] p-8 shadow-[6px_6px_54px_0px_rgba(0,0,0,0.05)]">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-[24px] font-bold text-dark">Deals Details</h3>
+                        <button class="border border-[#D5D5D5] rounded py-1 px-3 flex items-center gap-2 text-sm font-semibold text-dark opacity-70 hover:bg-gray-50 transition-colors">
+                            October
+                            <i class="fa-solid fa-chevron-down text-[10px]"></i>
+                        </button>
+                    </div>
+
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left border-collapse">
+                            <thead>
+                                <tr class="bg-[#F1F4F9] rounded-xl text-dark">
+                                    <th class="py-4 px-6 font-bold text-[14px] first:rounded-l-xl">Product Name</th>
+                                    <th class="py-4 px-6 font-bold text-[14px]">Location</th>
+                                    <th class="py-4 px-6 font-bold text-[14px]">Date - Time</th>
+                                    <th class="py-4 px-6 font-bold text-[14px]">Piece</th>
+                                    <th class="py-4 px-6 font-bold text-[14px]">Amount</th>
+                                    <th class="py-4 px-6 font-bold text-[14px] last:rounded-r-xl">Status</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-gray-100">
+                                <!-- Row 1 -->
+                                <tr class="hover:bg-gray-50 transition-colors group">
+                                    <td class="py-4 px-6">
+                                        <div class="flex items-center gap-4">
+                                            <img src="https://images.unsplash.com/photo-1546868871-7041f2a55e12?auto=format&fit=crop&w=100&h=100&q=80" alt="Apple Watch" class="w-[36px] h-[36px] rounded-[10px] object-cover bg-gray-200">
+                                            <span class="font-semibold text-[14px] text-dark opacity-80 group-hover:opacity-100 transition-opacity">Apple Watch</span>
+                                        </div>
+                                    </td>
+                                    <td class="py-4 px-6">
+                                        <span class="font-semibold text-[14px] text-dark opacity-80">6096 Marjolaine Landing</span>
+                                    </td>
+                                    <td class="py-4 px-6">
+                                        <span class="font-semibold text-[14px] text-dark opacity-80">12.09.2026 - 12.53 PM</span>
+                                    </td>
+                                    <td class="py-4 px-6">
+                                        <span class="font-semibold text-[14px] text-dark opacity-80">423</span>
+                                    </td>
+                                    <td class="py-4 px-6">
+                                        <span class="font-semibold text-[14px] text-dark opacity-80">$34,295</span>
+                                    </td>
+                                    <td class="py-4 px-6">
+                                        <span class="inline-flex items-center justify-center px-4 py-1.5 rounded-full bg-success text-white text-[14px] font-bold">Delivered</span>
+                                    </td>
+                                </tr>
+                                
+                                <!-- Row 2 -->
+                                <tr class="hover:bg-gray-50 transition-colors group">
+                                    <td class="py-4 px-6">
+                                        <div class="flex items-center gap-4">
+                                            <div class="w-[36px] h-[36px] rounded-[10px] bg-gray-200 flex items-center justify-center overflow-hidden">
+                                                 <img src="https://images.unsplash.com/photo-1523275335684-37898b6baf30?auto=format&fit=crop&w=100&h=100&q=80" alt="Watch" class="w-full h-full object-cover">
+                                            </div>
+                                            <span class="font-semibold text-[14px] text-dark opacity-80 group-hover:opacity-100 transition-opacity">Apple Watch</span>
+                                        </div>
+                                    </td>
+                                    <td class="py-4 px-6">
+                                        <span class="font-semibold text-[14px] text-dark opacity-80">6096 Marjolaine Landing</span>
+                                    </td>
+                                    <td class="py-4 px-6">
+                                        <span class="font-semibold text-[14px] text-dark opacity-80">12.09.2026 - 12.53 PM</span>
+                                    </td>
+                                    <td class="py-4 px-6">
+                                        <span class="font-semibold text-[14px] text-dark opacity-80">423</span>
+                                    </td>
+                                    <td class="py-4 px-6">
+                                        <span class="font-semibold text-[14px] text-dark opacity-80">$34,295</span>
+                                    </td>
+                                    <td class="py-4 px-6">
+                                        <span class="inline-flex items-center justify-center px-4 py-1.5 rounded-full bg-warning text-white text-[14px] font-bold">Pending</span>
+                                    </td>
+                                </tr>
+
+                                <!-- Row 3 -->
+                                <tr class="hover:bg-gray-50 transition-colors group">
+                                    <td class="py-4 px-6">
+                                        <div class="flex items-center gap-4">
+                                            <div class="w-[36px] h-[36px] rounded-[10px] bg-gray-200 flex items-center justify-center overflow-hidden">
+                                                <img src="https://images.unsplash.com/photo-1579586337278-3befd40fd17a?auto=format&fit=crop&w=100&h=100&q=80" alt="Watch" class="w-full h-full object-cover">
+                                            </div>
+                                            <span class="font-semibold text-[14px] text-dark opacity-80 group-hover:opacity-100 transition-opacity">Apple Watch</span>
+                                        </div>
+                                    </td>
+                                    <td class="py-4 px-6">
+                                        <span class="font-semibold text-[14px] text-dark opacity-80">6096 Marjolaine Landing</span>
+                                    </td>
+                                    <td class="py-4 px-6">
+                                        <span class="font-semibold text-[14px] text-dark opacity-80">12.09.2026 - 12.53 PM</span>
+                                    </td>
+                                    <td class="py-4 px-6">
+                                        <span class="font-semibold text-[14px] text-dark opacity-80">423</span>
+                                    </td>
+                                    <td class="py-4 px-6">
+                                        <span class="font-semibold text-[14px] text-dark opacity-80">$34,295</span>
+                                    </td>
+                                    <td class="py-4 px-6">
+                                        <span class="inline-flex items-center justify-center px-4 py-1.5 rounded-full bg-danger text-white text-[14px] font-bold">Rejected</span>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+</body>
+</html>

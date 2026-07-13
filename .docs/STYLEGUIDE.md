@@ -4,7 +4,7 @@
 - **Primary Action (Màu chốt hạ/Tiến trình):** `palette.primary.main` (Màu xanh chủ đạo hệ thống. Sử dụng cho Sidebar Active, các nút hành động chính như "Thêm mới", "Tiếp tục", "Xem chi tiết").
 - **Success Action (Màu đột biến dữ liệu thành công):** `palette.success.main` (Màu xanh lá. Chỉ dùng DUY NHẤT cho các nút xác nhận lưu thay đổi mang tính chất chốt hạ như: "Lưu cấu hình", "Kích hoạt Scenario", "Phát hành Coupon" để định hướng hành vi an toàn).
 - **Secondary Action:** `palette.secondary.main` hoặc `palette.action.disabled` (Màu xám/slate. Sử dụng cho nút "Hủy", "Quay lại", các bộ lọc danh sách chưa active).
-- **Background Hệ thống:** Nền layout tổng thể dùng màu xám siêu nhạt `palette.background.default` (`#f8fafc`). Toàn bộ các thẻ thống kê (Metrics Card) và Bảng dữ liệu (Data Grid) bắt buộc dùng nền trắng tinh (`#ffffff`) để tạo độ tương phản phẳng, giúp giảm mỏi mắt khi vận hành lâu.
+- **Background Hệ thống:** Nền layout tổng thể và toàn bộ các thành phần như thẻ thống kê (Metrics Card), Bảng dữ liệu (Data Grid) bắt buộc dùng chung nền màu trắng tinh (#ffffff) `palette.background.default`. Lựa chọn này tạo ra một giao diện giao thoa phẳng, tối giản và đồng bộ, giúp giảm mỏi mắt khi vận hành lâu.
 - **Hiển thị Số liệu (Metrics):** Số liệu tổng quan dùng font lớn bold màu sẫm (`#0f172a`). Các chỉ số tăng trưởng (Growth Rate) nếu Dương dùng `text-green-600`, nếu Âm dùng `text-red-600`.
 
 ## 2. Thành phần đặc thù Admin (Admin UI Components)

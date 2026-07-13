@@ -1,6 +1,6 @@
 ---
 name: code-ui
-description: Chuyển đổi bản vẽ từ Stitch thành Code React/Refine.js, tuân thủ chặt chẽ Frontend Plan, ép buộc dùng Framework chuẩn và ưu tiên tái sử dụng Component.
+description: Chuyển đổi thiết kế từ Stitch thành Code React/Refine.js & Material UI (MUI), tuân thủ Frontend Plan, ép buộc dùng Framework chuẩn và tối ưu tái sử dụng Component.
 triggers:
   - "/code-ui"
   - "code giao diện"
@@ -8,37 +8,55 @@ triggers:
 
 # NHIỆM VỤ: LẬP TRÌNH GIAO DIỆN (UI EXECUTION)
 
-Khi nhận lệnh `/code-ui [Tên dự án] [Tên Màn Hình / Component]`, bạn đang đóng vai trò là một Frontend Developer thi công. Hãy BẮT BUỘC thực hiện tuần tự 4 bước sau một cách im lặng, chỉ báo cáo kết quả cuối cùng:
+Khi nhận lệnh `/code-ui [Tên dự án] [Tên Giao Diện / Component]`, bạn đóng vai trò là một Chuyên gia Frontend Developer cấp cao, chuyên trách về Refine.js và Material UI. Hãy thực hiện tuần tự 4 bước sau một cách im lặng, chỉ báo cáo kết quả cuối cùng.
 
 ## BƯỚC 1: NẠP NGỮ CẢNH VÀ QUY HOẠCH
-Trước khi làm bất cứ điều gì, bạn BẮT BUỘC phải đọc ngầm 2 file:
-1. `.docs/STYLEGUIDE.md` (Để lấy cấu hình Material UI Palette, Theme và các token thiết kế cho Admin).
-2. Tương ứng file kế hoạch trong `.docs/frontend-plans/` (Để biết cấu trúc trang/component và Interface Props).
+Trước khi viết bất kỳ dòng code nào, bạn BẮT BUỘC phải đọc ngầm các file sau để đồng bộ ngữ cảnh:
+1. `.docs/STYLEGUIDE.md`: Lấy cấu hình Material UI Palette, Theme, Typography và các token thiết kế dành cho Admin hệ thống.
+2. File kế hoạch tương ứng trong `.docs/frontend-plans/`: Để nắm rõ cấu trúc trang/component, định tuyến (Routing) và các Interface Props.
 
 ## BƯỚC 2: QUÉT THƯ VIỆN & TÁI SỬ DỤNG (QUAN TRỌNG TỐI THƯỢNG)
-- Quét các thư mục components dùng chung của dự án.
-- Nếu bản vẽ của Stitch có chứa các phần tử UI cơ bản... BẠN PHẢI TÌM XEM component hoặc hệ thống Material UI tương ứng đã được thiết lập chưa.
-- **Luật thép:** Nếu ĐÃ CÓ hoặc Material UI đã hỗ trợ sẵn (ví dụ: `DataGrid`, `Card`, `Button`, `TextField`), tuyệt đối không code lại bừa bãi. BẮT BUỘC phải import và cấu hình theo đúng hệ thống design system đã thống nhất. Chỉ tạo file mới cho những layout nghiệp vụ đặc thù chưa từng xuất hiện.
+- Quét các thư mục components dùng chung (`src/components/`) của dự án để tìm các thành phần UI có sẵn.
+- **Luật thép:** Nếu một thành phần UI cơ bản (ví dụ: `Button`, `TextField`, `Card`, `DataGrid`) đã được Material UI hỗ trợ hoặc dự án đã wrap sẵn, TUYỆT ĐỐI không code lại bừa bãi. BẮT BUỘC phải import và cấu hình theo đúng thiết kế của dự án. Chỉ tạo file mới cho các Layout nghiệp vụ đặc thù chưa có sẵn.
 
-## BƯỚC 3: ĐỌC BẢN VẼ TỪ STITCH
-- Kết nối với bản vẽ mà người dùng vừa cung cấp.
-- Ánh xạ (Map) các thuộc tính đồ họa sang các component và thuộc tính (sx props) của **Material UI**. Không dùng mã HEX tự chế, chỉ dùng token màu từ Theme Palette.
+## BƯỚC 3: ĐỌC VÀ ÁNH XẠ BẢN VẼ TỪ STITCH
+- Phân tích bản vẽ từ Stitch do người dùng cung cấp.
+- Ánh xạ (Map) trực tiếp các thuộc tính đồ họa sang các component và hệ thống `sx` props của **Material UI**. 
+- **Quy tắc màu sắc & Spacing:** Nghiêm cấm dùng mã HEX tự chế. Bắt buộc dùng token từ Theme Palette (ví dụ: `primary.main`, `text.secondary`, `background.paper`) và hệ thống spacing của MUI (`spacing(2)`, `p: 2`, `gap: 2`).
 
-## BƯỚC 4: SINH CODE VÀ ÉP KHUÔN FRAMEWORK
-Tiến hành gõ code vào thư mục dự án theo các quy tắc của bản Kế hoạch, ĐỒNG THỜI tuân thủ tuyệt đối Đạo luật Framework sau:
+## BƯỚC 4: SINH CODE VÀ ÉP KHUÔN FRAMEWORK (REFINE.JS & MUI)
+Tiến hành sinh code vào đúng cấu trúc thư mục của dự án, tuân thủ tuyệt đối Đạo luật Framework sau:
 
-[RÀNG BUỘC FRAMEWORK: REFINE.JS & MATERIAL UI]
-1. Kiến trúc CRUD: Tận dụng triệt để kiến trúc resource-driven của Refine.js. Sử dụng các component bọc chuẩn như `<List>`, `<Create>`, `<Edit>`, `<Show>` từ gói `@refinedev/mui`.
-2. Cú pháp: Sử dụng Functional Component (Arrow Function). Khai báo kiểu dữ liệu tường minh bằng `interface` hoặc `type` (TypeScript), nghiêm cấm sử dụng `any`.
-3. Quản lý luồng dữ liệu: Phân tách rõ ràng Logic và UI. Sử dụng các React Hooks đặc trưng của Refine (`useTable`, `useForm`, `useShow`, `useSelect`) để gắn kết trạng thái, không tự viết lại logic tương tác CRUD.
-4. UI Densities: Đảm bảo các bảng dữ liệu (`<DataGrid>`) sử dụng cấu hình mật độ hiển thị cao (`dense` hoặc `medium`) để tối ưu hóa không gian làm việc của admin.
+### 1. Kiến trúc CRUD & Gói `@refinedev/mui`
+- Sử dụng triệt để kiến trúc resource-driven của Refine.js.
+- Tất cả các trang thuộc các view chuẩn phải được bọc trong các layout component tương ứng từ `@refinedev/mui`:
+  - View Danh sách: `<List>` bọc ngoài `<DataGrid>` hoặc `<Grid>`.
+  - View Tạo mới: `<Create>` bọc ngoài Form.
+  - View Chỉnh sửa: `<Edit>` bọc ngoài Form.
+  - View Chi tiết: `<Show>` bọc ngoài cấu trúc hiển thị thông tin.
 
-## DATA FETCHING
-- Bạn bị cấm tự gọi trực tiếp API trong bước này.
-- Thay vào đó, bạn phải cấu hình mock data thông qua cơ chế `dataProvider` của Refine.js hoặc định nghĩa dữ liệu giả (mock data) có cấu trúc chuẩn.
-- Dữ liệu giả phải được định nghĩa bằng interface và type rõ ràng.
-- Hình ảnh dữ liệu giả phải được lấy từ các nguồn CDN ổn định hoặc unsplash.com.
-- Dữ liệu giả phải được định nghĩa ở file mock data (.json) trong thư mục `.docs/mock-data/`.
+### 2. Quản lý Luồng Dữ Liệu & Hooks (Phân tách Logic và UI)
+- **Cấm tự viết logic CRUD:** Sử dụng các React Hooks đặc trưng của Refine để tương tác với Data Provider:
+  - Danh sách/Bảng: Sử dụng `useDataGrid` hoặc `useTable` từ `@refinedev/mui` (hoặc `@refinedev/core`).
+  - Biểu mẫu (Form): Sử dụng `useForm` từ `@refinedev/mui` để tự động hóa việc bind dữ liệu, handle submit và validation.
+  - Lựa chọn (Select/Autocomplete): Sử dụng `useSelect` để lấy dữ liệu cho các trường dropdown (ví dụ: danh sách Category, Trạng thái).
+- **Mật độ hiển thị (UI Densities):** Đối với bảng dữ liệu (`<DataGrid>`), luôn cấu hình mật độ hiển thị cao (`density="compact"` hoặc `"standard"`) để tối ưu không gian làm việc của trang quản trị admin.
+
+### 3. Tiêu chuẩn Mã nguồn (Code Quality)
+- Cú pháp: Sử dụng Functional Component (Arrow Function).
+- TypeScript: Khai báo kiểu dữ liệu tường minh bằng `interface` hoặc `type`. **Nghiêm cấm hoàn toàn việc sử dụng kiểu `any`**.
+- Xử lý Form: Sử dụng kết hợp `useForm` của Refine với `react-hook-form` (nếu dự án quy định) và đảm bảo có hiển thị lỗi rõ ràng trên các field thông qua `error` và `helperText` của MUI `TextField`.
+
+## DATA FETCHING & MOCK DATA
+- Bạn bị cấm tự ý gọi trực tiếp API (`axios`, `fetch`) trong các component UI này.
+- Mọi luồng dữ liệu phải đi qua hooks của Refine và được nuôi dưỡng bởi cơ chế `dataProvider`.
+- Để phục vụ cho việc hiển thị UI đúng thiết kế ngay lập tức, hãy cấu hình mock data:
+  - Toàn bộ dữ liệu giả phải được định nghĩa dưới dạng file `.json` và đặt trong thư mục `.docs/mock-data/`.
+  - Định nghĩa rõ ràng các `interface` hoặc `type` cho dữ liệu giả này tại file `.tsx` hoặc file types dùng chung của resource.
+  - Hình ảnh hoặc avatar trong dữ liệu giả phải dùng các CDN ổn định (ví dụ: `unsplash.com`, `picsum.photos`).
 
 ## BÁO CÁO KẾT QUẢ
-Sau khi code xong, in ra danh sách các file `.tsx` vừa tạo hoặc chỉnh sửa. Hỏi người dùng xem có cần điều chỉnh bố cục UI, khoảng cách padding/margin nào không trước khi chạy lệnh `/save`.
+Sau khi sinh code thành công, hãy in ra:
+1. Cấu trúc cây thư mục và danh sách các file `.tsx`, `.json` vừa được tạo mới hoặc chỉnh sửa.
+2. Đoạn code chi tiết được đặt trong block code rõ ràng.
+3. Hỏi người dùng xem có cần điều chỉnh gì về Layout, khoảng cách (Padding/Margin), hoặc hành vi của các component Refine trước khi họ chạy lệnh `/save`.
