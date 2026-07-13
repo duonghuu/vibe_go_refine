@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DashStack - Product Stock</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['"Nunito Sans"', 'sans-serif'],
+                    },
+                    colors: {
+                        primary: '#4880FF',
+                        dark: '#202224',
+                        lightbg: '#F5F6FA',
+                        bordercolor: '#D5D5D5'
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-lightbg text-dark font-sans flex h-screen overflow-hidden">
+    
+    <!-- Sidebar -->
+    <aside class="w-[240px] bg-white h-full flex flex-col flex-shrink-0">
+        <!-- Logo -->
+        <div class="h-[70px] flex items-center justify-center font-extrabold text-xl">
+            <span class="text-primary">Dash</span><span class="text-dark">Stack</span>
+        </div>
+        
+        <!-- Menu -->
+        <div class="flex-1 overflow-y-auto py-4 custom-scrollbar">
+            <nav class="space-y-1">
+                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-50 hover:text-primary transition-colors">
+                    <i class="fa-solid fa-gauge w-5 text-center mr-4 text-xl"></i>
+                    <span class="font-semibold text-sm">Dashboard</span>
+                </a>
+                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-50 hover:text-primary transition-colors">
+                    <i class="fa-solid fa-box w-5 text-center mr-4 text-xl"></i>
+                    <span class="font-semibold text-sm">Products</span>
+                </a>
+                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-50 hover:text-primary transition-colors">
+                    <i class="fa-solid fa-heart w-5 text-center mr-4 text-xl"></i>
+                    <span class="font-semibold text-sm">Favorites</span>
+                </a>
+                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-50 hover:text-primary transition-colors">
+                    <i class="fa-solid fa-inbox w-5 text-center mr-4 text-xl"></i>
+                    <span class="font-semibold text-sm">Inbox</span>
+                </a>
+                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-50 hover:text-primary transition-colors">
+                    <i class="fa-solid fa-list-check w-5 text-center mr-4 text-xl"></i>
+                    <span class="font-semibold text-sm">Order Lists</span>
+                </a>
+                <a href="#" class="flex items-center px-6 py-3 bg-primary text-white transition-colors relative">
+                    <div class="absolute left-0 top-0 bottom-0 w-1 bg-primary"></div>
+                    <i class="fa-solid fa-cubes w-5 text-center mr-4 text-xl"></i>
+                    <span class="font-semibold text-sm">Product Stock</span>
+                </a>
+                
+                <div class="px-6 pt-4 pb-2">
+                    <span class="text-xs font-bold text-gray-400 tracking-wider">PAGES</span>
+                </div>
+                
+                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-50 hover:text-primary transition-colors">
+                    <i class="fa-solid fa-tag w-5 text-center mr-4 text-xl"></i>
+                    <span class="font-semibold text-sm">Pricing</span>
+                </a>
+                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-50 hover:text-primary transition-colors">
+                    <i class="fa-solid fa-calendar w-5 text-center mr-4 text-xl"></i>
+                    <span class="font-semibold text-sm">Calender</span>
+                </a>
+                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-50 hover:text-primary transition-colors">
+                    <i class="fa-solid fa-clipboard-check w-5 text-center mr-4 text-xl"></i>
+                    <span class="font-semibold text-sm">To-Do</span>
+                </a>
+                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-50 hover:text-primary transition-colors">
+                    <i class="fa-solid fa-address-book w-5 text-center mr-4 text-xl"></i>
+                    <span class="font-semibold text-sm">Contact</span>
+                </a>
+                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-50 hover:text-primary transition-colors">
+                    <i class="fa-solid fa-file-invoice w-5 text-center mr-4 text-xl"></i>
+                    <span class="font-semibold text-sm">Invoice</span>
+                </a>
+                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-50 hover:text-primary transition-colors">
+                    <i class="fa-solid fa-layer-group w-5 text-center mr-4 text-xl"></i>
+                    <span class="font-semibold text-sm">UI Elements</span>
+                </a>
+                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-50 hover:text-primary transition-colors">
+                    <i class="fa-solid fa-users w-5 text-center mr-4 text-xl"></i>
+                    <span class="font-semibold text-sm">Team</span>
+                </a>
+                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-50 hover:text-primary transition-colors">
+                    <i class="fa-solid fa-table w-5 text-center mr-4 text-xl"></i>
+                    <span class="font-semibold text-sm">Table</span>
+                </a>
+                
+                <div class="px-6 pt-4 pb-2 border-t border-gray-100 mt-2"></div>
+                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-50 hover:text-primary transition-colors">
+                    <i class="fa-solid fa-gear w-5 text-center mr-4 text-xl"></i>
+                    <span class="font-semibold text-sm">Settings</span>
+                </a>
+                <a href="#" class="flex items-center px-6 py-3 text-gray-600 hover:bg-gray-50 hover:text-primary transition-colors">
+                    <i class="fa-solid fa-right-from-bracket w-5 text-center mr-4 text-xl"></i>
+                    <span class="font-semibold text-sm">Logout</span>
+                </a>
+            </nav>
+        </div>
+    </aside>
+
+    <!-- Main Content wrapper -->
+    <div class="flex-1 flex flex-col overflow-hidden">
+        
+        <!-- Topbar -->
+        <header class="h-[70px] bg-white flex items-center justify-between px-8 flex-shrink-0">
+            <!-- Left side (Menu icon & Search) -->
+            <div class="flex items-center gap-6">
+                <button class="text-gray-600 hover:text-primary">
+                    <i class="fa-solid fa-bars text-xl"></i>
+                </button>
+                <div class="relative flex items-center">
+                    <div class="absolute left-4 text-gray-400">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </div>
+                    <input type="text" placeholder="Search" class="bg-lightbg rounded-full pl-10 pr-4 py-2 w-80 focus:outline-none focus:ring-2 focus:ring-primary/20 text-sm border border-bordercolor">
+                </div>
+            </div>
+            
+            <!-- Right side -->
+            <div class="flex items-center gap-6">
+                <!-- Notifications -->
+                <button class="relative text-primary/80 hover:text-primary transition-colors">
+                    <i class="fa-regular fa-bell text-xl"></i>
+                    <span class="absolute -top-1.5 -right-1.5 bg-red-500 text-white text-[10px] font-bold w-4 h-4 rounded-full flex items-center justify-center border-2 border-white">6</span>
+                </button>
+                
+                <!-- Language -->
+                <button class="flex items-center gap-2">
+                    <img src="https://flagcdn.com/w20/gb.png" alt="UK Flag" class="w-6 h-4 object-cover rounded-sm">
+                    <span class="text-sm font-semibold text-gray-600">English</span>
+                    <i class="fa-solid fa-chevron-down text-xs text-gray-400"></i>
+                </button>
+                
+                <!-- User Profile -->
+                <button class="flex items-center gap-3 pl-6 border-l border-gray-200">
+                    <img src="https://i.pravatar.cc/150?img=11" alt="Profile" class="w-10 h-10 rounded-full object-cover">
+                    <div class="text-left hidden sm:block">
+                        <div class="text-sm font-bold text-gray-800">Moni Roy</div>
+                        <div class="text-xs font-semibold text-gray-500">Admin</div>
+                    </div>
+                    <div class="w-6 h-6 border border-gray-200 rounded-full flex items-center justify-center ml-2 text-gray-400 hover:bg-gray-50 transition-colors">
+                        <i class="fa-solid fa-chevron-down text-[10px]"></i>
+                    </div>
+                </button>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="flex-1 overflow-y-auto p-8">
+            <div class="flex justify-between items-center mb-6">
+                <h1 class="text-[32px] font-bold tracking-tight text-dark">Product Stock</h1>
+            </div>
+            
+            <!-- Table Card -->
+            <div class="bg-white rounded-[14px] border border-bordercolor overflow-hidden">
+                <!-- Table Header Tools -->
+                <div class="px-6 py-4 flex justify-between items-center border-b border-bordercolor">
+                    <div class="relative">
+                        <div class="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400">
+                            <i class="fa-solid fa-magnifying-glass text-sm"></i>
+                        </div>
+                        <input type="text" placeholder="Search product name" class="bg-lightbg rounded-full pl-9 pr-4 py-2 w-64 focus:outline-none focus:ring-2 focus:ring-primary/20 text-sm border border-bordercolor">
+                    </div>
+                </div>
+                
+                <!-- Table -->
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="bg-lightbg border-b border-bordercolor border-t-0">
+                                <th class="py-4 px-6 text-sm font-bold text-dark w-24">Image</th>
+                                <th class="py-4 px-6 text-sm font-bold text-dark">Product Name</th>
+                                <th class="py-4 px-6 text-sm font-bold text-dark">Category</th>
+                                <th class="py-4 px-6 text-sm font-bold text-dark">Price</th>
+                                <th class="py-4 px-6 text-sm font-bold text-dark">Piece</th>
+                                <th class="py-4 px-6 text-sm font-bold text-dark">Available Color</th>
+                                <th class="py-4 px-6 text-sm font-bold text-dark w-24">Action</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-gray-100">
+                            <!-- Row 1 -->
+                            <tr class="hover:bg-gray-50/50 transition-colors group">
+                                <td class="py-4 px-6">
+                                    <div class="w-[60px] h-[60px] bg-gray-200 rounded-lg flex items-center justify-center overflow-hidden">
+                                        <img src="https://images.unsplash.com/photo-1546868871-7041f2a55e12?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80" alt="Apple Watch" class="w-full h-full object-cover">
+                                    </div>
+                                </td>
+                                <td class="py-4 px-6 text-sm font-semibold text-dark/90">Apple Watch Series 4</td>
+                                <td class="py-4 px-6 text-sm font-semibold text-dark/90">Digital Product</td>
+                                <td class="py-4 px-6 text-sm font-semibold text-dark/90">$690.00</td>
+                                <td class="py-4 px-6 text-sm font-semibold text-dark/90">63</td>
+                                <td class="py-4 px-6">
+                                    <div class="flex -space-x-1">
+                                        <div class="w-5 h-5 rounded-full border border-white bg-black"></div>
+                                        <div class="w-5 h-5 rounded-full border border-white bg-gray-300"></div>
+                                        <div class="w-5 h-5 rounded-full border border-white bg-pink-200"></div>
+                                    </div>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <div class="flex items-center gap-3">
+                                        <button class="w-8 h-8 rounded bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-700 flex items-center justify-center transition-colors">
+                                            <i class="fa-regular fa-pen-to-square"></i>
+                                        </button>
+                                        <button class="w-8 h-8 rounded bg-gray-100 text-red-500 hover:bg-red-50 hover:text-red-600 flex items-center justify-center transition-colors">
+                                            <i class="fa-regular fa-trash-can"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                            
+                            <!-- Row 2 -->
+                            <tr class="hover:bg-gray-50/50 transition-colors group">
+                                <td class="py-4 px-6">
+                                    <div class="w-[60px] h-[60px] bg-gray-200 rounded-lg flex items-center justify-center overflow-hidden">
+                                        <img src="https://images.unsplash.com/photo-1550009158-9ebf69173e03?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80" alt="Microsoft Headsquare" class="w-full h-full object-cover">
+                                    </div>
+                                </td>
+                                <td class="py-4 px-6 text-sm font-semibold text-dark/90">Microsoft Headsquare</td>
+                                <td class="py-4 px-6 text-sm font-semibold text-dark/90">Digital Product</td>
+                                <td class="py-4 px-6 text-sm font-semibold text-dark/90">$190.00</td>
+                                <td class="py-4 px-6 text-sm font-semibold text-dark/90">13</td>
+                                <td class="py-4 px-6">
+                                    <div class="flex -space-x-1">
+                                        <div class="w-5 h-5 rounded-full border border-white bg-black"></div>
+                                        <div class="w-5 h-5 rounded-full border border-white bg-blue-500"></div>
+                                        <div class="w-5 h-5 rounded-full border border-white bg-red-500"></div>
+                                    </div>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <div class="flex items-center gap-3">
+                                        <button class="w-8 h-8 rounded bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-700 flex items-center justify-center transition-colors">
+                                            <i class="fa-regular fa-pen-to-square"></i>
+                                        </button>
+                                        <button class="w-8 h-8 rounded bg-gray-100 text-red-500 hover:bg-red-50 hover:text-red-600 flex items-center justify-center transition-colors">
+                                            <i class="fa-regular fa-trash-can"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <!-- Row 3 -->
+                            <tr class="hover:bg-gray-50/50 transition-colors group">
+                                <td class="py-4 px-6">
+                                    <div class="w-[60px] h-[60px] bg-gray-200 rounded-lg flex items-center justify-center overflow-hidden">
+                                        <img src="https://images.unsplash.com/photo-1595777457583-95e059d581b8?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80" alt="Women's Dress" class="w-full h-full object-cover">
+                                    </div>
+                                </td>
+                                <td class="py-4 px-6 text-sm font-semibold text-dark/90">Women's Dress</td>
+                                <td class="py-4 px-6 text-sm font-semibold text-dark/90">Fashion</td>
+                                <td class="py-4 px-6 text-sm font-semibold text-dark/90">$640.00</td>
+                                <td class="py-4 px-6 text-sm font-semibold text-dark/90">635</td>
+                                <td class="py-4 px-6">
+                                    <div class="flex -space-x-1">
+                                        <div class="w-5 h-5 rounded-full border border-white bg-purple-500"></div>
+                                        <div class="w-5 h-5 rounded-full border border-white bg-yellow-400"></div>
+                                        <div class="w-5 h-5 rounded-full border border-white bg-black"></div>
+                                    </div>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <div class="flex items-center gap-3">
+                                        <button class="w-8 h-8 rounded bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-700 flex items-center justify-center transition-colors">
+                                            <i class="fa-regular fa-pen-to-square"></i>
+                                        </button>
+                                        <button class="w-8 h-8 rounded bg-gray-100 text-red-500 hover:bg-red-50 hover:text-red-600 flex items-center justify-center transition-colors">
+                                            <i class="fa-regular fa-trash-can"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <!-- Row 4 -->
+                            <tr class="hover:bg-gray-50/50 transition-colors group">
+                                <td class="py-4 px-6">
+                                    <div class="w-[60px] h-[60px] bg-gray-200 rounded-lg flex items-center justify-center overflow-hidden">
+                                        <img src="https://images.unsplash.com/photo-1598327105666-5b89351cb315?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80" alt="Samsung A50" class="w-full h-full object-cover">
+                                    </div>
+                                </td>
+                                <td class="py-4 px-6 text-sm font-semibold text-dark/90">Samsung A50</td>
+                                <td class="py-4 px-6 text-sm font-semibold text-dark/90">Mobile</td>
+                                <td class="py-4 px-6 text-sm font-semibold text-dark/90">$400.00</td>
+                                <td class="py-4 px-6 text-sm font-semibold text-dark/90">67</td>
+                                <td class="py-4 px-6">
+                                    <div class="flex -space-x-1">
+                                        <div class="w-5 h-5 rounded-full border border-white bg-black"></div>
+                                        <div class="w-5 h-5 rounded-full border border-white bg-blue-700"></div>
+                                        <div class="w-5 h-5 rounded-full border border-white bg-gray-100"></div>
+                                    </div>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <div class="flex items-center gap-3">
+                                        <button class="w-8 h-8 rounded bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-700 flex items-center justify-center transition-colors">
+                                            <i class="fa-regular fa-pen-to-square"></i>
+                                        </button>
+                                        <button class="w-8 h-8 rounded bg-gray-100 text-red-500 hover:bg-red-50 hover:text-red-600 flex items-center justify-center transition-colors">
+                                            <i class="fa-regular fa-trash-can"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+
+                            <!-- Row 5 -->
+                            <tr class="hover:bg-gray-50/50 transition-colors group">
+                                <td class="py-4 px-6">
+                                    <div class="w-[60px] h-[60px] bg-gray-200 rounded-lg flex items-center justify-center overflow-hidden">
+                                        <img src="https://images.unsplash.com/photo-1516035069371-29a1b244cc32?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80" alt="Camera" class="w-full h-full object-cover">
+                                    </div>
+                                </td>
+                                <td class="py-4 px-6 text-sm font-semibold text-dark/90">Camera</td>
+                                <td class="py-4 px-6 text-sm font-semibold text-dark/90">Electronic</td>
+                                <td class="py-4 px-6 text-sm font-semibold text-dark/90">$420.00</td>
+                                <td class="py-4 px-6 text-sm font-semibold text-dark/90">52</td>
+                                <td class="py-4 px-6">
+                                    <div class="flex -space-x-1">
+                                        <div class="w-5 h-5 rounded-full border border-white bg-black"></div>
+                                        <div class="w-5 h-5 rounded-full border border-white bg-gray-400"></div>
+                                        <div class="w-5 h-5 rounded-full border border-white bg-red-600"></div>
+                                    </div>
+                                </td>
+                                <td class="py-4 px-6">
+                                    <div class="flex items-center gap-3">
+                                        <button class="w-8 h-8 rounded bg-gray-100 text-gray-500 hover:bg-gray-200 hover:text-gray-700 flex items-center justify-center transition-colors">
+                                            <i class="fa-regular fa-pen-to-square"></i>
+                                        </button>
+                                        <button class="w-8 h-8 rounded bg-gray-100 text-red-500 hover:bg-red-50 hover:text-red-600 flex items-center justify-center transition-colors">
+                                            <i class="fa-regular fa-trash-can"></i>
+                                        </button>
+                                    </div>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <!-- Pagination Footer -->
+                <div class="px-6 py-4 flex items-center justify-between border-t border-bordercolor">
+                    <span class="text-sm font-semibold text-gray-400">Showing 1-05 of 78</span>
+                    
+                    <div class="flex items-center gap-2">
+                        <button class="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 transition-colors">
+                            <i class="fa-solid fa-chevron-left text-xs"></i>
+                        </button>
+                        <button class="w-8 h-8 flex items-center justify-center rounded-lg bg-primary text-white font-semibold text-sm shadow-sm transition-colors">1</button>
+                        <button class="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 font-semibold text-sm transition-colors">2</button>
+                        <button class="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 font-semibold text-sm transition-colors">3</button>
+                        <span class="text-gray-400 px-1">...</span>
+                        <button class="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 font-semibold text-sm transition-colors">16</button>
+                        <button class="w-8 h-8 flex items-center justify-center rounded-lg border border-gray-200 text-gray-500 hover:bg-gray-50 transition-colors">
+                            <i class="fa-solid fa-chevron-right text-xs"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+        </main>
+    </div>
+    
+    <style>
+        /* Custom Scrollbar for sidebar */
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #e2e8f0;
+            border-radius: 4px;
+        }
+        .custom-scrollbar:hover::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+        }
+    </style>
+</body>
+</html>
