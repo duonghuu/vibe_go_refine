@@ -107,7 +107,7 @@ export const CustomSidebar: React.FC = () => {
                   primaryTypographyProps={{
                     fontSize: "14px",
                     fontWeight: 600,
-                    opacity: isSelected ? 1 : 0.7,
+                    sx: { opacity: isSelected ? 1 : 0.7 },
                   }}
                 />
               </ListItemButton>
@@ -140,7 +140,7 @@ export const CustomSidebar: React.FC = () => {
               primaryTypographyProps={{
                 fontSize: "14px",
                 fontWeight: 600,
-                opacity: 0.7,
+                sx: { opacity: 0.7 },
               }}
             />
           </ListItemButton>
@@ -159,7 +159,7 @@ export const CustomSidebar: React.FC = () => {
               primaryTypographyProps={{
                 fontSize: "14px",
                 fontWeight: 600,
-                opacity: 0.7,
+                sx: { opacity: 0.7 },
               }}
             />
           </ListItemButton>

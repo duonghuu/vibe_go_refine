@@ -1,0 +1,52 @@
+[
+  {
+    "id": 1,
+    "name": "Apple Watch Series 4",
+    "category": { "id": 1, "name": "Digital Product" },
+    "price": 690.00,
+    "stock": 63,
+    "colors": ["#000000", "#D1D5DB", "#FBCFE8"],
+    "image": "https://images.unsplash.com/photo-1546868871-7041f2a55e12?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80",
+    "status": "Active"
+  },
+  {
+    "id": 2,
+    "name": "Microsoft Headsquare",
+    "category": { "id": 1, "name": "Digital Product" },
+    "price": 190.00,
+    "stock": 13,
+    "colors": ["#000000", "#3B82F6", "#EF4444"],
+    "image": "https://images.unsplash.com/photo-1550009158-9ebf69173e03?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80",
+    "status": "Active"
+  },
+  {
+    "id": 3,
+    "name": "Women's Dress",
+    "category": { "id": 2, "name": "Fashion" },
+    "price": 640.00,
+    "stock": 635,
+    "colors": ["#A855F7", "#FBBF24", "#000000"],
+    "image": "https://images.unsplash.com/photo-1595777457583-95e059d581b8?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80",
+    "status": "Active"
+  },
+  {
+    "id": 4,
+    "name": "Samsung A50",
+    "category": { "id": 3, "name": "Mobile" },
+    "price": 400.00,
+    "stock": 67,
+    "colors": ["#000000", "#1D4ED8", "#F3F4F6"],
+    "image": "https://images.unsplash.com/photo-1598327105666-5b89351cb315?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80",
+    "status": "Active"
+  },
+  {
+    "id": 5,
+    "name": "Camera",
+    "category": { "id": 4, "name": "Electronic" },
+    "price": 420.00,
+    "stock": 52,
+    "colors": ["#000000", "#9CA3AF", "#DC2626"],
+    "image": "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80",
+    "status": "Active"
+  }
+]

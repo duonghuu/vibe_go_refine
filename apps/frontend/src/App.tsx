@@ -29,6 +29,7 @@ import {
   CategoryList,
   CategoryShow,
 } from "./pages/categories";
+import { ProductList } from "./pages/products";
 import { dataProvider } from "./providers/data";
 import { AdminMasterLayout } from "./components/layout";
 
@@ -66,6 +67,13 @@ function App() {
                       canDelete: true,
                     },
                   },
+                  {
+                    name: "products",
+                    list: "/products",
+                    meta: {
+                      canDelete: true,
+                    },
+                  },
                 ]}
                 options={{
                   syncWithLocation: true,
@@ -96,6 +104,9 @@ function App() {
                       <Route path="create" element={<CategoryCreate />} />
                       <Route path="edit/:id" element={<CategoryEdit />} />
                       <Route path="show/:id" element={<CategoryShow />} />
+                    </Route>
+                    <Route path="/products">
+                      <Route index element={<ProductList />} />
                     </Route>
                     <Route path="*" element={<ErrorComponent />} />
                   </Route>

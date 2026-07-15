@@ -46,3 +46,29 @@ Bạn là Codex - một Senior Fullstack Engineer và System Architect. Nhiệm 
    - **Quản lý TTL trên Redis:** Khi đưa accessToken/jti vào blacklist, BẮT BUỘC phải tính toán thời gian còn lại của JWT và dùng hàm `SETEX` (hoặc `client.Set(ctx, key, value, expiration)`) để Redis tự động xóa rác, tránh tràn RAM.
    - **Code Refresh Token Rotation:** Tại api `/refresh-token`, bắt buộc phải xử lý trong khối logic đảm bảo tính nguyên tử (Atomicity): thu hồi token cũ (cho vào blacklist), sinh cặp token mới và cập nhật trạng thái Redis.
    - **API /logout:** Phải đi qua Middleware xác thực hợp lệ trước khi tiến hành hủy token và đưa vào Redis Blacklist nhằm tránh spam token rác.
+
+# Backend Golang Folder Structure
+
+internal
+├── common
+│   ├── aes
+├── controller
+├── di
+├── domain
+│   ├── user_profile
+│   │   ├── service
+│   │   └── valueobjects
+├── infrastructure
+│   ├── dbmodel
+│   ├── qsdto
+│   ├── queryservice
+│   ├── repository
+├── middleware
+├── pkg
+│   ├── log
+└── usecases
+    └── coupon
+        ├── dto
+        ├── queryservice
+        ├── service
+        └── usecase
