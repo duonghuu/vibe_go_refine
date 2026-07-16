@@ -1,49 +1,162 @@
-import { DataGrid, type GridColDef } from "@mui/x-data-grid";
+import React, { useMemo } from "react";
+import {
+  DataGrid,
+  GridColDef,
+  GridToolbarContainer,
+} from "@mui/x-data-grid";
 import {
   DeleteButton,
   EditButton,
   List,
-  ShowButton,
   useDataGrid,
 } from "@refinedev/mui";
-import React from "react";
+import {
+  Box,
+  Card,
+  CardContent,
+  Grid,
+  InputAdornment,
+  MenuItem,
+  Select,
+  TextField,
+  Typography,
+  Chip,
+  IconButton,
+  Avatar,
+  Stack,
+  Button
+} from "@mui/material";
+import SearchIcon from "@mui/icons-material/Search";
+import FilterListIcon from "@mui/icons-material/FilterList";
+import ReorderIcon from "@mui/icons-material/Reorder";
 
 export const CategoryList = () => {
-  const { dataGridProps } = useDataGrid({});
+  const { dataGridProps, setFilters } = useDataGrid({
+    syncWithLocation: true,
+  });
 
-  const columns = React.useMemo<GridColDef[]>(
+  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFilters([
+      {
+        field: "name",
+        operator: "contains",
+        value: e.target.value,
+      },
+    ]);
+  };
+
+  const columns = useMemo<GridColDef[]>(
     () => [
       {
-        field: "id",
-        headerName: "ID",
-        type: "number",
-        minWidth: 50,
-        display: "flex",
-        align: "left",
-        headerAlign: "left",
+        field: "image",
+        headerName: "Image",
+        width: 100,
+        renderCell: function render({ row }) {
+          return (
+            <Avatar
+              src={row.image}
+              variant="rounded"
+              sx={{ width: 60, height: 60, my: 1, borderRadius: '8px' }}
+            />
+          );
+        },
       },
       {
-        field: "title",
+        field: "name",
+        headerName: "Category Name",
         flex: 1,
-        headerName: "Title",
         minWidth: 200,
-        display: "flex",
+        renderCell: function render({ row }) {
+          return (
+            <Box sx={{ pl: row.parentId ? 3 : 0, display: "flex", alignItems: "center", height: "100%" }}>
+              {row.parentId && <Typography sx={{ color: "text.secondary", mr: 1 }}>—</Typography>}
+              <Typography fontWeight="600" color="text.primary">
+                {row.name}
+              </Typography>
+            </Box>
+          );
+        },
+      },
+      {
+        field: "slug",
+        headerName: "Slug",
+        flex: 1,
+        minWidth: 150,
+      },
+      {
+        field: "productCount",
+        headerName: "Products",
+        width: 120,
+        renderCell: function render({ row }) {
+          return (
+            <Typography fontWeight="600" color="text.primary" sx={{ display: 'flex', alignItems: 'center', height: '100%' }}>
+              {row.productCount}
+            </Typography>
+          );
+        },
+      },
+      {
+        field: "sortOrder",
+        headerName: "Order",
+        width: 100,
+        renderCell: function render({ row }) {
+          return (
+            <Typography fontWeight="600" color="text.primary" sx={{ display: 'flex', alignItems: 'center', height: '100%' }}>
+              {row.sortOrder}
+            </Typography>
+          );
+        },
+      },
+      {
+        field: "status",
+        headerName: "Status",
+        width: 150,
+        renderCell: function render({ row }) {
+          const isActive = row.status === "Active";
+          return (
+            <Box sx={{ display: 'flex', alignItems: 'center', height: '100%' }}>
+              <Chip
+                label={row.status}
+                size="small"
+                sx={{
+                  backgroundColor: isActive ? "#e8f5e9" : "#f5f5f5",
+                  color: isActive ? "#2e7d32" : "#757575",
+                  fontWeight: "bold",
+                }}
+              />
+            </Box>
+          );
+        },
       },
       {
         field: "actions",
-        headerName: "Actions",
+        headerName: "Action",
         align: "right",
         headerAlign: "right",
         minWidth: 120,
         sortable: false,
-        display: "flex",
         renderCell: function render({ row }) {
           return (
-            <>
-              <EditButton hideText recordItemId={row.id} />
-              <ShowButton hideText recordItemId={row.id} />
-              <DeleteButton hideText recordItemId={row.id} />
-            </>
+            <Stack direction="row" spacing={1} alignItems="center" justifyContent="flex-end" sx={{ height: '100%' }}>
+              <EditButton 
+                hideText 
+                recordItemId={row.id} 
+                sx={{ 
+                  backgroundColor: '#f3f4f6', 
+                  color: '#6b7280',
+                  '&:hover': { backgroundColor: '#e5e7eb', color: '#374151' }
+                }} 
+              />
+              <DeleteButton 
+                hideText 
+                recordItemId={row.id} 
+                sx={{ 
+                  backgroundColor: '#f3f4f6', 
+                  color: '#ef4444',
+                  '&:hover': { backgroundColor: '#fef2f2', color: '#dc2626' }
+                }} 
+              />
+            </Stack>
           );
         },
       },
@@ -52,8 +165,69 @@ export const CategoryList = () => {
   );
 
   return (
-    <List>
-      <DataGrid {...dataGridProps} columns={columns} />
+    <List
+      title={
+        <Typography variant="h4" fontWeight="bold" color="text.primary" sx={{ fontSize: '32px', letterSpacing: '-0.02em' }}>
+          Category List
+        </Typography>
+      }
+      headerButtons={(props) => (
+        <Stack direction="row" spacing={2}>
+          {props.defaultButtons}
+        </Stack>
+      )}
+      wrapperProps={{ sx: { p: { xs: 2, md: 4 }, backgroundColor: '#F5F6FA', minHeight: '100vh' } }}
+    >
+      <Card sx={{ borderRadius: '14px', border: '1px solid #D5D5D5', boxShadow: 'none', overflow: 'hidden' }}>
+        <Box sx={{ p: 3, borderBottom: '1px solid #D5D5D5', display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#fff' }}>
+          <TextField
+            placeholder="Search category name"
+            variant="outlined"
+            size="small"
+            onChange={handleSearch}
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <SearchIcon sx={{ color: 'text.secondary' }} />
+                </InputAdornment>
+              ),
+              sx: { borderRadius: '50px', backgroundColor: '#F5F6FA', width: { xs: '100%', md: '300px' } }
+            }}
+          />
+          <Select
+            size="small"
+            displayEmpty
+            defaultValue=""
+            sx={{ borderRadius: '8px', minWidth: '150px', backgroundColor: '#F5F6FA' }}
+            IconComponent={FilterListIcon}
+          >
+            <MenuItem value="">All Status</MenuItem>
+            <MenuItem value="Active">Active</MenuItem>
+            <MenuItem value="Hidden">Hidden</MenuItem>
+          </Select>
+        </Box>
+        <DataGrid
+          {...dataGridProps}
+          columns={columns}
+          rowHeight={80}
+          density="standard"
+          sx={{
+            border: 'none',
+            '& .MuiDataGrid-columnHeaders': {
+              backgroundColor: '#F5F6FA',
+              borderBottom: '1px solid #D5D5D5',
+              color: 'text.primary',
+              fontWeight: 'bold',
+            },
+            '& .MuiDataGrid-cell': {
+              borderBottom: '1px solid #f3f4f6',
+            },
+            '& .MuiDataGrid-row:hover': {
+              backgroundColor: '#f9fafb',
+            }
+          }}
+        />
+      </Card>
     </List>
   );
 };

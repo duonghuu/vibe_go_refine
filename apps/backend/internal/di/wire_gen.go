@@ -7,9 +7,11 @@
 package di
 
 import (
+	"github.com/google/wire"
 	"go_refine_dashboard_be/internal/controller"
 	"go_refine_dashboard_be/internal/infrastructure/repository"
-	mediaService "go_refine_dashboard_be/internal/usecases/media/service"
+	service3 "go_refine_dashboard_be/internal/usecases/category/service"
+	service2 "go_refine_dashboard_be/internal/usecases/media/service"
 	"go_refine_dashboard_be/internal/usecases/product/service"
 	"gorm.io/gorm"
 )
@@ -25,7 +27,22 @@ func InitializeProductController(db *gorm.DB) *controller.ProductController {
 
 func InitializeMediaController(db *gorm.DB) *controller.MediaController {
 	mediaRepository := repository.NewMediaRepository(db)
-	mediaService := mediaService.NewMediaService(mediaRepository)
+	mediaService := service2.NewMediaService(mediaRepository)
 	mediaController := controller.NewMediaController(mediaService)
 	return mediaController
 }
+
+func InitializeCategoryController(db *gorm.DB) *controller.CategoryController {
+	categoryRepository := repository.NewCategoryRepository(db)
+	categoryService := service3.NewCategoryService(categoryRepository)
+	categoryController := controller.NewCategoryController(categoryService)
+	return categoryController
+}
+
+// wire.go:
+
+var ProductSet = wire.NewSet(repository.NewProductRepository, service.NewProductService, controller.NewProductController)
+
+var MediaSet = wire.NewSet(repository.NewMediaRepository, service2.NewMediaService, controller.NewMediaController)
+
+var CategorySet = wire.NewSet(repository.NewCategoryRepository, service3.NewCategoryService, controller.NewCategoryController)

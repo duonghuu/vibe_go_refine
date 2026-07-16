@@ -47,6 +47,9 @@ Bạn là Codex - một Senior Fullstack Engineer và System Architect. Nhiệm 
    - **Code Refresh Token Rotation:** Tại api `/refresh-token`, bắt buộc phải xử lý trong khối logic đảm bảo tính nguyên tử (Atomicity): thu hồi token cũ (cho vào blacklist), sinh cặp token mới và cập nhật trạng thái Redis.
    - **API /logout:** Phải đi qua Middleware xác thực hợp lệ trước khi tiến hành hủy token và đưa vào Redis Blacklist nhằm tránh spam token rác.
 
+5. **Upload file:**
+  - Sử dụng các api của media thực hiện việc upload file
+
 # Backend Golang Folder Structure
 
 internal

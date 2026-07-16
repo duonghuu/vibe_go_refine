@@ -22,6 +22,7 @@ func main() {
 	// 2. Initialize Dependency Injection
 	productController := di.InitializeProductController(db)
 	mediaController := di.InitializeMediaController(db)
+	categoryController := di.InitializeCategoryController(db)
 
 	// 3. Setup Router
 	r := gin.Default()
@@ -49,6 +50,16 @@ func main() {
 		products.DELETE("/:id", productController.DeleteProduct)
 		products.POST("/bulk-delete", productController.BulkDelete)
 		products.PATCH("/bulk-status", productController.BulkStatus)
+	}
+
+	categories := admin.Group("/categories")
+	{
+		categories.GET("", categoryController.GetCategories)
+		categories.GET("/:id", categoryController.GetCategoryByID)
+		categories.POST("", categoryController.CreateCategory)
+		categories.PUT("/:id", categoryController.UpdateCategory)
+		categories.DELETE("/:id", categoryController.DeleteCategory)
+		categories.PATCH("/reorder", categoryController.ReorderCategories)
 	}
 
 	// 5. Start Server
