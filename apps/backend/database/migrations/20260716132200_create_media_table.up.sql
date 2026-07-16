@@ -1,0 +1,22 @@
+CREATE TABLE IF NOT EXISTS media (
+    id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+    original_name VARCHAR(255) NOT NULL,
+    file_name VARCHAR(255) NOT NULL,
+    mime_type VARCHAR(100) NOT NULL,
+    size BIGINT NOT NULL,
+    original_url VARCHAR(500) NOT NULL,
+    thumbnail_url VARCHAR(500) DEFAULT NULL,
+    medium_url VARCHAR(500) DEFAULT NULL,
+    status ENUM('temporary', 'attached') NOT NULL DEFAULT 'temporary',
+    owner_id INT UNSIGNED NOT NULL,
+    product_id INT UNSIGNED DEFAULT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    deleted_at TIMESTAMP NULL DEFAULT NULL,
+    UNIQUE INDEX idx_media_file_name (file_name),
+    INDEX idx_status_created (status, created_at),
+    INDEX idx_media_owner_id (owner_id),
+    INDEX idx_media_product_id (product_id),
+    INDEX idx_media_deleted_at (deleted_at),
+    CONSTRAINT fk_media_product FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE SET NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
