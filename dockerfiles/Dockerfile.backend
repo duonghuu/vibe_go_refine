@@ -1,0 +1,29 @@
+FROM golang:1.22-alpine AS builder
+
+WORKDIR /build
+
+# Copy and download dependencies
+COPY apps/backend/go.mod ./
+COPY apps/backend/go.su[m] ./
+RUN go mod download
+
+# Copy the rest of the backend source code
+COPY apps/backend/ .
+
+# Build the application
+RUN CGO_ENABLED=0 GOOS=linux go build -o main .
+
+# Final stage
+FROM alpine:latest
+
+WORKDIR /app
+
+# Install CA certificates for HTTPS requests
+RUN apk --no-cache add ca-certificates
+
+# Copy the built executable
+COPY --from=builder /build/main .
+
+EXPOSE 8080
+
+CMD ["./main"]
