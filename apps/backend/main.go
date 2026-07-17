@@ -1,6 +1,7 @@
 package main
 
 import (
+	"context"
 	"log"
 
 	"go_refine_dashboard_be/internal/di"
@@ -8,6 +9,7 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+	"github.com/redis/go-redis/v9"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
 )
@@ -20,11 +22,20 @@ func main() {
 		log.Fatalf("Failed to connect database: %v", err)
 	}
 
+	// 1.1 Connect Redis
+	redisClient := redis.NewClient(&redis.Options{
+		Addr: "127.0.0.1:6379",
+	})
+	if err := redisClient.Ping(context.Background()).Err(); err != nil {
+		log.Printf("Failed to connect redis: %v. Auth might fail.", err)
+	}
+
 	// 2. Initialize Dependency Injection
 	productController := di.InitializeProductController(db)
 	mediaController := di.InitializeMediaController(db)
 	categoryController := di.InitializeCategoryController(db)
 	userController := di.InitializeUserController(db)
+	authController := di.InitializeAuthController(db, redisClient)
 
 	// 3. Setup Router
 	r := gin.Default()
@@ -51,9 +62,25 @@ func main() {
 		mediaGroup.DELETE("/:id", mediaController.DeleteFile)
 	}
 
+	// Auth Routes (Public)
+	authGroup := api.Group("/auth")
+	{
+		authGroup.POST("/login", authController.Login)
+		authGroup.POST("/refresh-token", authController.RefreshToken)
+	}
+
+	// Auth Protected Routes
 	admin := api.Group("/admin")
-	admin.Use(middleware.AuthMiddleware())
+	admin.Use(middleware.AuthMiddleware(redisClient))
 	admin.Use(middleware.RoleMiddleware("ADMIN", "STAFF"))
+
+	// Protected Auth Endpoints
+	authProtected := api.Group("/auth")
+	authProtected.Use(middleware.AuthMiddleware(redisClient))
+	{
+		authProtected.GET("/me", authController.GetMe)
+		authProtected.POST("/logout", authController.Logout)
+	}
 
 	products := admin.Group("/products")
 	{
@@ -66,8 +93,7 @@ func main() {
 		products.PATCH("/bulk-status", productController.BulkStatus)
 	}
 
-	// Tạm thời không dùng auth cho categories
-	categories := api.Group("/admin/categories")
+	categories := admin.Group("/categories")
 	{
 		categories.GET("", categoryController.GetCategories)
 		categories.GET("/:id", categoryController.GetCategoryByID)
@@ -77,8 +103,7 @@ func main() {
 		categories.PATCH("/reorder", categoryController.ReorderCategories)
 	}
 
-	// Tạm thời không dùng auth cho users
-	users := api.Group("/admin/users")
+	users := admin.Group("/users")
 	{
 		users.GET("", userController.GetUsers)
 		users.GET("/:id", userController.GetUserByID)

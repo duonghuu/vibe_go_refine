@@ -1,4 +1,6 @@
-.PHONY: build up down logs restart clean migrate-up migrate-down migrate-docker
+.PHONY: build up down logs restart clean \
+	migrate-up migrate-down migrate-docker \
+	air air-config
 
 # Project variables
 COMPOSE_FILE = docker-compose.yml

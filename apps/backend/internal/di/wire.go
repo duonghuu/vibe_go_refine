@@ -10,7 +10,9 @@ import (
 	"go_refine_dashboard_be/internal/usecases/product/service"
 	categoryService "go_refine_dashboard_be/internal/usecases/category/service"
 	userService "go_refine_dashboard_be/internal/usecases/user/service"
+	authService "go_refine_dashboard_be/internal/usecases/auth/service"
 	"gorm.io/gorm"
+	"github.com/redis/go-redis/v9"
 
 	"github.com/google/wire"
 )
@@ -39,6 +41,12 @@ var UserSet = wire.NewSet(
 	controller.NewUserController,
 )
 
+var AuthSet = wire.NewSet(
+	repository.NewUserRepository,
+	authService.NewAuthService,
+	controller.NewAuthController,
+)
+
 func InitializeProductController(db *gorm.DB) *controller.ProductController {
 	wire.Build(ProductSet)
 	return &controller.ProductController{}
@@ -57,4 +65,9 @@ func InitializeCategoryController(db *gorm.DB) *controller.CategoryController {
 func InitializeUserController(db *gorm.DB) *controller.UserController {
 	wire.Build(UserSet)
 	return &controller.UserController{}
+}
+
+func InitializeAuthController(db *gorm.DB, redisClient *redis.Client) *controller.AuthController {
+	wire.Build(AuthSet)
+	return &controller.AuthController{}
 }

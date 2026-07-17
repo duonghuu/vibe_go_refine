@@ -14,6 +14,8 @@ import (
 	service2 "go_refine_dashboard_be/internal/usecases/media/service"
 	"go_refine_dashboard_be/internal/usecases/product/service"
 	service4 "go_refine_dashboard_be/internal/usecases/user/service"
+	service5 "go_refine_dashboard_be/internal/usecases/auth/service"
+	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
 )
 
@@ -47,6 +49,13 @@ func InitializeUserController(db *gorm.DB) *controller.UserController {
 	return userController
 }
 
+func InitializeAuthController(db *gorm.DB, redisClient *redis.Client) *controller.AuthController {
+	userRepository := repository.NewUserRepository(db)
+	authService := service5.NewAuthService(userRepository, redisClient)
+	authController := controller.NewAuthController(authService)
+	return authController
+}
+
 // wire.go:
 
 var ProductSet = wire.NewSet(repository.NewProductRepository, service.NewProductService, controller.NewProductController)
@@ -56,3 +65,5 @@ var MediaSet = wire.NewSet(repository.NewMediaRepository, service2.NewMediaServi
 var CategorySet = wire.NewSet(repository.NewCategoryRepository, service3.NewCategoryService, controller.NewCategoryController)
 
 var UserSet = wire.NewSet(repository.NewUserRepository, service4.NewUserService, controller.NewUserController)
+
+var AuthSet = wire.NewSet(repository.NewUserRepository, service5.NewAuthService, controller.NewAuthController)
