@@ -9,6 +9,7 @@ import (
 	mediaService "go_refine_dashboard_be/internal/usecases/media/service"
 	"go_refine_dashboard_be/internal/usecases/product/service"
 	categoryService "go_refine_dashboard_be/internal/usecases/category/service"
+	userService "go_refine_dashboard_be/internal/usecases/user/service"
 	"gorm.io/gorm"
 
 	"github.com/google/wire"
@@ -32,6 +33,12 @@ var CategorySet = wire.NewSet(
 	controller.NewCategoryController,
 )
 
+var UserSet = wire.NewSet(
+	repository.NewUserRepository,
+	userService.NewUserService,
+	controller.NewUserController,
+)
+
 func InitializeProductController(db *gorm.DB) *controller.ProductController {
 	wire.Build(ProductSet)
 	return &controller.ProductController{}
@@ -45,4 +52,9 @@ func InitializeMediaController(db *gorm.DB) *controller.MediaController {
 func InitializeCategoryController(db *gorm.DB) *controller.CategoryController {
 	wire.Build(CategorySet)
 	return &controller.CategoryController{}
+}
+
+func InitializeUserController(db *gorm.DB) *controller.UserController {
+	wire.Build(UserSet)
+	return &controller.UserController{}
 }

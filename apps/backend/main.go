@@ -24,6 +24,7 @@ func main() {
 	productController := di.InitializeProductController(db)
 	mediaController := di.InitializeMediaController(db)
 	categoryController := di.InitializeCategoryController(db)
+	userController := di.InitializeUserController(db)
 
 	// 3. Setup Router
 	r := gin.Default()
@@ -74,6 +75,18 @@ func main() {
 		categories.PUT("/:id", categoryController.UpdateCategory)
 		categories.DELETE("/:id", categoryController.DeleteCategory)
 		categories.PATCH("/reorder", categoryController.ReorderCategories)
+	}
+
+	// Tạm thời không dùng auth cho users
+	users := api.Group("/admin/users")
+	{
+		users.GET("", userController.GetUsers)
+		users.GET("/:id", userController.GetUserByID)
+		users.POST("", userController.CreateUser)
+		users.PUT("/:id", userController.UpdateUser)
+		users.PATCH("/:id/status", userController.UpdateStatus)
+		users.PATCH("/bulk-status", userController.BulkUpdateStatus)
+		users.PATCH("/:id/reset-password", userController.ResetPassword)
 	}
 
 	// 5. Start Server

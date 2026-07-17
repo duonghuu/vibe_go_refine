@@ -416,6 +416,162 @@ paths:
       responses:
         '200':
           description: OK
+  /api/v1/admin/users:
+    get:
+      summary: Lấy danh sách người dùng (Phân trang & Lọc)
+      tags:
+        - Admin User
+      parameters:
+        - in: query
+          name: _start
+          schema:
+            type: integer
+        - in: query
+          name: _end
+          schema:
+            type: integer
+        - in: query
+          name: _sort
+          schema:
+            type: string
+        - in: query
+          name: _order
+          schema:
+            type: string
+        - in: query
+          name: q
+          schema:
+            type: string
+        - in: query
+          name: role
+          schema:
+            type: string
+        - in: query
+          name: status
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+    post:
+      summary: Tạo mới người dùng
+      tags:
+        - Admin User
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                email: { type: string }
+                password: { type: string }
+                name: { type: string }
+                role: { type: string, enum: [ADMIN, STAFF, CUSTOMER] }
+                status: { type: string, enum: [ACTIVE, INACTIVE] }
+      responses:
+        '201':
+          description: Created
+  /api/v1/admin/users/{id}:
+    get:
+      summary: Lấy chi tiết người dùng
+      tags:
+        - Admin User
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+    put:
+      summary: Cập nhật người dùng (Không bao gồm email và password)
+      tags:
+        - Admin User
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name: { type: string }
+                role: { type: string, enum: [ADMIN, STAFF, CUSTOMER] }
+                status: { type: string, enum: [ACTIVE, INACTIVE] }
+      responses:
+        '200':
+          description: OK
+  /api/v1/admin/users/{id}/status:
+    patch:
+      summary: Đổi trạng thái User
+      tags:
+        - Admin User
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                status: { type: string, enum: [ACTIVE, INACTIVE] }
+      responses:
+        '200':
+          description: OK
+  /api/v1/admin/users/bulk-status:
+    patch:
+      summary: Đổi trạng thái nhiều User
+      tags:
+        - Admin User
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                ids:
+                  type: array
+                  items: { type: integer }
+                status: { type: string, enum: [ACTIVE, INACTIVE] }
+      responses:
+        '200':
+          description: OK
+  /api/v1/admin/users/{id}/reset-password:
+    patch:
+      summary: Reset mật khẩu User
+      tags:
+        - Admin User
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                newPassword: { type: string }
+      responses:
+        '200':
+          description: OK
 components:
   securitySchemes:
     BearerAuth:
