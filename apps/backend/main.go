@@ -6,6 +6,7 @@ import (
 	"go_refine_dashboard_be/internal/di"
 	"go_refine_dashboard_be/internal/middleware"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"
@@ -26,6 +27,18 @@ func main() {
 
 	// 3. Setup Router
 	r := gin.Default()
+	
+	// Add CORS middleware
+	r.Use(cors.New(cors.Config{
+		AllowOriginFunc: func(origin string) bool {
+			return true
+		},
+		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS", "HEAD"},
+		AllowHeaders:     []string{"Origin", "Content-Length", "Content-Type", "Authorization", "Accept", "X-Requested-With"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+	}))
+
 	r.Static("/uploads", "./public/uploads")
 
 	// 4. API Routes
@@ -52,7 +65,8 @@ func main() {
 		products.PATCH("/bulk-status", productController.BulkStatus)
 	}
 
-	categories := admin.Group("/categories")
+	// Tạm thời không dùng auth cho categories
+	categories := api.Group("/admin/categories")
 	{
 		categories.GET("", categoryController.GetCategories)
 		categories.GET("/:id", categoryController.GetCategoryByID)
