@@ -10,6 +10,8 @@ import {
   List,
   useDataGrid,
 } from "@refinedev/mui";
+import { HttpError } from "@refinedev/core";
+import debounce from "lodash/debounce";
 import {
   Box,
   Card,
@@ -30,31 +32,47 @@ import SearchIcon from "@mui/icons-material/Search";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import ReorderIcon from "@mui/icons-material/Reorder";
 
+export interface ICategory {
+  id: number;
+  name: string;
+  slug: string;
+  parentId: number | null;
+  imageUrl: string;
+  sortOrder: number;
+  status: "ACTIVE" | "HIDDEN";
+  productCount: number;
+  createdAt: string;
+}
+
 export const CategoryList = () => {
-  const { dataGridProps, setFilters } = useDataGrid({
+  const { dataGridProps, setFilters } = useDataGrid<ICategory, HttpError>({
     syncWithLocation: true,
   });
 
-  const handleSearch = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFilters([
-      {
-        field: "name",
-        operator: "contains",
-        value: e.target.value,
-      },
-    ]);
-  };
+  const handleSearch = useMemo(
+    () =>
+      debounce((e: React.ChangeEvent<HTMLInputElement>) => {
+        setFilters([
+          {
+            field: "q",
+            operator: "eq",
+            value: e.target.value,
+          },
+        ]);
+      }, 300),
+    [setFilters]
+  );
 
   const columns = useMemo<GridColDef[]>(
     () => [
       {
-        field: "image",
+        field: "imageUrl",
         headerName: "Image",
         width: 100,
         renderCell: function render({ row }) {
           return (
             <Avatar
-              src={row.image}
+              src={row.imageUrl}
               variant="rounded"
               sx={{ width: 60, height: 60, my: 1, borderRadius: '8px' }}
             />
@@ -112,11 +130,11 @@ export const CategoryList = () => {
         headerName: "Status",
         width: 150,
         renderCell: function render({ row }) {
-          const isActive = row.status === "Active";
+          const isActive = row.status === "ACTIVE";
           return (
             <Box sx={{ display: 'flex', alignItems: 'center', height: '100%' }}>
               <Chip
-                label={row.status}
+                label={row.status === "ACTIVE" ? "Active" : "Hidden"}
                 size="small"
                 sx={{
                   backgroundColor: isActive ? "#e8f5e9" : "#f5f5f5",
@@ -165,69 +183,80 @@ export const CategoryList = () => {
   );
 
   return (
-    <List
-      title={
-        <Typography variant="h4" fontWeight="bold" color="text.primary" sx={{ fontSize: '32px', letterSpacing: '-0.02em' }}>
+    <Box>
+      <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
+        <Typography variant="h4" fontWeight="700" color="#202224" letterSpacing="-0.02em">
           Category List
         </Typography>
-      }
-      headerButtons={(props) => (
-        <Stack direction="row" spacing={2}>
-          {props.defaultButtons}
-        </Stack>
-      )}
-      wrapperProps={{ sx: { p: { xs: 2, md: 4 }, backgroundColor: '#F5F6FA', minHeight: '100vh' } }}
-    >
-      <Card sx={{ borderRadius: '14px', border: '1px solid #D5D5D5', boxShadow: 'none', overflow: 'hidden' }}>
-        <Box sx={{ p: 3, borderBottom: '1px solid #D5D5D5', display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#fff' }}>
-          <TextField
-            placeholder="Search category name"
-            variant="outlined"
-            size="small"
-            onChange={handleSearch}
-            InputProps={{
-              startAdornment: (
-                <InputAdornment position="start">
-                  <SearchIcon sx={{ color: 'text.secondary' }} />
-                </InputAdornment>
-              ),
-              sx: { borderRadius: '50px', backgroundColor: '#F5F6FA', width: { xs: '100%', md: '300px' } }
+      </Box>
+      <List
+        title=""
+        headerButtons={(props) => (
+          <Stack direction="row" spacing={2}>
+            {props.defaultButtons}
+          </Stack>
+        )}
+      >
+        <Card sx={{ borderRadius: '14px', border: '1px solid #D5D5D5', boxShadow: 'none', overflow: 'hidden' }}>
+          <Box sx={{ p: 3, borderBottom: '1px solid #D5D5D5', display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#fff' }}>
+            <TextField
+              placeholder="Search category name"
+              variant="outlined"
+              size="small"
+              onChange={handleSearch}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon sx={{ color: 'text.secondary' }} />
+                  </InputAdornment>
+                ),
+                sx: { borderRadius: '50px', backgroundColor: '#F5F6FA', width: { xs: '100%', md: '300px' } }
+              }}
+            />
+            <Select
+              size="small"
+              displayEmpty
+              defaultValue=""
+              onChange={(e) => {
+                setFilters([
+                  {
+                    field: "status",
+                    operator: "eq",
+                    value: e.target.value,
+                  },
+                ]);
+              }}
+              sx={{ borderRadius: '8px', minWidth: '150px', backgroundColor: '#F5F6FA' }}
+              IconComponent={FilterListIcon}
+            >
+              <MenuItem value="">All Status</MenuItem>
+              <MenuItem value="ACTIVE">Active</MenuItem>
+              <MenuItem value="HIDDEN">Hidden</MenuItem>
+            </Select>
+          </Box>
+          <DataGrid
+            {...dataGridProps}
+            columns={columns}
+            rowHeight={80}
+            density="standard"
+            sx={{
+              border: 'none',
+              '& .MuiDataGrid-columnHeaders': {
+                backgroundColor: '#F5F6FA',
+                borderBottom: '1px solid #D5D5D5',
+                color: 'text.primary',
+                fontWeight: 'bold',
+              },
+              '& .MuiDataGrid-cell': {
+                borderBottom: '1px solid #f3f4f6',
+              },
+              '& .MuiDataGrid-row:hover': {
+                backgroundColor: '#f9fafb',
+              }
             }}
           />
-          <Select
-            size="small"
-            displayEmpty
-            defaultValue=""
-            sx={{ borderRadius: '8px', minWidth: '150px', backgroundColor: '#F5F6FA' }}
-            IconComponent={FilterListIcon}
-          >
-            <MenuItem value="">All Status</MenuItem>
-            <MenuItem value="Active">Active</MenuItem>
-            <MenuItem value="Hidden">Hidden</MenuItem>
-          </Select>
-        </Box>
-        <DataGrid
-          {...dataGridProps}
-          columns={columns}
-          rowHeight={80}
-          density="standard"
-          sx={{
-            border: 'none',
-            '& .MuiDataGrid-columnHeaders': {
-              backgroundColor: '#F5F6FA',
-              borderBottom: '1px solid #D5D5D5',
-              color: 'text.primary',
-              fontWeight: 'bold',
-            },
-            '& .MuiDataGrid-cell': {
-              borderBottom: '1px solid #f3f4f6',
-            },
-            '& .MuiDataGrid-row:hover': {
-              backgroundColor: '#f9fafb',
-            }
-          }}
-        />
-      </Card>
-    </List>
+        </Card>
+      </List>
+    </Box>
   );
 };
