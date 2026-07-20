@@ -6,3 +6,4 @@
 - [2026-07-16 16:40:00] Lên plan backend, tạo DB struct, migration và hoàn thiện toàn bộ API quản trị Danh mục sản phẩm chuẩn Clean Architecture.
 - [2026-07-17 10:04:43] Tích hợp API thực tế vào UI Category List, cấu hình CORS backend, và custom dataProvider để parse chuẩn dữ liệu Refine.
 - [2026-07-17 11:35:52] Đã hoàn thành plan backend, tạo DB migration và code toàn bộ API chuẩn Clean Architecture cho tính năng Quản lý người dùng.
+- [2026-07-20 17:03:18] Đã hoàn thiện cấu hình Docker Multi-stage cho Backend và Frontend, thiết lập docker-compose dev/prod.

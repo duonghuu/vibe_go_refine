@@ -1,0 +1,37 @@
+# ---- Stage 1: Build ----
+FROM golang:1.25-alpine AS builder
+
+WORKDIR /app
+
+# Cài đặt các công cụ cần thiết để build (kể cả cgo nếu dùng)
+RUN apk add --no-cache git gcc musl-dev tzdata
+
+# Cache go modules
+COPY go.mod go.sum ./
+RUN go mod download
+
+# Copy source code
+COPY . .
+
+# Build file binary với các tuỳ chọn tối ưu
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -a -installsuffix cgo -ldflags="-w -s" -o main .
+
+# ---- Stage 2: Runtime ----
+FROM alpine:latest
+
+# Bảo mật: Tạo non-root user để chạy ứng dụng
+RUN addgroup -S appgroup && adduser -S appuser -G appgroup && \
+    apk add --no-cache tzdata ca-certificates
+
+WORKDIR /app
+
+# Chuyển quyền sở hữu cho appuser
+COPY --from=builder --chown=appuser:appgroup /app/main .
+
+USER appuser
+
+# Expose port backend (Ví dụ: 8080)
+EXPOSE 8080
+
+# Chạy binary
+CMD ["./main"]

@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 
@@ -21,6 +22,7 @@ func NewCategoryController(categoryService service.CategoryService) *CategoryCon
 }
 
 func (c *CategoryController) GetCategories(ctx *gin.Context) {
+	fmt.Println("in software => out")
 	skip, _ := strconv.Atoi(ctx.DefaultQuery("_start", "0"))
 	end, _ := strconv.Atoi(ctx.DefaultQuery("_end", "10"))
 	limit := end - skip
@@ -31,7 +33,7 @@ func (c *CategoryController) GetCategories(ctx *gin.Context) {
 	sortOrder := ctx.DefaultQuery("_order", "DESC")
 	query := ctx.Query("q")
 	status := ctx.Query("status")
-	
+
 	var parentID *uint
 	if pid := ctx.Query("parentId"); pid != "" {
 		if pidInt, err := strconv.ParseUint(pid, 10, 32); err == nil {

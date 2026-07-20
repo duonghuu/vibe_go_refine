@@ -1,0 +1,88 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./apps/backend
+      dockerfile: ../../dockerfiles/backend/Dockerfile.dev
+    container_name: vibe_backend_dev
+    volumes:
+      - ./apps/backend:/app
+      - go-modules:/go/pkg/mod
+    ports:
+      - "8080:8080"
+    environment:
+      - GO_ENV=development
+      - DB_HOST=db
+      - DB_USER=root
+      - DB_PASSWORD=root
+      - DB_NAME=vibe_db
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - vibe_network
+    restart: always
+
+  frontend:
+    build:
+      context: ./apps/frontend
+      dockerfile: ../../dockerfiles/frontend/Dockerfile.dev
+    container_name: vibe_frontend_dev
+    volumes:
+      - ./apps/frontend:/app
+      - /app/node_modules
+    ports:
+      - "5173:5173"
+    environment:
+      - NODE_ENV=development
+      - VITE_API_URL=http://localhost:8080
+    networks:
+      - vibe_network
+    restart: always
+
+  db:
+    image: mysql:8.0
+    container_name: vibe_db_dev
+    environment:
+      - MYSQL_ROOT_PASSWORD=root
+      - MYSQL_DATABASE=vibe_db
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - vibe_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: vibe_redis_dev
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - vibe_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  vibe_network:
+    driver: bridge
+
+volumes:
+  go-modules:
+  db_data:
+  redis_data:

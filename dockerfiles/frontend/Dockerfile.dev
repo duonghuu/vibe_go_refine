@@ -1,0 +1,19 @@
+FROM node:20-alpine
+
+WORKDIR /app
+
+# Cài đặt các package build cần thiết
+RUN apk add --no-cache libc6-compat
+
+# Tận dụng cache của docker cho node_modules
+COPY package.json package-lock.json* yarn.lock* pnpm-lock.yaml* ./
+RUN npm install
+
+# Copy source code
+COPY . .
+
+# Expose port Vite (hoặc refine)
+EXPOSE 5173
+
+# Chạy dev server
+CMD ["npm", "run", "dev"]

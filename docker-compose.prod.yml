@@ -1,0 +1,103 @@
+version: '3.8'
+
+services:
+  backend:
+    build:
+      context: ./apps/backend
+      dockerfile: ../../dockerfiles/backend/Dockerfile.prod
+    container_name: vibe_backend_prod
+    ports:
+      - "8080:8080"
+    environment:
+      - GO_ENV=production
+      - DB_HOST=db
+      - DB_USER_FILE=/run/secrets/db_user
+      - DB_PASSWORD_FILE=/run/secrets/db_password
+      - DB_NAME=vibe_db
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    secrets:
+      - db_user
+      - db_password
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - backend_network
+    deploy:
+      resources:
+        limits:
+          cpus: '1.0'
+          memory: 1G
+      restart_policy:
+        condition: on-failure
+
+  frontend:
+    build:
+      context: .
+      dockerfile: dockerfiles/frontend/Dockerfile.prod
+    container_name: vibe_frontend_prod
+    ports:
+      - "80:80"
+    networks:
+      - frontend_network
+      - backend_network
+    depends_on:
+      - backend
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+      restart_policy:
+        condition: on-failure
+
+  db:
+    image: mysql:8.0
+    container_name: vibe_db_prod
+    environment:
+      - MYSQL_ROOT_PASSWORD_FILE=/run/secrets/db_password
+      - MYSQL_DATABASE=vibe_db
+    secrets:
+      - db_password
+    volumes:
+      - db_data_prod:/var/lib/mysql
+    networks:
+      - backend_network
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: vibe_redis_prod
+    volumes:
+      - redis_data_prod:/data
+    networks:
+      - backend_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+networks:
+  frontend_network:
+    driver: bridge
+  backend_network:
+    driver: bridge
+    internal: true # Bảo mật không expose network backend ra ngoài
+
+volumes:
+  db_data_prod:
+  redis_data_prod:
+
+secrets:
+  db_user:
+    file: ./secrets/db_user.txt
+  db_password:
+    file: ./secrets/db_password.txt

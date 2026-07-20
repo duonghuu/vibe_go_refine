@@ -1,0 +1,26 @@
+# ---- Stage 1: Install dependencies ----
+FROM node:20-alpine AS deps
+RUN apk add --no-cache libc6-compat
+WORKDIR /app
+COPY apps/frontend/package.json apps/frontend/package-lock.json* apps/frontend/yarn.lock* apps/frontend/pnpm-lock.yaml* ./
+RUN npm ci
+
+# ---- Stage 2: Build ----
+FROM node:20-alpine AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
+COPY apps/frontend/ .
+# Build ra thư mục dist
+RUN npm run build
+
+# ---- Stage 3: Serve bằng Nginx ----
+FROM nginx:alpine AS runner
+
+# Bảo mật Nginx
+COPY --from=builder /app/dist /usr/share/nginx/html
+# Copy custom nginx config để hỗ trợ React Router SPA. Context đang là root project (.)
+COPY dockerfiles/frontend/nginx.conf /etc/nginx/conf.d/default.conf
+
+EXPOSE 80
+
+CMD ["nginx", "-g", "daemon off;"]

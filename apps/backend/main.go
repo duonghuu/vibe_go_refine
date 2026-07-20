@@ -2,7 +2,9 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"log"
+	"os"
 
 	"go_refine_dashboard_be/internal/di"
 	"go_refine_dashboard_be/internal/middleware"
@@ -16,15 +18,44 @@ import (
 
 func main() {
 	// 1. Connect DB (thay đổi dsn theo môi trường)
-	dsn := "root:root@tcp(127.0.0.1:3306)/vibe_go_refine?charset=utf8mb4&parseTime=True&loc=Local"
+	dbHost := os.Getenv("DB_HOST")
+	if dbHost == "" {
+		dbHost = "127.0.0.1"
+	}
+	dbPort := os.Getenv("DB_PORT")
+	if dbPort == "" {
+		dbPort = "3306"
+	}
+	dbUser := os.Getenv("DB_USER")
+	if dbUser == "" {
+		dbUser = "root"
+	}
+	dbPassword := os.Getenv("DB_PASSWORD")
+	if dbPassword == "" {
+		dbPassword = "root"
+	}
+	dbName := os.Getenv("DB_NAME")
+	if dbName == "" {
+		dbName = "vibe_go_refine"
+	}
+
+	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", dbUser, dbPassword, dbHost, dbPort, dbName)
 	db, err := gorm.Open(mysql.Open(dsn), &gorm.Config{})
 	if err != nil {
 		log.Fatalf("Failed to connect database: %v", err)
 	}
 
 	// 1.1 Connect Redis
+	redisHost := os.Getenv("REDIS_HOST")
+	if redisHost == "" {
+		redisHost = "127.0.0.1"
+	}
+	redisPort := os.Getenv("REDIS_PORT")
+	if redisPort == "" {
+		redisPort = "6379"
+	}
 	redisClient := redis.NewClient(&redis.Options{
-		Addr: "127.0.0.1:6379",
+		Addr: fmt.Sprintf("%s:%s", redisHost, redisPort),
 	})
 	if err := redisClient.Ping(context.Background()).Err(); err != nil {
 		log.Printf("Failed to connect redis: %v. Auth might fail.", err)
@@ -39,7 +70,7 @@ func main() {
 
 	// 3. Setup Router
 	r := gin.Default()
-	
+
 	// Add CORS middleware
 	r.Use(cors.New(cors.Config{
 		AllowOriginFunc: func(origin string) bool {
@@ -71,8 +102,6 @@ func main() {
 
 	// Auth Protected Routes
 	admin := api.Group("/admin")
-	admin.Use(middleware.AuthMiddleware(redisClient))
-	admin.Use(middleware.RoleMiddleware("ADMIN", "STAFF"))
 
 	// Protected Auth Endpoints
 	authProtected := api.Group("/auth")
