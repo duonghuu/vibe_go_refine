@@ -43,7 +43,7 @@ Tôi đã tiến hành kiểm tra cấu trúc dự án cũng như đọc các fi
 
   Sử dụng cờ -f để chỉ định file cấu hình môi trường dev.
 
-    docker compose -f docker-compose.dev.yml up -d --build
+    docker compose -f docker-compose.dev.yaml up -d --build
     
   • --build: Ép Docker build lại các image nếu có thay đổi trong Dockerfile.
   • -d: Chạy ngầm (detached mode) để không chiếm terminal của bạn.

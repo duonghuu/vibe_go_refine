@@ -9,11 +9,13 @@ services:
     volumes:
       - ./apps/backend:/app
       - go-modules:/go/pkg/mod
+    tty: true
     ports:
-      - "8080:8080"
+      - "8081:8080"
     environment:
       - GO_ENV=development
       - DB_HOST=db
+      - DB_PORT=3307
       - DB_USER=root
       - DB_PASSWORD=root
       - DB_NAME=vibe_db
@@ -36,11 +38,12 @@ services:
     volumes:
       - ./apps/frontend:/app
       - /app/node_modules
+    tty: true
     ports:
-      - "5173:5173"
+      - "5174:5173"
     environment:
       - NODE_ENV=development
-      - VITE_API_URL=http://localhost:8080
+      - VITE_API_URL=http://localhost:8081
     networks:
       - vibe_network
     restart: always
@@ -52,7 +55,7 @@ services:
       - MYSQL_ROOT_PASSWORD=root
       - MYSQL_DATABASE=vibe_db
     ports:
-      - "3306:3306"
+      - "3307:3306"
     volumes:
       - db_data:/var/lib/mysql
     networks:
@@ -67,7 +70,7 @@ services:
     image: redis:7-alpine
     container_name: vibe_redis_dev
     ports:
-      - "6379:6379"
+      - "6380:6379"
     volumes:
       - redis_data:/data
     networks:

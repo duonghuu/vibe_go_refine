@@ -24,7 +24,7 @@ func main() {
 	}
 	dbPort := os.Getenv("DB_PORT")
 	if dbPort == "" {
-		dbPort = "3306"
+		dbPort = "3307"
 	}
 	dbUser := os.Getenv("DB_USER")
 	if dbUser == "" {
@@ -36,7 +36,7 @@ func main() {
 	}
 	dbName := os.Getenv("DB_NAME")
 	if dbName == "" {
-		dbName = "vibe_go_refine"
+		dbName = "vibe_db"
 	}
 
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=utf8mb4&parseTime=True&loc=Local", dbUser, dbPassword, dbHost, dbPort, dbName)
@@ -144,8 +144,12 @@ func main() {
 	}
 
 	// 5. Start Server
-	log.Println("Server is running on port 8080...")
-	if err := r.Run(":8080"); err != nil {
+	serverPort := os.Getenv("PORT")
+	if serverPort == "" {
+		serverPort = "8080"
+	}
+	log.Println("Server is running on port " + serverPort + "...")
+	if err := r.Run(":" + serverPort); err != nil {
 		log.Fatalf("Failed to start server: %v", err)
 	}
 }
