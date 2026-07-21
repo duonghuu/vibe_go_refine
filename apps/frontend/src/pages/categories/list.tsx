@@ -190,15 +190,26 @@ export const CategoryList = () => {
         </Typography>
       </Box>
       <List
+        wrapperProps={{
+          sx: {
+            bgcolor: "#fff",
+            borderRadius: "14px",
+            border: "1px solid #D5D5D5",
+            boxShadow: "none",
+            p: 0,
+            overflow: "hidden",
+          },
+        }}
+        headerProps={{
+          sx: {
+            p: 2,
+            px: 3,
+            borderBottom: "1px solid #D5D5D5",
+          },
+        }}
         title=""
         headerButtons={(props) => (
           <Stack direction="row" spacing={2}>
-            {props.defaultButtons}
-          </Stack>
-        )}
-      >
-        <Card sx={{ borderRadius: '14px', border: '1px solid #D5D5D5', boxShadow: 'none', overflow: 'hidden' }}>
-          <Box sx={{ p: 3, borderBottom: '1px solid #D5D5D5', display: 'flex', justifyContent: 'space-between', alignItems: 'center', backgroundColor: '#fff' }}>
             <TextField
               placeholder="Search category name"
               variant="outlined"
@@ -233,29 +244,31 @@ export const CategoryList = () => {
               <MenuItem value="ACTIVE">Active</MenuItem>
               <MenuItem value="HIDDEN">Hidden</MenuItem>
             </Select>
-          </Box>
-          <DataGrid
-            {...dataGridProps}
-            columns={columns}
-            rowHeight={80}
-            density="standard"
-            sx={{
-              border: 'none',
-              '& .MuiDataGrid-columnHeaders': {
-                backgroundColor: '#F5F6FA',
-                borderBottom: '1px solid #D5D5D5',
-                color: 'text.primary',
-                fontWeight: 'bold',
-              },
-              '& .MuiDataGrid-cell': {
-                borderBottom: '1px solid #f3f4f6',
-              },
-              '& .MuiDataGrid-row:hover': {
-                backgroundColor: '#f9fafb',
-              }
-            }}
-          />
-        </Card>
+            {props.defaultButtons}
+          </Stack>
+        )}
+      >
+        <DataGrid
+          {...dataGridProps}
+          columns={columns}
+          rowHeight={80}
+          density="standard"
+          sx={{
+            border: 'none',
+            '& .MuiDataGrid-columnHeaders': {
+              backgroundColor: '#F5F6FA',
+              borderBottom: '1px solid #D5D5D5',
+              color: 'text.primary',
+              fontWeight: 'bold',
+            },
+            '& .MuiDataGrid-cell': {
+              borderBottom: '1px solid #f3f4f6',
+            },
+            '& .MuiDataGrid-row:hover': {
+              backgroundColor: '#f9fafb',
+            }
+          }}
+        />
       </List>
     </Box>
   );
