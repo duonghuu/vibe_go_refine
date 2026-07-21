@@ -8,3 +8,4 @@
 - [2026-07-17 11:35:52] Đã hoàn thành plan backend, tạo DB migration và code toàn bộ API chuẩn Clean Architecture cho tính năng Quản lý người dùng.
 - [2026-07-20 17:03:18] Đã hoàn thiện cấu hình Docker Multi-stage cho Backend và Frontend, thiết lập docker-compose dev/prod.
 - [2026-07-21 10:17:17] Đã sửa lỗi xung đột port 3307 của Gin server và cập nhật Makefile, Dockerfile để chạy lệnh migrate trực tiếp trong container.
+- [2026-07-21 13:25:57] Đã tạo Frontend Plan và hoàn thành code giao diện UI cho tính năng Thêm danh mục sản phẩm (Category Create) với Refine & MUI.
