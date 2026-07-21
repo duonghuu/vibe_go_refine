@@ -2,7 +2,7 @@ import { createSimpleRestDataProvider } from "@refinedev/rest/simple-rest";
 import { API_URL } from "./constants";
 
 const simpleRest = createSimpleRestDataProvider({
-  apiURL: API_URL,
+  apiURL: `${API_URL}/admin`,
 });
 
 export const kyInstance = simpleRest.kyInstance;

@@ -31,6 +31,7 @@ import {
 import SearchIcon from "@mui/icons-material/Search";
 import FilterListIcon from "@mui/icons-material/FilterList";
 import ReorderIcon from "@mui/icons-material/Reorder";
+import { BACKEND_URL } from "../../providers/constants";
 
 export interface ICategory {
   id: number;
@@ -72,7 +73,7 @@ export const CategoryList = () => {
         renderCell: function render({ row }) {
           return (
             <Avatar
-              src={row.imageUrl}
+              src={row.imageUrl?.startsWith("/") ? `${BACKEND_URL}${row.imageUrl}` : row.imageUrl}
               variant="rounded"
               sx={{ width: 60, height: 60, my: 1, borderRadius: '8px' }}
             />

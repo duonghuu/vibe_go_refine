@@ -22,7 +22,31 @@ import { useForm } from "@refinedev/react-hook-form";
 import { Controller } from "react-hook-form";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { useSelect, useNavigation } from "@refinedev/core";
+import { HttpError, useSelect, useNavigation, useCustomMutation } from "@refinedev/core";
+import { API_URL, BACKEND_URL } from "../../providers/constants";
+
+interface ICategoryResponse {
+  id: number;
+  name: string;
+  slug: string;
+  parentId: number | null;
+  description: string;
+  imageUrl: string;
+  sortOrder: number;
+  status: string;
+  productCount: number;
+  createdAt: string;
+}
+
+interface ICreateCategoryRequest {
+  name: string;
+  slug: string;
+  parentId: number | null;
+  description: string;
+  imageUrl: string;
+  sortOrder: number;
+  status: string;
+}
 
 const generateSlug = (text: string) => {
   return text
@@ -41,6 +65,8 @@ export const CategoryCreate = () => {
   const isSaveAndNewRef = useRef(false);
   const { list } = useNavigation();
 
+  const [isUploading, setIsUploading] = useState(false);
+
   const {
     saveButtonProps,
     refineCore: { formLoading },
@@ -50,7 +76,7 @@ export const CategoryCreate = () => {
     setValue,
     reset,
     formState: { errors },
-  } = useForm({
+  } = useForm<ICategoryResponse, HttpError, ICreateCategoryRequest>({
     refineCoreProps: {
       redirect: false,
       onMutationSuccess: () => {
@@ -65,7 +91,7 @@ export const CategoryCreate = () => {
     },
   });
 
-  const { options } = useSelect({
+  const { options } = useSelect<ICategoryResponse, HttpError>({
     resource: "categories",
     optionLabel: "name",
     optionValue: "id",
@@ -81,12 +107,29 @@ export const CategoryCreate = () => {
     }
   }, [nameValue]); // Only depend on nameValue so it doesn't overwrite manual edits endlessly
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      const url = URL.createObjectURL(file);
-      setPreviewImage(url);
-      setValue("imageUrl", url, { shouldValidate: true }); // Mock URL for preview
+      const formData = new FormData();
+      formData.append("file", file);
+
+      setIsUploading(true);
+      try {
+        const response = await fetch(`${API_URL}/media/upload`, {
+          method: "POST",
+          body: formData,
+        });
+        const data = await response.json();
+        const url = data?.data?.originalUrl || data?.originalUrl;
+        if (url) {
+          setPreviewImage(url);
+          setValue("imageUrl", url, { shouldValidate: true });
+        }
+      } catch (error) {
+        console.error("Upload failed", error);
+      } finally {
+        setIsUploading(false);
+      }
     }
   };
 
@@ -268,7 +311,7 @@ export const CategoryCreate = () => {
                     >
                       {previewImage ? (
                         <Box position="relative" display="inline-block" width="100%">
-                          <img src={previewImage} alt="Preview" style={{ width: "100%", height: "200px", objectFit: "cover", borderRadius: "8px" }} />
+                          <img src={previewImage?.startsWith("/") ? `${BACKEND_URL}${previewImage}` : previewImage} alt="Preview" style={{ width: "100%", height: "200px", objectFit: "cover", borderRadius: "8px" }} />
                           <IconButton
                             size="small"
                             onClick={handleRemoveImage}
@@ -289,8 +332,8 @@ export const CategoryCreate = () => {
                           <Typography variant="body2" color="text.secondary" mb={2}>
                             Kéo thả hoặc click để chọn ảnh
                           </Typography>
-                          <Button variant="contained" component="label" color="primary" sx={{ textTransform: "none", borderRadius: "8px", boxShadow: "none" }}>
-                            Tải ảnh lên
+                          <Button variant="contained" component="label" color="primary" sx={{ textTransform: "none", borderRadius: "8px", boxShadow: "none" }} disabled={isUploading}>
+                            {isUploading ? "Đang tải lên..." : "Tải ảnh lên"}
                             <input
                               type="file"
                               hidden

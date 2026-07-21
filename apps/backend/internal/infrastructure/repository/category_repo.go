@@ -20,6 +20,7 @@ type CategoryRepository interface {
 		SortOrder int
 	}) error
 	CountProductsByCategoryID(ctx context.Context, categoryID uint) (int64, error)
+	CheckSlugExists(ctx context.Context, slug string, excludeID uint) (bool, error)
 }
 
 type categoryRepository struct {
@@ -114,4 +115,16 @@ func (r *categoryRepository) CountProductsByCategoryID(ctx context.Context, cate
 		return 0, err
 	}
 	return count, nil
+}
+
+func (r *categoryRepository) CheckSlugExists(ctx context.Context, slug string, excludeID uint) (bool, error) {
+	var count int64
+	q := r.db.WithContext(ctx).Model(&entity.Category{}).Where("slug = ?", slug)
+	if excludeID > 0 {
+		q = q.Where("id != ?", excludeID)
+	}
+	if err := q.Count(&count).Error; err != nil {
+		return false, err
+	}
+	return count > 0, nil
 }

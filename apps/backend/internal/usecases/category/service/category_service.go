@@ -56,6 +56,14 @@ func (s *categoryService) GetCategoryByID(ctx context.Context, id uint) (*dto.Ca
 }
 
 func (s *categoryService) CreateCategory(ctx context.Context, req *dto.CreateCategoryRequest) (*dto.CategoryResponse, error) {
+	exists, err := s.categoryRepo.CheckSlugExists(ctx, req.Slug, 0)
+	if err != nil {
+		return nil, err
+	}
+	if exists {
+		return nil, errors.New("slug đã tồn tại")
+	}
+
 	cat := &entity.Category{
 		Name:        req.Name,
 		Slug:        req.Slug,
@@ -83,14 +91,38 @@ func (s *categoryService) UpdateCategory(ctx context.Context, id uint, req *dto.
 		return nil, err
 	}
 
-	if req.Name != nil {
-		cat.Name = *req.Name
-	}
-	if req.Slug != nil {
+	if req.Slug != nil && *req.Slug != cat.Slug {
+		exists, err := s.categoryRepo.CheckSlugExists(ctx, *req.Slug, id)
+		if err != nil {
+			return nil, err
+		}
+		if exists {
+			return nil, errors.New("slug đã tồn tại")
+		}
 		cat.Slug = *req.Slug
 	}
+
 	if req.ParentID != nil {
+		if *req.ParentID == id {
+			return nil, errors.New("danh mục cha không được là chính nó")
+		}
+		// Check circular dependency
+		currParentID := req.ParentID
+		for currParentID != nil {
+			if *currParentID == id {
+				return nil, errors.New("phát hiện vòng lặp danh mục (circular dependency)")
+			}
+			parentCat, err := s.categoryRepo.FindByID(ctx, *currParentID)
+			if err != nil || parentCat == nil {
+				break
+			}
+			currParentID = parentCat.ParentID
+		}
 		cat.ParentID = req.ParentID
+	}
+
+	if req.Name != nil {
+		cat.Name = *req.Name
 	}
 	if req.Description != nil {
 		cat.Description = *req.Description
