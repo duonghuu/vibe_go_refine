@@ -3,7 +3,7 @@ import {
   Box,
   TextField,
   Typography,
-  Grid,
+  Grid2,
   Card,
   CardContent,
   FormControl,
@@ -72,9 +72,10 @@ export const CategoryCreate = () => {
     refineCore: { formLoading },
     register,
     control,
-    watch,
     setValue,
     reset,
+    getValues,
+    watch,
     formState: { errors },
   } = useForm<ICategoryResponse, HttpError, ICreateCategoryRequest>({
     refineCoreProps: {
@@ -98,14 +99,14 @@ export const CategoryCreate = () => {
   });
 
   const nameValue = watch("name");
-  const slugValue = watch("slug");
 
-  // Auto-generate slug when name changes, if slug hasn't been manually edited or is empty
   useEffect(() => {
-    if (nameValue && !slugValue) {
+    if (nameValue) {
       setValue("slug", generateSlug(nameValue), { shouldValidate: true });
+    } else {
+      setValue("slug", "");
     }
-  }, [nameValue]); // Only depend on nameValue so it doesn't overwrite manual edits endlessly
+  }, [nameValue, setValue]);
 
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -203,9 +204,9 @@ export const CategoryCreate = () => {
         }
       >
         <Box component="form" autoComplete="off">
-          <Grid container spacing={3}>
+          <Grid2 container spacing={3}>
             {/* Cột chính: Thông tin cơ bản */}
-            <Grid item xs={12} md={8}>
+            <Grid2 size={{ xs: 12, md: 8 }}>
               <Card sx={{ borderRadius: "14px", border: "1px solid #D5D5D5", boxShadow: "none", height: "100%" }}>
                 <CardContent sx={{ p: 3 }}>
                   <Typography variant="h6" fontWeight="600" mb={3} color="text.primary">
@@ -241,6 +242,7 @@ export const CategoryCreate = () => {
                     label="Slug"
                     name="slug"
                     sx={{ mb: 3 }}
+                    InputLabelProps={{ shrink: !!watch("slug") || undefined }}
                     InputProps={{ sx: { borderRadius: "8px" } }}
                   />
 
@@ -282,10 +284,10 @@ export const CategoryCreate = () => {
                   />
                 </CardContent>
               </Card>
-            </Grid>
+            </Grid2>
 
             {/* Cột phụ: Media & Settings */}
-            <Grid item xs={12} md={4}>
+            <Grid2 size={{ xs: 12, md: 4 }}>
               <Stack spacing={3}>
                 {/* Hình ảnh */}
                 <Card sx={{ borderRadius: "14px", border: "1px solid #D5D5D5", boxShadow: "none" }}>
@@ -392,8 +394,8 @@ export const CategoryCreate = () => {
                   </CardContent>
                 </Card>
               </Stack>
-            </Grid>
-          </Grid>
+            </Grid2>
+          </Grid2>
         </Box>
       </Create>
     </Box>

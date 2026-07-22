@@ -3,7 +3,7 @@ import {
   Box,
   TextField,
   Typography,
-  Grid,
+  Grid2,
   Card,
   CardContent,
   FormControl,
@@ -209,9 +209,9 @@ export const CategoryEdit = () => {
         }
       >
         <Box component="form" autoComplete="off">
-          <Grid container spacing={3}>
+          <Grid2 container spacing={3}>
             {/* Cột chính: Thông tin cơ bản */}
-            <Grid item xs={12} md={8}>
+            <Grid2 size={{ xs: 12, md: 8 }}>
               <Card sx={{ borderRadius: "14px", border: "1px solid #D5D5D5", boxShadow: "none", height: "100%", mb: 3 }}>
                 <CardContent sx={{ p: 3 }}>
                   <Typography variant="h6" fontWeight="600" mb={3} color="text.primary">
@@ -292,10 +292,10 @@ export const CategoryEdit = () => {
                   />
                 </CardContent>
               </Card>
-            </Grid>
+            </Grid2>
 
             {/* Cột phụ: Media & Settings */}
-            <Grid item xs={12} md={4}>
+            <Grid2 size={{ xs: 12, md: 4 }}>
               <Stack spacing={3}>
                 {/* Hình ảnh */}
                 <Card sx={{ borderRadius: "14px", border: "1px solid #D5D5D5", boxShadow: "none" }}>
@@ -441,8 +441,8 @@ export const CategoryEdit = () => {
                   </CardContent>
                 </Card>
               </Stack>
-            </Grid>
-          </Grid>
+            </Grid2>
+          </Grid2>
         </Box>
       </Edit>
 
