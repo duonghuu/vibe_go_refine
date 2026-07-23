@@ -30,7 +30,7 @@ import { useForm } from "@refinedev/react-hook-form";
 import { Controller } from "react-hook-form";
 import CloudUploadIcon from "@mui/icons-material/CloudUpload";
 import DeleteIcon from "@mui/icons-material/Delete";
-import { HttpError, useSelect, useParsed, useCustomMutation } from "@refinedev/core";
+import { HttpError, useSelect, useParsed, useCustomMutation, useNotification } from "@refinedev/core";
 import { API_URL, BACKEND_URL } from "../../providers/constants";
 
 export interface ICategoryResponse {
@@ -64,20 +64,25 @@ export const CategoryEdit = () => {
   const [showStatusWarning, setShowStatusWarning] = useState(false);
   const [pendingStatus, setPendingStatus] = useState<string | null>(null);
 
+  const { open } = useNotification();
   const [isUploading, setIsUploading] = useState(false);
 
   const {
     saveButtonProps,
-    refineCore: { formLoading, query },
+    refineCore: { formLoading, query, onFinish },
     register,
     control,
     setValue,
     watch,
+    handleSubmit,
     formState: { errors, isDirty },
   } = useForm<ICategoryResponse, HttpError, IUpdateCategoryRequest>({
     refineCoreProps: {
       action: "edit",
       redirect: "list",
+      meta: {
+        method: "put",
+      },
     },
     warnWhenUnsavedChanges: true,
   });
@@ -198,7 +203,18 @@ export const CategoryEdit = () => {
               Hủy
             </Button>
             <Button
-              {...saveButtonProps}
+              disabled={formLoading}
+              onClick={handleSubmit(
+                (data) => onFinish(data),
+                () => {
+                  open?.({
+                    type: "error",
+                    message: "Lưu thất bại",
+                    description: "Vui lòng kiểm tra lại các trường thông tin không hợp lệ.",
+                    key: "validation-error",
+                  });
+                }
+              )}
               variant="contained"
               color="success"
               sx={{ borderRadius: "8px", textTransform: "none", fontWeight: "600", bgcolor: 'success.main', boxShadow: 'none', '&:hover': { bgcolor: 'success.dark', boxShadow: 'none' } }}

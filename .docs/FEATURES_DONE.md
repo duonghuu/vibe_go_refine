@@ -11,3 +11,4 @@
 - [2026-07-21 13:25:57] Đã tạo Frontend Plan và hoàn thành code giao diện UI cho tính năng Thêm danh mục sản phẩm (Category Create) với Refine & MUI.
 - [2026-07-21 16:51:12] Sửa lỗi đường dẫn API REST của Refine thành `/admin`, khắc phục lỗi 400 khi upload file bằng fetch và hoàn thiện hiển thị ảnh danh mục.
 - [2026-07-22 10:21:44] Hoàn thiện logic tự động đồng bộ slug từ tên danh mục (không validate sớm) và sửa lỗi UI label bị đè tại trang thêm danh mục.
+- [2026-07-23 09:07:45] Đã fix lỗi hiển thị toast error khi submit form trên Refine bằng cách trích xuất lỗi backend trong dataProvider.

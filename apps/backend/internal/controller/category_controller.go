@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -22,7 +21,6 @@ func NewCategoryController(categoryService service.CategoryService) *CategoryCon
 }
 
 func (c *CategoryController) GetCategories(ctx *gin.Context) {
-	fmt.Println("in software => out")
 	skip, _ := strconv.Atoi(ctx.DefaultQuery("_start", "0"))
 	end, _ := strconv.Atoi(ctx.DefaultQuery("_end", "10"))
 	limit := end - skip
