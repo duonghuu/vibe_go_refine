@@ -104,7 +104,7 @@ export const CategoryEdit = () => {
 
   // Filter out the current category and its children to prevent circular dependency
   // For now, we filter out the current category itself.
-  const parentOptions = options.filter((option) => option.value !== id);
+  const parentOptions = options.filter((option) => String(option.value) !== String(id));
 
   const currentStatus = watch("status");
 
