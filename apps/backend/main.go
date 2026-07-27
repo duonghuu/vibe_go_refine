@@ -114,9 +114,10 @@ func main() {
 	products := admin.Group("/products")
 	{
 		products.GET("", productController.GetProducts)
+		products.GET("/:id", productController.GetProductByID)
 		products.POST("", productController.CreateProduct)
 		products.PUT("/:id", productController.UpdateProduct)
-		products.PATCH("/:id/status", productController.UpdateProductStatus)
+		products.PUT("/:id/status", productController.UpdateProductStatus)
 		products.DELETE("/:id", productController.DeleteProduct)
 		products.POST("/bulk-delete", productController.BulkDelete)
 		products.PATCH("/bulk-status", productController.BulkStatus)

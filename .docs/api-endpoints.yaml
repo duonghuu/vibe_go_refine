@@ -79,6 +79,21 @@ paths:
         '201':
           description: Created
   /api/v1/admin/products/{id}:
+    get:
+      summary: Lấy chi tiết Sản phẩm
+      tags:
+        - Admin Product
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
     put:
       summary: Cập nhật thông tin Sản phẩm
       tags:

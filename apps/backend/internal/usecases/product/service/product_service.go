@@ -2,6 +2,10 @@ package service
 
 import (
 	"context"
+	"errors"
+	"fmt"
+	"time"
+
 	"go_refine_dashboard_be/internal/domain/product/entity"
 	"go_refine_dashboard_be/internal/infrastructure/repository"
 	"go_refine_dashboard_be/internal/usecases/product/dto"
@@ -9,6 +13,7 @@ import (
 
 type ProductService interface {
 	GetProducts(ctx context.Context, req dto.ListProductReq) ([]entity.Product, int64, error)
+	GetProductByID(ctx context.Context, id uint) (*entity.Product, error)
 	CreateProduct(ctx context.Context, req dto.CreateProductReq) (*entity.Product, error)
 	UpdateProduct(ctx context.Context, id uint, req dto.UpdateProductReq) (*entity.Product, error)
 	UpdateProductStatus(ctx context.Context, id uint, req dto.UpdateProductStatusReq) error
@@ -37,9 +42,46 @@ func (s *productServiceImpl) GetProducts(ctx context.Context, req dto.ListProduc
 	return s.repo.FindAll(ctx, page, pageSize, req.Sort, req.Order, req.Search, req.CategoryID, req.Status, req.MinPrice, req.MaxPrice, req.MinStock)
 }
 
+func (s *productServiceImpl) GetProductByID(ctx context.Context, id uint) (*entity.Product, error) {
+	return s.repo.FindByID(ctx, id)
+}
+
 func (s *productServiceImpl) CreateProduct(ctx context.Context, req dto.CreateProductReq) (*entity.Product, error) {
+	if req.SalePrice != nil && *req.SalePrice >= req.Price {
+		return nil, errors.New("sale price must be less than original price")
+	}
+
+	exists, err := s.repo.CategoryExists(ctx, req.CategoryID)
+	if err != nil {
+		return nil, err
+	}
+	if !exists {
+		return nil, errors.New("category does not exist")
+	}
+
+	if req.SKU == "" {
+		req.SKU = fmt.Sprintf("PRD-%d", time.Now().UnixMilli())
+	}
+
+	count, err := s.repo.CountBySKU(ctx, req.SKU, 0)
+	if err != nil {
+		return nil, err
+	}
+	if count > 0 {
+		return nil, errors.New("sku already exists")
+	}
+
+	slugCount, err := s.repo.CountBySlug(ctx, req.Slug, 0)
+	if err != nil {
+		return nil, err
+	}
+	if slugCount > 0 {
+		return nil, errors.New("slug already exists")
+	}
+
 	product := &entity.Product{
 		Name:       req.Name,
+		Slug:       req.Slug,
 		SKU:        req.SKU,
 		CategoryID: req.CategoryID,
 		Price:      req.Price,
@@ -48,7 +90,7 @@ func (s *productServiceImpl) CreateProduct(ctx context.Context, req dto.CreatePr
 		Status:     req.Status,
 		ImageURL:   req.ImageURL,
 	}
-	err := s.repo.Create(ctx, product)
+	err = s.repo.Create(ctx, product)
 	if err != nil {
 		return nil, err
 	}
@@ -56,12 +98,45 @@ func (s *productServiceImpl) CreateProduct(ctx context.Context, req dto.CreatePr
 }
 
 func (s *productServiceImpl) UpdateProduct(ctx context.Context, id uint, req dto.UpdateProductReq) (*entity.Product, error) {
+	if req.SalePrice != nil && *req.SalePrice >= req.Price {
+		return nil, errors.New("sale price must be less than original price")
+	}
+
+	exists, err := s.repo.CategoryExists(ctx, req.CategoryID)
+	if err != nil {
+		return nil, err
+	}
+	if !exists {
+		return nil, errors.New("category does not exist")
+	}
+
+	if req.SKU == "" {
+		req.SKU = fmt.Sprintf("PRD-%d", time.Now().UnixMilli())
+	}
+
+	count, err := s.repo.CountBySKU(ctx, req.SKU, id)
+	if err != nil {
+		return nil, err
+	}
+	if count > 0 {
+		return nil, errors.New("sku already exists")
+	}
+
+	slugCount, err := s.repo.CountBySlug(ctx, req.Slug, id)
+	if err != nil {
+		return nil, err
+	}
+	if slugCount > 0 {
+		return nil, errors.New("slug already exists")
+	}
+
 	product, err := s.repo.FindByID(ctx, id)
 	if err != nil {
 		return nil, err
 	}
 
 	product.Name = req.Name
+	product.Slug = req.Slug
 	product.SKU = req.SKU
 	product.CategoryID = req.CategoryID
 	product.Price = req.Price

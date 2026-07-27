@@ -6,7 +6,8 @@
 - Xây dựng layout 2 cột rõ ràng, nhóm thông tin theo card (Thông tin cơ bản, Giá cả, Quản lý kho, Hình ảnh, Phân loại, Trạng thái) giúp người dùng nhập liệu hiệu quả.
 
 ## 2. Phạm vi chức năng
-- **Thông tin cơ bản:** Tên sản phẩm, Mô tả chi tiết (Rich Text Editor).
+- **Thông tin cơ bản:** Tên sản phẩm, Đường dẫn (Slug), Mô tả chi tiết.
+- **Phân loại:** Danh mục sản phẩm (Category).
 - **Giá cả:** Giá bán gốc, Giá khuyến mãi.
 - **Quản lý kho:** Mã sản phẩm (SKU), Số lượng tồn kho.
 - **Hình ảnh:** Tải lên ảnh sản phẩm (Kéo thả, xem trước).
@@ -22,10 +23,11 @@
 ### 3.2. Form Layout (Sử dụng CSS Grid / Flexbox)
 Bố cục 2 cột (Main Column chiếm khoảng 2/3, Side Column chiếm 1/3) trên màn hình Desktop, sẽ chuyển thành 1 cột trên Tablet/Mobile:
 
-- **Cột chính (Main Column):**
+- **Cột chính (Main Column - 8/12):**
   - Card "Thông tin cơ bản":
-    - **Tên sản phẩm (*):** MUI `TextField`, bắt buộc.
-    - **Mô tả:** Rich Text Editor (như MUI RTE, React-Quill, hoặc TipTap) cho phép in đậm, bullet, v.v.
+    - **Tên sản phẩm (*):** Bắt buộc nhập, MUI `TextField`.
+    - **Đường dẫn (Slug) (*):** Bắt buộc nhập, tự sinh từ Tên sản phẩm, MUI `TextField`.
+    - **Mô tả chi tiết:** MUI `TextField` multiline.
   - Card "Giá cả":
     - **Giá bán gốc (*):** MUI `TextField` dạng Number, bắt buộc > 0.
     - **Giá khuyến mãi:** MUI `TextField` dạng Number, có thể trống, nếu nhập phải < Giá bán gốc.
@@ -41,7 +43,7 @@ Bố cục 2 cột (Main Column chiếm khoảng 2/3, Side Column chiếm 1/3) t
   - Card "Trạng thái":
     - **Trạng thái hiển thị:** MUI `Switch` hoặc `RadioGroup` (Mặc định: Đang bán).
 
-### 3.3. Sticky Footer Actions (Cố định ở dưới hoặc trên cùng)
+## 3.3. Sticky Footer Actions (Cố định ở dưới hoặc trên cùng)
 - Nút **Hủy bỏ:** Hủy bỏ việc tạo, hiển thị dialog confirm nếu form đã bị thay đổi, điều hướng về `/products`.
 - Nút **Lưu & Ẩn (Lưu nháp):** Trigger form submit và gán giá trị biến trạng thái gửi lên backend là "Ẩn" (Inactive).
 - Nút **Lưu & Xuất bản (Primary):** Trigger form submit với biến trạng thái "Đang bán" (Active). Thành công điều hướng về list sản phẩm.
@@ -62,9 +64,10 @@ Bố cục 2 cột (Main Column chiếm khoảng 2/3, Side Column chiếm 1/3) t
 - Sử dụng hook `useSelect` từ Refine để lấy danh sách danh mục phục vụ cho thẻ Category Dropdown.
 - Tích hợp logic xử lý file/ảnh: Phụ thuộc vào config hệ thống, frontend upload ảnh lên cloud/S3 trước nhận URL, hoặc gửi file trong đối tượng FormData.
 
-### 5.2. Form Validation (Sử dụng Yup / Zod / React Hook Form rules)
-- **Tên sản phẩm:** `required` (Bắt buộc), max 255 ký tự.
-- **Giá bán gốc:** `required`, `min: 1`.
+### 5.2. Form Validation (Quy tắc kiểm tra)
+- **Tên sản phẩm:** `required` (Bắt buộc).
+- **Slug:** `required`, tự động điền dựa trên Tên sản phẩm, Regex chỉ cho phép chữ thường, số và gạch ngang.
+- **Giá gốc:** `required`, `min: 1`.
 - **Giá khuyến mãi:** Custom validate (nếu không trống, thì `value < gia_ban_goc`).
 - **Danh mục:** `required`.
 - **Số lượng tồn kho:** integer, `min: 0`.

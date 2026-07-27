@@ -15,6 +15,9 @@ type ProductRepository interface {
 	Delete(ctx context.Context, id uint) error
 	BulkDelete(ctx context.Context, ids []uint) error
 	BulkUpdateStatus(ctx context.Context, ids []uint, status string) error
+	CountBySKU(ctx context.Context, sku string, excludeID uint) (int64, error)
+	CountBySlug(ctx context.Context, slug string, excludeID uint) (int64, error)
+	CategoryExists(ctx context.Context, categoryID uint) (bool, error)
 }
 
 type productRepositoryImpl struct {
@@ -101,4 +104,31 @@ func (r *productRepositoryImpl) BulkDelete(ctx context.Context, ids []uint) erro
 
 func (r *productRepositoryImpl) BulkUpdateStatus(ctx context.Context, ids []uint, status string) error {
 	return r.db.WithContext(ctx).Model(&entity.Product{}).Where("id IN ?", ids).Update("status", status).Error
+}
+
+func (r *productRepositoryImpl) CountBySKU(ctx context.Context, sku string, excludeID uint) (int64, error) {
+	var count int64
+	query := r.db.WithContext(ctx).Model(&entity.Product{}).Where("sku = ?", sku)
+	if excludeID > 0 {
+		query = query.Where("id != ?", excludeID)
+	}
+	err := query.Count(&count).Error
+	return count, err
+}
+
+func (r *productRepositoryImpl) CountBySlug(ctx context.Context, slug string, excludeID uint) (int64, error) {
+	var count int64
+	query := r.db.WithContext(ctx).Model(&entity.Product{}).Where("slug = ?", slug)
+	if excludeID > 0 {
+		query = query.Where("id != ?", excludeID)
+	}
+	err := query.Count(&count).Error
+	return count, err
+}
+
+func (r *productRepositoryImpl) CategoryExists(ctx context.Context, categoryID uint) (bool, error) {
+	var count int64
+	// Because ProductRepo has db, we can check Category table directly to avoid wiring CategoryRepo
+	err := r.db.WithContext(ctx).Table("categories").Where("id = ? AND deleted_at IS NULL", categoryID).Count(&count).Error
+	return count > 0, err
 }

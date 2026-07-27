@@ -1,5 +1,5 @@
-import React, { useState, useRef, useEffect } from "react";
-import { Create, useAutocomplete } from "@refinedev/mui";
+import React, { useState, useEffect } from "react";
+import { Edit, useAutocomplete } from "@refinedev/mui";
 import { useForm } from "@refinedev/react-hook-form";
 import { Controller } from "react-hook-form";
 import {
@@ -44,7 +44,7 @@ export interface IProductResponse {
   createdAt: string;
 }
 
-export interface ICreateProductRequest {
+export interface IUpdateProductRequest {
   name: string;
   slug: string;
   description: string;
@@ -69,53 +69,58 @@ const generateSlug = (text: string) => {
     .replace(/--+/g, "-");
 };
 
-export const ProductCreate: React.FC = () => {
+export const ProductEdit: React.FC = () => {
   const [previewImage, setPreviewImage] = useState<string | null>(null);
   const [isUploading, setIsUploading] = useState(false);
-  const isSaveAndNewRef = useRef(false);
   const { list } = useNavigation();
 
   const {
     saveButtonProps,
-    refineCore: { formLoading, onFinish },
+    refineCore: { query, formLoading, onFinish },
     register,
     control,
     setValue,
-    reset,
     handleSubmit,
     formState: { errors },
     watch,
-  } = useForm<IProductResponse, HttpError, ICreateProductRequest>({
+  } = useForm<IProductResponse, HttpError, IUpdateProductRequest>({
     refineCoreProps: {
-      action: "create",
+      action: "edit",
       resource: "products",
       redirect: false,
       onMutationSuccess: () => {
-        if (isSaveAndNewRef.current) {
-          reset();
-          setPreviewImage(null);
-          isSaveAndNewRef.current = false;
-        } else {
-          list("products");
-        }
+        list("products");
+      },
+      meta: {
+        method: "put",
       },
     },
     warnWhenUnsavedChanges: true,
   });
 
-  const nameValue = watch("name");
-
-  useEffect(() => {
-    if (nameValue) {
-      setValue("slug", generateSlug(nameValue), { shouldValidate: true });
-    } else {
-      setValue("slug", "");
-    }
-  }, [nameValue, setValue]);
-
   const { autocompleteProps } = useAutocomplete<ICategoryResponse, HttpError>({
     resource: "categories",
   });
+
+  const initialImage = query?.data?.data?.image;
+
+  useEffect(() => {
+    if (initialImage) {
+      setPreviewImage(initialImage);
+    }
+  }, [initialImage]);
+
+  const nameValue = watch("name");
+  const slugValue = watch("slug");
+
+  // In edit mode, we might only want to generate slug if it's currently empty
+  // but to match category behavior, we can leave it as manual edit or auto-generate if empty.
+  useEffect(() => {
+    if (nameValue && !slugValue && query?.data?.data) {
+      // only generate if it's completely empty and we just loaded or cleared it
+      setValue("slug", generateSlug(nameValue), { shouldValidate: true, shouldDirty: true });
+    }
+  }, [nameValue, slugValue, setValue, query]);
 
   const handleImageChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -133,7 +138,7 @@ export const ProductCreate: React.FC = () => {
         const url = data?.data?.originalUrl || data?.originalUrl;
         if (url) {
           setPreviewImage(url);
-          setValue("image", url, { shouldValidate: true });
+          setValue("image", url, { shouldValidate: true, shouldDirty: true });
         }
       } catch (error) {
         console.error("Upload failed", error);
@@ -145,10 +150,10 @@ export const ProductCreate: React.FC = () => {
 
   const handleRemoveImage = () => {
     setPreviewImage(null);
-    setValue("image", "", { shouldValidate: true });
+    setValue("image", "", { shouldValidate: true, shouldDirty: true });
   };
 
-  const onCustomSubmit = (data: ICreateProductRequest, customStatus: string) => {
+  const onCustomSubmit = (data: IUpdateProductRequest, customStatus: string) => {
     onFinish({
       ...data,
       status: customStatus,
@@ -159,11 +164,11 @@ export const ProductCreate: React.FC = () => {
     <Box>
       <Box display="flex" justifyContent="space-between" alignItems="center" mb={3}>
         <Typography variant="h4" fontWeight="700" color="#202224" letterSpacing="-0.02em">
-          Thêm sản phẩm mới
+          Chỉnh sửa sản phẩm
         </Typography>
       </Box>
 
-      <Create
+      <Edit
         isLoading={formLoading}
         title=""
         wrapperProps={{
@@ -181,7 +186,7 @@ export const ProductCreate: React.FC = () => {
             <Button
               variant="outlined"
               color="secondary"
-              onClick={() => window.history.back()}
+              onClick={() => list("products")}
               sx={{ borderRadius: "8px", textTransform: "none", fontWeight: "600", color: 'text.secondary', borderColor: '#D5D5D5' }}
             >
               Hủy
@@ -190,7 +195,6 @@ export const ProductCreate: React.FC = () => {
               variant="contained"
               disabled={formLoading}
               onClick={handleSubmit((data) => {
-                isSaveAndNewRef.current = false;
                 onCustomSubmit(data, "HIDDEN");
               })}
               sx={{ borderRadius: "8px", textTransform: "none", fontWeight: "600", bgcolor: 'primary.main', boxShadow: 'none' }}
@@ -201,7 +205,6 @@ export const ProductCreate: React.FC = () => {
               variant="contained"
               color="success"
               onClick={handleSubmit((data) => {
-                isSaveAndNewRef.current = false;
                 onCustomSubmit(data, "ACTIVE");
               })}
               sx={{ borderRadius: "8px", textTransform: "none", fontWeight: "600", bgcolor: 'success.main', boxShadow: 'none', '&:hover': { bgcolor: 'success.dark', boxShadow: 'none' } }}
@@ -232,6 +235,7 @@ export const ProductCreate: React.FC = () => {
                       fullWidth
                       sx={{ mb: 3 }}
                       InputProps={{ sx: { borderRadius: "8px" } }}
+                      InputLabelProps={{ shrink: true }}
                     />
                     <TextField
                       {...register("slug", {
@@ -243,7 +247,7 @@ export const ProductCreate: React.FC = () => {
                       })}
                       error={!!errors.slug}
                       helperText={errors.slug?.message as string}
-                      label="Đường dẫn (Slug) (*)"
+                      label="(Slug) (*)"
                       margin="normal"
                       variant="outlined"
                       fullWidth
@@ -260,6 +264,7 @@ export const ProductCreate: React.FC = () => {
                       multiline
                       rows={5}
                       InputProps={{ sx: { borderRadius: "8px" } }}
+                      InputLabelProps={{ shrink: true }}
                     />
                   </CardContent>
                 </Card>
@@ -286,6 +291,7 @@ export const ProductCreate: React.FC = () => {
                           variant="outlined"
                           fullWidth
                           InputProps={{ sx: { borderRadius: "8px" } }}
+                          InputLabelProps={{ shrink: true }}
                         />
                       </Grid2>
                       <Grid2 size={{ xs: 12, sm: 6 }}>
@@ -309,6 +315,7 @@ export const ProductCreate: React.FC = () => {
                           variant="outlined"
                           fullWidth
                           InputProps={{ sx: { borderRadius: "8px" } }}
+                          InputLabelProps={{ shrink: true }}
                         />
                       </Grid2>
                     </Grid2>
@@ -330,6 +337,7 @@ export const ProductCreate: React.FC = () => {
                           variant="outlined"
                           fullWidth
                           InputProps={{ sx: { borderRadius: "8px" } }}
+                          InputLabelProps={{ shrink: true }}
                         />
                       </Grid2>
                       <Grid2 size={{ xs: 12, sm: 6 }}>
@@ -342,11 +350,11 @@ export const ProductCreate: React.FC = () => {
                           helperText={errors.stock?.message as string}
                           label="Số lượng tồn kho"
                           type="number"
-                          defaultValue={0}
                           margin="normal"
                           variant="outlined"
                           fullWidth
                           InputProps={{ sx: { borderRadius: "8px" } }}
+                          InputLabelProps={{ shrink: true }}
                         />
                       </Grid2>
                     </Grid2>
@@ -461,6 +469,7 @@ export const ProductCreate: React.FC = () => {
                                 ...params.InputProps,
                                 sx: { borderRadius: "8px" }
                               }}
+                              InputLabelProps={{ shrink: true }}
                             />
                           )}
                         />
@@ -478,7 +487,6 @@ export const ProductCreate: React.FC = () => {
                     <Controller
                       control={control}
                       name="status"
-                      defaultValue="ACTIVE"
                       render={({ field }) => (
                         <FormControl component="fieldset" sx={{ mb: 3, width: "100%" }}>
                           <RadioGroup {...field} row>
@@ -494,7 +502,7 @@ export const ProductCreate: React.FC = () => {
             </Grid2>
           </Grid2>
         </Box>
-      </Create>
+      </Edit>
     </Box>
   );
 };

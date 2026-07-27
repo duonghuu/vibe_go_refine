@@ -37,6 +37,24 @@ func (c *ProductController) GetProducts(ctx *gin.Context) {
 	})
 }
 
+func (c *ProductController) GetProductByID(ctx *gin.Context) {
+	idParam := ctx.Param("id")
+	id, err := strconv.ParseUint(idParam, 10, 32)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "invalid id"})
+		return
+	}
+
+	product, err := c.productService.GetProductByID(ctx.Request.Context(), uint(id))
+	if err != nil {
+		ctx.JSON(http.StatusNotFound, gin.H{"error": "product not found"})
+		return
+	}
+
+	// Refine expects a "data" property for single resource GET as well
+	ctx.JSON(http.StatusOK, gin.H{"data": product})
+}
+
 func (c *ProductController) CreateProduct(ctx *gin.Context) {
 	var req dto.CreateProductReq
 	if err := ctx.ShouldBindJSON(&req); err != nil {

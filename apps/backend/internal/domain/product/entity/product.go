@@ -12,6 +12,7 @@ import (
 type Product struct {
 	ID         uint                    `gorm:"primaryKey;autoIncrement;column:id" json:"id"`
 	SKU        string                  `gorm:"type:varchar(50);uniqueIndex;not null;column:sku" json:"sku"`
+	Slug       string                  `gorm:"type:varchar(255);uniqueIndex;not null;column:slug" json:"slug"`
 	Name       string                  `gorm:"type:varchar(255);not null;index:idx_product_name;column:name" json:"name"`
 	CategoryID uint                    `gorm:"not null;index;column:category_id" json:"categoryId"`
 	Category   categoryEntity.Category `gorm:"foreignKey:CategoryID;references:ID;constraint:OnDelete:RESTRICT;" json:"category"`

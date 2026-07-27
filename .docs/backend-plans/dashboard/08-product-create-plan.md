@@ -59,7 +59,7 @@ func (Product) TableName() string {
 ## TRỤ CỘT 2: GIAO KÈO API (API CONTRACT & CONTEXT AUTH)
 
 ### 1. Tạo mới sản phẩm
-- **Method & Route:** `POST /api/v1/admin/products`
+- **Method:** `POST /api/v1/admin/products`
 - **Auth:** Yêu cầu đi qua Middleware Auth (Kiểm tra token hợp lệ, lấy `userId`, phân quyền Admin/Operator).
 
 **Request Binding Struct:**
@@ -68,6 +68,7 @@ package dto
 
 type CreateProductRequest struct {
 	Name        string   `json:"name" binding:"required,max=255"`
+	Slug        string   `json:"slug" binding:"required,max=255"`
 	Description string   `json:"description"`
 	CategoryID  uint     `json:"categoryId" binding:"required"`
 	Price       float64  `json:"price" binding:"required,gt=0"`
@@ -84,6 +85,7 @@ type CreateProductRequest struct {
 type ProductResponse struct {
 	ID          uint     `json:"id"`
 	Name        string   `json:"name"`
+	Slug        string   `json:"slug"`
 	Description string   `json:"description"`
 	CategoryID  uint     `json:"categoryId"`
 	Category    *CategoryResponse `json:"category,omitempty"`
@@ -103,10 +105,10 @@ type ProductResponse struct {
 Khi tạo mới một product, Service layer (UseCase) cần xử lý các luồng logic (Business validations) sau:
 1. **Auto-Generate SKU:** 
    Nếu client không gửi `req.SKU`, hệ thống tự sinh mã SKU ngẫu nhiên kết hợp prefix (VD: `PRD-<UUID_Short>` hoặc logic tuỳ biến).
-2. **Kiểm tra trùng lặp SKU:** 
-   Thực thi câu truy vấn `Count` để đảm bảo `SKU` (người dùng nhập hoặc tự sinh) là duy nhất. Báo lỗi 400 (Bad Request) nếu trùng lặp.
+2. **Kiểm tra trùng lặp SKU & Slug:**
+   Nếu SKU hoặc Slug bị thay đổi, phải kiểm tra xem SKU/Slug mới có bị trùng với sản phẩm KHÁC hay không.
 3. **Kiểm tra Validate Category:** 
-   Gọi Repository kiểm tra xem `CategoryID` gửi lên có thật sự tồn tại trong DB không. Báo lỗi 404/400 nếu danh mục không hợp lệ.
+   Gọi Repository kiểm tra xem Product ID có tồn tại hay không. Báo lỗi 404 (Not Found) nếu không thấy.
 4. **Kiểm tra logic Giá khuyến mãi:** 
    Nếu client có truyền lên `SalePrice`, bắt buộc ở tầng Service phải check: `SalePrice < Price`. Mặc dù FE đã check nhưng BE không bao giờ được phép tin tưởng tuyệt đối vào FE.
 5. **Gán giá trị mặc định:** 

@@ -15,11 +15,12 @@ type ListProductReq struct {
 
 type CreateProductReq struct {
 	Name       string   `json:"name" binding:"required,max=255"`
-	SKU        string   `json:"sku" binding:"required,max=50"`
+	Slug       string   `json:"slug" binding:"required,max=255"`
+	SKU        string   `json:"sku" binding:"max=50"`
 	CategoryID uint     `json:"categoryId" binding:"required"`
 	Price      float64  `json:"price" binding:"required,gt=0"`
 	SalePrice  *float64 `json:"salePrice" binding:"omitempty,gte=0"`
-	Stock      int      `json:"stock" binding:"required,gte=0"`
+	Stock      int      `json:"stock" binding:"gte=0"`
 	Status     string   `json:"status" binding:"required,oneof=ACTIVE HIDDEN OUT_OF_STOCK"`
 	ImageURL   string   `json:"image" binding:"omitempty,max=500"`
 }
