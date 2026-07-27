@@ -21,7 +21,7 @@ type CreateProductReq struct {
 	SalePrice  *float64 `json:"salePrice" binding:"omitempty,gte=0"`
 	Stock      int      `json:"stock" binding:"required,gte=0"`
 	Status     string   `json:"status" binding:"required,oneof=ACTIVE HIDDEN OUT_OF_STOCK"`
-	ImageURL   string   `json:"image" binding:"omitempty,url"`
+	ImageURL   string   `json:"image" binding:"omitempty,max=500"`
 }
 
 type UpdateProductReq struct {
