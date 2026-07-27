@@ -60,6 +60,8 @@ paths:
               properties:
                 name:
                   type: string
+                description:
+                  type: string
                 sku:
                   type: string
                 categoryId:

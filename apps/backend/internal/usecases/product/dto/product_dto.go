@@ -15,6 +15,7 @@ type ListProductReq struct {
 
 type CreateProductReq struct {
 	Name       string   `json:"name" binding:"required,max=255"`
+	Description string  `json:"description" binding:"omitempty"`
 	Slug       string   `json:"slug" binding:"required,max=255"`
 	SKU        string   `json:"sku" binding:"max=50"`
 	CategoryID uint     `json:"categoryId" binding:"required"`

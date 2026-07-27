@@ -16,3 +16,4 @@
 - [2026-07-27 10:35:12] Sửa lỗi lệnh make run-backend chạy air và hoàn tất tích hợp API lấy danh sách sản phẩm vào UI (products/list.tsx).
 - [2026-07-27 10:36:12] Đã hoàn thiện UI, backend plan, tích hợp API cho chức năng Thêm mới sản phẩm và sửa lỗi validation image URL ở BE.
 - [2026-07-27 14:04:19] Hoàn thiện API và UI chỉnh sửa sản phẩm. Bổ sung trường Slug (tự động sinh), sửa lỗi validate (SKU, Stock) và fix lỗi Refine useForm query.
+- [2026-07-27 15:32:56] Đã bổ sung trường description cho thực thể Product (Entity, DTO, Service), tạo migration thêm cột vào DB và cập nhật api-endpoints.yaml.

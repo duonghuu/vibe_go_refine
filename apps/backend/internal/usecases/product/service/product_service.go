@@ -80,10 +80,11 @@ func (s *productServiceImpl) CreateProduct(ctx context.Context, req dto.CreatePr
 	}
 
 	product := &entity.Product{
-		Name:       req.Name,
-		Slug:       req.Slug,
-		SKU:        req.SKU,
-		CategoryID: req.CategoryID,
+		Name:        req.Name,
+		Description: req.Description,
+		Slug:        req.Slug,
+		SKU:         req.SKU,
+		CategoryID:  req.CategoryID,
 		Price:      req.Price,
 		SalePrice:  req.SalePrice,
 		Stock:      req.Stock,
@@ -136,6 +137,7 @@ func (s *productServiceImpl) UpdateProduct(ctx context.Context, id uint, req dto
 	}
 
 	product.Name = req.Name
+	product.Description = req.Description
 	product.Slug = req.Slug
 	product.SKU = req.SKU
 	product.CategoryID = req.CategoryID

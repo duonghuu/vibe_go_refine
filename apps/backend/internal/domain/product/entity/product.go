@@ -14,6 +14,7 @@ type Product struct {
 	SKU        string                  `gorm:"type:varchar(50);uniqueIndex;not null;column:sku" json:"sku"`
 	Slug       string                  `gorm:"type:varchar(255);uniqueIndex;not null;column:slug" json:"slug"`
 	Name       string                  `gorm:"type:varchar(255);not null;index:idx_product_name;column:name" json:"name"`
+	Description string                 `gorm:"type:text;column:description" json:"description"`
 	CategoryID uint                    `gorm:"not null;index;column:category_id" json:"categoryId"`
 	Category   categoryEntity.Category `gorm:"foreignKey:CategoryID;references:ID;constraint:OnDelete:RESTRICT;" json:"category"`
 	Price      float64                 `gorm:"type:decimal(10,2);not null;column:price" json:"price"`
