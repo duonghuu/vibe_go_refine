@@ -95,3 +95,31 @@ Tôi đã tiến hành kiểm tra cấu trúc dự án cũng như đọc các fi
     docker compose -f docker-compose.dev.yml down
 
   (Lưu ý: Chạy lệnh down sẽ không làm mất dữ liệu của MySQL và Redis do chúng đã được lưu cứng ở các volume db_data và redis_data bên ngoài)
+
+# REDIS
+
+Để truy cập vào Redis CLI trong môi trường development dựa trên cấu hình docker-compose.dev.yaml, bạn
+
+  ### Cách 1: Sử dụng lệnh Docker (Khuyên dùng)
+  có 2 cách rất đơn giản:
+
+  Vì container redis được đặt tên là vibe_redis_dev, bạn có thể truy cập thẳng vào redis-cli bằng lệnh:
+    docker exec -it vibe_redis_dev redis-cli
+    
+  ### Cách 2: Sử dụng Makefile (Tiện lợi nhất)
+  Trong dự án này đã có cấu hình sẵn Makefile, bạn chỉ cần chạy lệnh sau tại thư mục gốc:
+
+    make shell-redis
+    
+  Một số lệnh cơ bản khi bạn đã vào được Redis CLI:
+
+  • PING: Kiểm tra kết nối (sẽ trả về PONG)
+  • KEYS *: Liệt kê tất cả các key hiện có
+  • GET <key>: Lấy giá trị của một key cụ thể (Ví dụ: GET mykey)
+  • FLUSHALL: Xóa tất cả dữ liệu (Cẩn thận khi dùng)
+  • exit: Để thoát khỏi giao diện Redis CLI
+
+  │ Chú ý: Nếu bạn muốn gọi Redis CLI từ máy host thông qua port map (thay vì vào thẳng shell container),
+  │ port của Redis đang được ánh xạ ra ngoài là 6380 (theo cấu hình "6380:6379"). Bạn có thể truy cập
+  bằng
+  │ lệnh: redis-cli -p 6380.
