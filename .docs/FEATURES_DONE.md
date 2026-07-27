@@ -13,3 +13,4 @@
 - [2026-07-22 10:21:44] Hoàn thiện logic tự động đồng bộ slug từ tên danh mục (không validate sớm) và sửa lỗi UI label bị đè tại trang thêm danh mục.
 - [2026-07-23 09:07:45] Đã fix lỗi hiển thị toast error khi submit form trên Refine bằng cách trích xuất lỗi backend trong dataProvider.
 - [2026-07-23 11:38:24] Đã sửa lỗi chọn chính nó làm danh mục cha trong màn hình chỉnh sửa Category do khác biệt kiểu dữ liệu.
+- [2026-07-27 09:45:12] Sửa lỗi lệnh make run-backend chạy air và hoàn tất tích hợp API lấy danh sách sản phẩm vào UI (products/list.tsx).

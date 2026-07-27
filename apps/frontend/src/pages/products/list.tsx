@@ -1,4 +1,5 @@
 import React, { useMemo, useState } from "react";
+import { HttpError } from "@refinedev/core";
 import {
   List,
   useDataGrid,
@@ -17,86 +18,39 @@ import {
 import SearchIcon from "@mui/icons-material/Search";
 import debounce from "@mui/material/utils/debounce";
 
-// Dữ liệu giả (Mock Data) tham chiếu từ .docs/mock-data/products.json
-const mockProducts: IProduct[] = [
-  {
-    id: 1,
-    name: "Apple Watch Series 4",
-    category: { id: 1, name: "Digital Product" },
-    price: 690.00,
-    stock: 63,
-    colors: ["#000000", "#D1D5DB", "#FBCFE8"],
-    image: "https://images.unsplash.com/photo-1546868871-7041f2a55e12?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80",
-    status: "Active"
-  },
-  {
-    id: 2,
-    name: "Microsoft Headsquare",
-    category: { id: 1, name: "Digital Product" },
-    price: 190.00,
-    stock: 13,
-    colors: ["#000000", "#3B82F6", "#EF4444"],
-    image: "https://images.unsplash.com/photo-1550009158-9ebf69173e03?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80",
-    status: "Active"
-  },
-  {
-    id: 3,
-    name: "Women's Dress",
-    category: { id: 2, name: "Fashion" },
-    price: 640.00,
-    stock: 635,
-    colors: ["#A855F7", "#FBBF24", "#000000"],
-    image: "https://images.unsplash.com/photo-1595777457583-95e059d581b8?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80",
-    status: "Active"
-  },
-  {
-    id: 4,
-    name: "Samsung A50",
-    category: { id: 3, name: "Mobile" },
-    price: 400.00,
-    stock: 67,
-    colors: ["#000000", "#1D4ED8", "#F3F4F6"],
-    image: "https://images.unsplash.com/photo-1598327105666-5b89351cb315?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80",
-    status: "Active"
-  },
-  {
-    id: 5,
-    name: "Camera",
-    category: { id: 4, name: "Electronic" },
-    price: 420.00,
-    stock: 52,
-    colors: ["#000000", "#9CA3AF", "#DC2626"],
-    image: "https://images.unsplash.com/photo-1516035069371-29a1b244cc32?ixlib=rb-4.0.3&auto=format&fit=crop&w=150&q=80",
-    status: "Active"
-  }
-];
-
 export interface ICategory {
   id: number;
   name: string;
+  parentId?: number;
 }
 
 export interface IProduct {
   id: number;
+  sku: string;
   name: string;
+  categoryId: number;
   category: ICategory;
   price: number;
+  salePrice?: number;
   stock: number;
-  colors: string[];
-  image: string;
+  soldCount: number;
   status: string;
+  image: string;
+  createdAt: string;
+  updatedAt: string;
 }
 
 export const ProductList: React.FC = () => {
   const [searchValue, setSearchValue] = useState("");
 
-  const { dataGridProps, search, filters } = useDataGrid<IProduct>({
+  const { dataGridProps, search, filters } = useDataGrid<IProduct, HttpError>({
+    resource: "products",
     onSearch: (params: any) => {
       return [
         {
-          field: "name",
-          operator: "contains",
-          value: params.name,
+          field: "q",
+          operator: "eq",
+          value: params.q,
         },
       ];
     },
@@ -106,7 +60,7 @@ export const ProductList: React.FC = () => {
   const handleSearch = useMemo(
     () =>
       debounce((value: string) => {
-        search([{ field: "name", operator: "contains", value }]);
+        search([{ field: "q", operator: "eq", value }]);
       }, 300),
     [search]
   );
@@ -130,6 +84,18 @@ export const ProductList: React.FC = () => {
               alt={row.name}
               sx={{ width: 60, height: 60, bgcolor: "#e2e8f0" }}
             />
+          );
+        },
+      },
+      {
+        field: "sku",
+        headerName: "SKU",
+        width: 120,
+        renderCell: function render({ row }) {
+          return (
+            <Typography variant="body2" color="text.secondary">
+              {row.sku}
+            </Typography>
           );
         },
       },
@@ -172,7 +138,7 @@ export const ProductList: React.FC = () => {
       },
       {
         field: "stock",
-        headerName: "Piece",
+        headerName: "Stock",
         width: 100,
         renderCell: function render({ row }) {
           return (
@@ -183,26 +149,26 @@ export const ProductList: React.FC = () => {
         },
       },
       {
-        field: "colors",
-        headerName: "Available Color",
-        width: 150,
+        field: "status",
+        headerName: "Status",
+        width: 130,
         renderCell: function render({ row }) {
+          const isActive = row.status === "ACTIVE";
           return (
-            <Stack direction="row" spacing={-1}>
-              {row.colors?.map((color, idx) => (
-                <Box
-                  key={idx}
-                  sx={{
-                    width: 20,
-                    height: 20,
-                    borderRadius: "50%",
-                    bgcolor: color,
-                    border: "2px solid #fff",
-                    boxShadow: "0 0 2px rgba(0,0,0,0.1)",
-                  }}
-                />
-              ))}
-            </Stack>
+            <Box
+              sx={{
+                px: 1.5,
+                py: 0.5,
+                borderRadius: "9999px",
+                bgcolor: isActive ? "#dcfce7" : "#fee2e2",
+                color: isActive ? "#166534" : "#991b1b",
+                fontSize: "12px",
+                fontWeight: "600",
+                display: "inline-block"
+              }}
+            >
+              {row.status}
+            </Box>
           );
         },
       },
@@ -301,7 +267,6 @@ export const ProductList: React.FC = () => {
       >
         <DataGrid
           {...dataGridProps}
-          rows={mockProducts} // Sử dụng mock data thay cho dataGridProps.rows để render đúng UI mockup
           columns={columns}
           autoHeight
           rowHeight={80}
