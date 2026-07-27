@@ -42,7 +42,7 @@ run-frontend:
 	cd apps/frontend && npm run dev
 
 run-backend:
-	cd apps/backend && go run main.go
+	cd apps/backend && "$$(go env GOPATH)/bin/air" -c .air.toml
 
 migrate-up:
 	docker exec -it vibe_backend_dev migrate -path database/migrations -database "mysql://root:root@tcp(db:3306)/vibe_db" up
