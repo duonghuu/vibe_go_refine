@@ -14,9 +14,12 @@ import {
   Avatar,
   Stack,
   InputAdornment,
+  Chip,
+  TextField,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import debounce from "@mui/material/utils/debounce";
+import { BACKEND_URL } from "../../providers/constants";
 
 export interface ICategory {
   id: number;
@@ -80,7 +83,7 @@ export const ProductList: React.FC = () => {
           return (
             <Avatar
               variant="rounded"
-              src={row.image}
+              src={row.image?.startsWith("/") ? `${BACKEND_URL}${row.image}` : row.image}
               alt={row.name}
               sx={{ width: 60, height: 60, bgcolor: "#e2e8f0" }}
             />
@@ -155,19 +158,16 @@ export const ProductList: React.FC = () => {
         renderCell: function render({ row }) {
           const isActive = row.status === "ACTIVE";
           return (
-            <Box
-              sx={{
-                px: 1.5,
-                py: 0.5,
-                borderRadius: "9999px",
-                bgcolor: isActive ? "#dcfce7" : "#fee2e2",
-                color: isActive ? "#166534" : "#991b1b",
-                fontSize: "12px",
-                fontWeight: "600",
-                display: "inline-block"
-              }}
-            >
-              {row.status}
+            <Box sx={{ display: 'flex', alignItems: 'center', height: '100%' }}>
+              <Chip
+                label={row.status === "ACTIVE" ? "Active" : "Hidden"}
+                size="small"
+                sx={{
+                  backgroundColor: isActive ? "#e8f5e9" : "#f5f5f5",
+                  color: isActive ? "#2e7d32" : "#757575",
+                  fontWeight: "bold",
+                }}
+              />
             </Box>
           );
         },
@@ -237,33 +237,25 @@ export const ProductList: React.FC = () => {
           },
         }}
         title=""
-        headerButtons={
-          <Box sx={{ position: "relative", width: "260px" }}>
-            <InputBase
+        headerButtons={(props) => (
+          <Stack direction="row" spacing={2}>
+            <TextField
               placeholder="Search product name"
-              value={searchValue}
+              variant="outlined"
+              size="small"
               onChange={onSearchChange}
-              startAdornment={
-                <InputAdornment position="start">
-                  <SearchIcon sx={{ color: "#9ca3af", fontSize: 20 }} />
-                </InputAdornment>
-              }
-              sx={{
-                bgcolor: "#F5F6FA",
-                borderRadius: "9999px",
-                px: 2,
-                py: 0.5,
-                width: "100%",
-                fontSize: "14px",
-                border: "1px solid #D5D5D5",
-                "&:focus-within": {
-                  borderColor: "primary.main",
-                  boxShadow: "0 0 0 2px rgba(72, 128, 255, 0.2)",
-                },
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon sx={{ color: 'text.secondary' }} />
+                  </InputAdornment>
+                ),
+                sx: { borderRadius: '50px', backgroundColor: '#F5F6FA', width: { xs: '100%', md: '300px' } }
               }}
             />
-          </Box>
-        }
+            {props.defaultButtons}
+          </Stack>
+        )}
       >
         <DataGrid
           {...dataGridProps}
