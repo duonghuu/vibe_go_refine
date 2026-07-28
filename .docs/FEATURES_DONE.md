@@ -17,3 +17,7 @@
 - [2026-07-27 10:36:12] Đã hoàn thiện UI, backend plan, tích hợp API cho chức năng Thêm mới sản phẩm và sửa lỗi validation image URL ở BE.
 - [2026-07-27 14:04:19] Hoàn thiện API và UI chỉnh sửa sản phẩm. Bổ sung trường Slug (tự động sinh), sửa lỗi validate (SKU, Stock) và fix lỗi Refine useForm query.
 - [2026-07-27 15:32:56] Đã bổ sung trường description cho thực thể Product (Entity, DTO, Service), tạo migration thêm cột vào DB và cập nhật api-endpoints.yaml.
+- [2026-07-28 09:23:25] Hoàn thành tạo database seeder cho bảng users dựa trên bản quy hoạch và chạy seed thành công.
+- [2026-07-28 09:28:20] Hoàn thành tạo database seeder cho bảng categories dựa trên mock data và chạy seed thành công.
+- [2026-07-28 13:31:57] Hoàn thành tạo database seeder cho bảng products dựa trên mock data và chạy seed thành công.
+- [2026-07-28 13:36:07] Đã chia nhỏ logic seeder thành các file riêng biệt (main.go, users.go, categories.go, products.go) để dễ quản lý.
