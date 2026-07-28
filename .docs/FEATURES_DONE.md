@@ -21,3 +21,4 @@
 - [2026-07-28 09:28:20] Hoàn thành tạo database seeder cho bảng categories dựa trên mock data và chạy seed thành công.
 - [2026-07-28 13:31:57] Hoàn thành tạo database seeder cho bảng products dựa trên mock data và chạy seed thành công.
 - [2026-07-28 13:36:07] Đã chia nhỏ logic seeder thành các file riêng biệt (main.go, users.go, categories.go, products.go) để dễ quản lý.
+- [2026-07-28 14:04:57] Hoàn thành frontend plan và lập trình UI màn hình Quản lý người dùng, tạo mock data, đồng bộ giao diện với Refine.js và MUI.

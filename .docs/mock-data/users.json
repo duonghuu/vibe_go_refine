@@ -1,0 +1,47 @@
+[
+  {
+    "id": 1,
+    "email": "admin@techbite.com",
+    "name": "System Admin",
+    "role": "ADMIN",
+    "status": "ACTIVE",
+    "lastLoginAt": "2026-07-17T08:30:00Z",
+    "createdAt": "2026-01-01T00:00:00Z"
+  },
+  {
+    "id": 2,
+    "email": "staff1@techbite.com",
+    "name": "Nguyễn Văn A",
+    "role": "STAFF",
+    "status": "ACTIVE",
+    "lastLoginAt": "2026-07-16T17:40:00Z",
+    "createdAt": "2026-03-12T00:00:00Z"
+  },
+  {
+    "id": 3,
+    "email": "staff2@techbite.com",
+    "name": "Trần Thị B",
+    "role": "STAFF",
+    "status": "INACTIVE",
+    "lastLoginAt": "2026-07-10T09:20:00Z",
+    "createdAt": "2026-03-20T00:00:00Z"
+  },
+  {
+    "id": 4,
+    "email": "customer1@gmail.com",
+    "name": "Lê Văn C",
+    "role": "CUSTOMER",
+    "status": "ACTIVE",
+    "lastLoginAt": "2026-07-17T09:05:00Z",
+    "createdAt": "2026-05-08T00:00:00Z"
+  },
+  {
+    "id": 5,
+    "email": "customer2@gmail.com",
+    "name": "Phạm Thị D",
+    "role": "CUSTOMER",
+    "status": "INACTIVE",
+    "lastLoginAt": "2026-06-29T15:15:00Z",
+    "createdAt": "2026-05-18T00:00:00Z"
+  }
+]
