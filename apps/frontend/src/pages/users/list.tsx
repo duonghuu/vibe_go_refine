@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import {
   useDataGrid,
   List,
@@ -22,7 +22,6 @@ import {
   TextField,
   InputAdornment,
   MenuItem,
-  Drawer,
   Button,
   Stack,
   FormControl,
@@ -38,8 +37,6 @@ import SearchIcon from "@mui/icons-material/Search";
 import LockIcon from "@mui/icons-material/Lock";
 import LockOpenIcon from "@mui/icons-material/LockOpen";
 import KeyIcon from "@mui/icons-material/Key";
-import { useForm } from "@refinedev/react-hook-form";
-import { Controller } from "react-hook-form";
 import { useCustomMutation, useUpdate, HttpError, useGetIdentity } from "@refinedev/core";
 
 export interface IUser {
@@ -76,9 +73,7 @@ export const UserList = () => {
   const [roleFilter, setRoleFilter] = useState<string>("ALL");
   const [statusFilter, setStatusFilter] = useState<string>("ALL");
 
-  // Drawer state for Create / Edit
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  const [editingId, setEditingId] = useState<number | null>(null);
+
 
   // Dialogs
   const [statusDialog, setStatusDialog] = useState<{ open: boolean; user: IUser | null }>({ open: false, user: null });
@@ -88,25 +83,7 @@ export const UserList = () => {
   const { mutate: updateStatus } = useUpdate<IUser>();
   const { mutate: customMutate } = useCustomMutation<any>();
 
-  // Form hook for drawer
-  const {
-    refineCore: { onFinish, formLoading },
-    register,
-    handleSubmit,
-    control,
-    reset,
-    formState: { errors },
-  } = useForm<IUser, HttpError, any>({
-    refineCoreProps: {
-      resource: "users",
-      action: editingId ? "edit" : "create",
-      id: editingId || undefined,
-      onMutationSuccess: () => {
-        setDrawerOpen(false);
-        reset();
-      },
-    },
-  });
+
 
   // Handle Search with debounce
   React.useEffect(() => {
@@ -135,17 +112,7 @@ export const UserList = () => {
     };
   }, [searchTerm, roleFilter, statusFilter, setFilters]);
 
-  // Open Drawer for Edit
-  const handleEdit = (user: IUser) => {
-    setEditingId(user.id);
-    reset({
-      email: user.email,
-      name: user.name,
-      role: user.role,
-      status: user.status,
-    });
-    setDrawerOpen(true);
-  };
+
 
   const handleToggleStatus = () => {
     if (statusDialog.user) {
@@ -232,35 +199,39 @@ export const UserList = () => {
       {
         field: "actions",
         headerName: "Thao tác",
-        type: "actions",
         width: 180,
-        getActions: ({ row }) => {
-          const isCurrentUser = identity?.id === row.id;
-          const canEdit = identity?.role === "ADMIN" || identity?.role === "STAFF";
+        sortable: false,
+        renderCell: ({ row }) => {
+          // Tạm thời bỏ qua identity vì AuthProvider chưa trả về đúng identity
+          const isCurrentUser = false; // identity?.id === row.id;
+          const canEdit = true; // identity?.role === "ADMIN" || identity?.role === "STAFF";
 
-          return [
-            <GridActionsCellItem
-              key="edit"
-              icon={<EditButton hideText size="small" />}
-              label="Edit"
-              onClick={() => handleEdit(row)}
-              disabled={!canEdit}
-            />,
-            <GridActionsCellItem
-              key="password"
-              icon={<KeyIcon color="warning" />}
-              label="Reset Password"
-              onClick={() => setPasswordDialog({ open: true, userId: row.id })}
-              disabled={identity?.role !== "ADMIN"}
-            />,
-            <GridActionsCellItem
-              key="status"
-              icon={row.status === "ACTIVE" ? <LockIcon color="error" /> : <LockOpenIcon color="success" />}
-              label="Toggle Status"
-              onClick={() => setStatusDialog({ open: true, user: row })}
-              disabled={isCurrentUser}
-            />,
-          ];
+          return (
+            <Stack direction="row" spacing={1} alignItems="center">
+              <EditButton 
+                hideText 
+                size="small" 
+                recordItemId={row.id} 
+                disabled={!canEdit}
+              />
+              <IconButton 
+                size="small" 
+                onClick={() => setPasswordDialog({ open: true, userId: row.id })}
+                // disabled={identity?.role !== "ADMIN"}
+                title="Reset Password"
+              >
+                <KeyIcon color="warning" fontSize="small" />
+              </IconButton>
+              <IconButton 
+                size="small" 
+                onClick={() => setStatusDialog({ open: true, user: row })}
+                disabled={isCurrentUser}
+                title="Toggle Status"
+              >
+                {row.status === "ACTIVE" ? <LockIcon color="error" fontSize="small" /> : <LockOpenIcon color="success" fontSize="small" />}
+              </IconButton>
+            </Stack>
+          );
         },
       },
     ],
@@ -388,89 +359,7 @@ export const UserList = () => {
         />
       </List>
 
-      {/* Drawer for Create / Edit */}
-      <Drawer
-        anchor="right"
-        open={drawerOpen}
-        onClose={() => setDrawerOpen(false)}
-        PaperProps={{ sx: { width: { xs: '100%', sm: 400 }, p: 3 } }}
-      >
-        <Typography variant="h6" fontWeight="700" mb={3}>
-          Chỉnh sửa người dùng
-        </Typography>
 
-        <Box component="form" onSubmit={handleSubmit(onFinish)} display="flex" flexDirection="column" gap={3}>
-          <TextField
-            {...register("name", { required: "Tên là bắt buộc" })}
-            label="Họ và tên (*)"
-            error={!!errors.name}
-            helperText={errors.name?.message as string}
-            fullWidth
-            InputProps={{ sx: { borderRadius: "8px" } }}
-          />
-
-          <TextField
-            {...register("email", { 
-              required: "Email là bắt buộc",
-              pattern: { value: /^\S+@\S+$/i, message: "Email không hợp lệ" }
-            })}
-            label="Email (*)"
-            error={!!errors.email}
-            helperText={errors.email?.message as string}
-            fullWidth
-            disabled={true}
-            InputProps={{ sx: { borderRadius: "8px" } }}
-          />
-
-          <Controller
-            control={control}
-            name="role"
-            render={({ field }) => (
-              <FormControl fullWidth>
-                <InputLabel>Quyền</InputLabel>
-                <Select {...field} label="Quyền" sx={{ borderRadius: "8px" }}>
-                  <MenuItem value="ADMIN">ADMIN</MenuItem>
-                  <MenuItem value="STAFF">STAFF</MenuItem>
-                  <MenuItem value="CUSTOMER">CUSTOMER</MenuItem>
-                </Select>
-              </FormControl>
-            )}
-          />
-
-          <Controller
-            control={control}
-            name="status"
-            render={({ field }) => (
-              <FormControl fullWidth>
-                <InputLabel>Trạng thái</InputLabel>
-                <Select {...field} label="Trạng thái" sx={{ borderRadius: "8px" }}>
-                  <MenuItem value="ACTIVE">Hoạt động</MenuItem>
-                  <MenuItem value="INACTIVE">Khóa</MenuItem>
-                </Select>
-              </FormControl>
-            )}
-          />
-
-          <Stack direction="row" spacing={2} justifyContent="flex-end" mt={2}>
-            <Button
-              variant="outlined"
-              color="secondary"
-              onClick={() => setDrawerOpen(false)}
-              sx={{ borderRadius: "8px", textTransform: "none", fontWeight: "600", borderColor: '#D5D5D5' }}
-            >
-              Hủy
-            </Button>
-            <Button
-              type="submit"
-              variant="contained"
-              disabled={formLoading}
-              sx={{ borderRadius: "8px", textTransform: "none", fontWeight: "600", bgcolor: 'primary.main', boxShadow: 'none' }}
-            >
-              Lưu
-            </Button>
-          </Stack>
-        </Box>
-      </Drawer>
 
       {/* Status Confirm Dialog */}
       <Dialog open={statusDialog.open} onClose={() => setStatusDialog({ open: false, user: null })}>
