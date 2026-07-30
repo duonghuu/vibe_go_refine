@@ -30,7 +30,7 @@ import {
   CategoryShow,
 } from "./pages/categories";
 import { ProductCreate, ProductEdit, ProductList } from "./pages/products";
-import { UserList } from "./pages/users";
+import { UserList, UserCreate } from "./pages/users";
 import { dataProvider } from "./providers/data";
 import { AdminMasterLayout } from "./components/layout";
 
@@ -80,6 +80,7 @@ function App() {
                   {
                     name: "users",
                     list: "/users",
+                    create: "/users/create",
                     meta: {
                       canDelete: false,
                     },
@@ -122,6 +123,7 @@ function App() {
                     </Route>
                     <Route path="/users">
                       <Route index element={<UserList />} />
+                      <Route path="create" element={<UserCreate />} />
                     </Route>
                     <Route path="*" element={<ErrorComponent />} />
                   </Route>

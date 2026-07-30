@@ -135,18 +135,6 @@ export const UserList = () => {
     };
   }, [searchTerm, roleFilter, statusFilter, setFilters]);
 
-  // Open Drawer for Create
-  const handleCreate = () => {
-    setEditingId(null);
-    reset({
-      email: "",
-      name: "",
-      role: "CUSTOMER",
-      status: "ACTIVE",
-    });
-    setDrawerOpen(true);
-  };
-
   // Open Drawer for Edit
   const handleEdit = (user: IUser) => {
     setEditingId(user.id);
@@ -371,14 +359,7 @@ export const UserList = () => {
               <MenuItem value="ACTIVE">Hoạt động</MenuItem>
               <MenuItem value="INACTIVE">Đã khóa</MenuItem>
             </Select>
-            <CreateButton 
-              onClick={(e) => {
-                e.preventDefault();
-                handleCreate();
-              }}
-            >
-              Thêm người dùng
-            </CreateButton>
+            <CreateButton />
           </Stack>
         )}
       >
@@ -415,7 +396,7 @@ export const UserList = () => {
         PaperProps={{ sx: { width: { xs: '100%', sm: 400 }, p: 3 } }}
       >
         <Typography variant="h6" fontWeight="700" mb={3}>
-          {editingId ? "Chỉnh sửa người dùng" : "Thêm người dùng mới"}
+          Chỉnh sửa người dùng
         </Typography>
 
         <Box component="form" onSubmit={handleSubmit(onFinish)} display="flex" flexDirection="column" gap={3}>
@@ -437,24 +418,9 @@ export const UserList = () => {
             error={!!errors.email}
             helperText={errors.email?.message as string}
             fullWidth
-            disabled={!!editingId}
+            disabled={true}
             InputProps={{ sx: { borderRadius: "8px" } }}
           />
-
-          {!editingId && (
-            <TextField
-              {...register("password", { 
-                required: "Mật khẩu là bắt buộc",
-                minLength: { value: 8, message: "Mật khẩu ít nhất 8 ký tự" }
-              })}
-              label="Mật khẩu (*)"
-              type="password"
-              error={!!errors.password}
-              helperText={errors.password?.message as string}
-              fullWidth
-              InputProps={{ sx: { borderRadius: "8px" } }}
-            />
-          )}
 
           <Controller
             control={control}
