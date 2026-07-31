@@ -24,3 +24,4 @@
 - [2026-07-28 14:04:57] Hoàn thành frontend plan và lập trình UI màn hình Quản lý người dùng, tạo mock data, đồng bộ giao diện với Refine.js và MUI.
 - [2026-07-30 13:46:53] Đã hoàn thành lên kế hoạch và code UI cho tính năng Thêm người dùng mới, tách thành trang riêng, bỏ drawer form.
 - [2026-07-30 14:37:41] Đã lên kế hoạch và hoàn thành UI trang chỉnh sửa User riêng biệt, bỏ Drawer và fix lỗi đè nhãn MUI TextField.
+- [2026-07-31 16:52:42] Lên kế hoạch Frontend và hoàn thành UI Login, viết AuthProvider (Refine), cấu hình Axios/Fetch chặn 401 tự động Refresh Token.

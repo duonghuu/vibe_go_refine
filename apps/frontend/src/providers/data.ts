@@ -1,11 +1,43 @@
 import { createSimpleRestDataProvider } from "@refinedev/rest/simple-rest";
 import { API_URL } from "./constants";
 
+import { refreshTokenFn } from "./axiosInstance";
+
+const customHttpClient = async (url: string, options: RequestInit = {}) => {
+  const token = localStorage.getItem("accessToken");
+  if (token) {
+    options.headers = {
+      ...options.headers,
+      Authorization: `Bearer ${token}`,
+    };
+  }
+
+  let response = await fetch(url, options);
+
+  if (response.status === 401) {
+    try {
+      const newToken = await refreshTokenFn();
+      if (newToken) {
+        options.headers = {
+          ...options.headers,
+          Authorization: `Bearer ${newToken}`,
+        };
+        response = await fetch(url, options);
+      }
+    } catch (e) {
+      // Failed to refresh, will return the original 401 response and let AuthProvider.onError handle it
+    }
+  }
+  return response as any;
+};
+
 const simpleRest = createSimpleRestDataProvider({
   apiURL: `${API_URL}/admin`,
+  httpClient: customHttpClient,
 });
 
-export const kyInstance = simpleRest.kyInstance;
+export const kyInstance = simpleRest.kyInstance; // Kept for backward compatibility if used elsewhere
+
 
 const parseError = (error: any) => {
   if (error && typeof error.message === "string") {

@@ -16,6 +16,10 @@ import routerProvider, {
   UnsavedChangesNotifier,
 } from "@refinedev/react-router";
 import { BrowserRouter, Outlet, Route, Routes } from "react-router";
+import { Authenticated } from "@refinedev/core";
+import { CatchAllNavigate } from "@refinedev/react-router";
+import { Login } from "./pages/auth";
+import { authProvider } from "./providers/authProvider";
 import { ColorModeContextProvider } from "./contexts/color-mode";
 import {
   BlogPostCreate,
@@ -45,6 +49,7 @@ function App() {
             <DevtoolsProvider>
               <Refine
                 dataProvider={dataProvider}
+                authProvider={authProvider}
                 notificationProvider={useNotificationProvider}
                 routerProvider={routerProvider}
                 resources={[
@@ -96,9 +101,11 @@ function App() {
                 <Routes>
                   <Route
                     element={
-                      <AdminMasterLayout>
-                        <Outlet />
-                      </AdminMasterLayout>
+                      <Authenticated key="authenticated-inner" fallback={<CatchAllNavigate to="/login" />}>
+                        <AdminMasterLayout>
+                          <Outlet />
+                        </AdminMasterLayout>
+                      </Authenticated>
                     }
                   >
                     <Route
@@ -128,6 +135,16 @@ function App() {
                       <Route path="edit/:id" element={<UserEdit />} />
                     </Route>
                     <Route path="*" element={<ErrorComponent />} />
+                  </Route>
+
+                  <Route
+                    element={
+                      <Authenticated key="authenticated-outer" fallback={<Outlet />}>
+                        <NavigateToResource />
+                      </Authenticated>
+                    }
+                  >
+                    <Route path="/login" element={<Login />} />
                   </Route>
                 </Routes>
 
