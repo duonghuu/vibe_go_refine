@@ -16,17 +16,32 @@ import {
 } from "@mui/material";
 import { useForm } from "@refinedev/react-hook-form";
 import { Controller } from "react-hook-form";
-import { HttpError } from "@refinedev/core";
+import { HttpError, useNavigation } from "@refinedev/core";
 import { IUser } from "./list";
 
 export const UserEdit: React.FC = () => {
+  const { list } = useNavigation();
+
   const {
     saveButtonProps,
     register,
     control,
     formState: { errors },
     refineCore: { query },
-  } = useForm<IUser, HttpError, any>();
+  } = useForm<IUser, HttpError, any>({
+    refineCoreProps: {
+      action: "edit",
+      resource: "users",
+      redirect: false,
+      onMutationSuccess: () => {
+        list("users");
+      },
+      meta: {
+        method: "put",
+      },
+    },
+    warnWhenUnsavedChanges: true,
+  });
 
   const userData = query?.data?.data;
 
@@ -97,7 +112,7 @@ export const UserEdit: React.FC = () => {
                     <Box display="flex" flexDirection="column" gap={2}>
                       <FormControl fullWidth>
                         <InputLabel shrink>Vai trò</InputLabel>
-                        <Select {...field} label="Vai trò" sx={{ borderRadius: "8px" }} displayEmpty>
+                        <Select {...field} label="Vai trò" sx={{ borderRadius: "8px" }} value={field.value ?? ""} displayEmpty>
                           <MenuItem value="ADMIN">ADMIN</MenuItem>
                           <MenuItem value="STAFF">STAFF</MenuItem>
                           <MenuItem value="CUSTOMER">CUSTOMER</MenuItem>
@@ -128,7 +143,7 @@ export const UserEdit: React.FC = () => {
                     <Box display="flex" flexDirection="column" gap={2}>
                       <FormControl fullWidth>
                         <InputLabel shrink>Trạng thái</InputLabel>
-                        <Select {...field} label="Trạng thái" sx={{ borderRadius: "8px" }} displayEmpty>
+                        <Select {...field} label="Trạng thái" sx={{ borderRadius: "8px" }} value={field.value ?? ""}  displayEmpty>
                           <MenuItem value="ACTIVE">Hoạt động (ACTIVE)</MenuItem>
                           <MenuItem value="INACTIVE">Khóa (INACTIVE)</MenuItem>
                         </Select>
