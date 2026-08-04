@@ -25,3 +25,4 @@
 - [2026-07-30 13:46:53] Đã hoàn thành lên kế hoạch và code UI cho tính năng Thêm người dùng mới, tách thành trang riêng, bỏ drawer form.
 - [2026-07-30 14:37:41] Đã lên kế hoạch và hoàn thành UI trang chỉnh sửa User riêng biệt, bỏ Drawer và fix lỗi đè nhãn MUI TextField.
 - [2026-07-31 16:52:42] Lên kế hoạch Frontend và hoàn thành UI Login, viết AuthProvider (Refine), cấu hình Axios/Fetch chặn 401 tự động Refresh Token.
+- [2026-08-04 14:54:08] Đã thiết lập DB và code API Đăng nhập/Xác thực (JWT/Redis), thêm AuthMiddleware bảo vệ các API và cấu hình GORM Logger.
