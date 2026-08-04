@@ -1,7 +1,6 @@
 package controller
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 
@@ -22,7 +21,6 @@ func NewUserController(userService service.UserService) *UserController {
 }
 
 func (c *UserController) GetUsers(ctx *gin.Context) {
-	fmt.Printf("=====TRACE: [2026/07/17 11:30:39] [apps/backend/internal/controller/user_controller.go:24] - message\n")
 	skip, _ := strconv.Atoi(ctx.DefaultQuery("_start", "0"))
 	end, _ := strconv.Atoi(ctx.DefaultQuery("_end", "10"))
 	limit := end - skip

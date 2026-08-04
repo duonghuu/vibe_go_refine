@@ -6,7 +6,6 @@ import (
 	"go_refine_dashboard_be/internal/usecases/auth/dto"
 	"go_refine_dashboard_be/internal/usecases/auth/service"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/gin-gonic/gin"
 )
 
@@ -21,7 +20,6 @@ func NewAuthController(authService service.AuthService) *AuthController {
 }
 
 func (c *AuthController) Login(ctx *gin.Context) {
-	spew.Dump("Login")
 	var req dto.LoginRequest
 	if err := ctx.ShouldBindJSON(&req); err != nil {
 		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
