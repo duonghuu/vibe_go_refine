@@ -15,4 +15,4 @@ RUN go mod download
 COPY . .
 
 # Chạy bằng air với file cấu hình
-CMD ["air", "-c", ".air.toml"]
+# CMD ["air", "-c", ".air.toml"]

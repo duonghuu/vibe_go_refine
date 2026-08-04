@@ -52,10 +52,15 @@ func main() {
 	}
 	redisPort := os.Getenv("REDIS_PORT")
 	if redisPort == "" {
-		redisPort = "6379"
+		redisPort = "6380"
+	}
+	redisPassword := os.Getenv("REDIS_PASSWORD")
+	if redisPassword == "" {
+		redisPassword = "vibe_redis_secret"
 	}
 	redisClient := redis.NewClient(&redis.Options{
-		Addr: fmt.Sprintf("%s:%s", redisHost, redisPort),
+		Addr:     fmt.Sprintf("%s:%s", redisHost, redisPort),
+		Password: redisPassword,
 	})
 	if err := redisClient.Ping(context.Background()).Err(); err != nil {
 		log.Printf("Failed to connect redis: %v. Auth might fail.", err)

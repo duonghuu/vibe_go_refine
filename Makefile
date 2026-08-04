@@ -39,10 +39,10 @@ help:
 
 # --- LOCAL DEVELOPMENT (Host Machine) ---
 run-frontend:
-	cd apps/frontend && npm run dev
+	docker compose -f docker-compose.dev.yaml exec frontend npm run dev
 
 run-backend:
-	cd apps/backend && "$$(go env GOPATH)/bin/air" -c .air.toml
+	docker compose -f docker-compose.dev.yaml exec -e GOTOOLCHAIN=auto backend air -c .air.toml
 
 migrate-up:
 	docker exec -it vibe_backend_dev migrate -path database/migrations -database "mysql://root:root@tcp(db:3306)/vibe_db" up
