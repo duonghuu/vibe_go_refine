@@ -96,11 +96,11 @@ export const refreshTokenFn = async () => {
       localStorage.setItem("accessToken", accessToken);
       return accessToken;
     }
+    throw new Error("Missing accessToken in response");
   } catch (e) {
     localStorage.removeItem("accessToken");
     localStorage.removeItem("user");
     window.location.href = "/login";
     throw e;
   }
-  return null;
 };

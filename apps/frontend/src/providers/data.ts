@@ -23,9 +23,16 @@ const customHttpClient = async (url: string, options: RequestInit = {}) => {
           Authorization: `Bearer ${newToken}`,
         };
         response = await fetch(url, options);
+        if (response.status === 401) {
+          throw new Error("Unauthorized after refresh");
+        }
       }
     } catch (e) {
-      // Failed to refresh, will return the original 401 response and let AuthProvider.onError handle it
+      // Failed to refresh, forcefully logout
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("user");
+      window.location.href = "/login";
+      throw e;
     }
   }
   return response as any;
@@ -33,7 +40,9 @@ const customHttpClient = async (url: string, options: RequestInit = {}) => {
 
 const simpleRest = createSimpleRestDataProvider({
   apiURL: `${API_URL}/admin`,
-  httpClient: customHttpClient,
+  kyOptions: {
+    fetch: customHttpClient as any,
+  },
 });
 
 export const kyInstance = simpleRest.kyInstance; // Kept for backward compatibility if used elsewhere
