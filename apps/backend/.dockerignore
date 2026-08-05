@@ -1,0 +1,33 @@
+# Binaries
+main
+bin/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+
+# Temporary files created by Air for live reloading
+tmp/
+
+# Uploaded media (usually mounted as volume, không nên build vào image)
+public/
+
+# Environment variables
+.env
+.env.*
+!.env.example
+
+# IDEs and Editors
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# Git
+.git/
+.gitignore
+
+# OS specific files
+.DS_Store
+Thumbs.db
