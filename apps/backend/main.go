@@ -85,6 +85,7 @@ func main() {
 	categoryController := di.InitializeCategoryController(db)
 	userController := di.InitializeUserController(db)
 	authController := di.InitializeAuthController(db, redisClient)
+	postTypeController := di.InitializePostTypeController(db, redisClient)
 
 	// 3. Setup Router
 	r := gin.Default()
@@ -162,6 +163,15 @@ func main() {
 		users.PATCH("/:id/status", userController.UpdateStatus)
 		users.PATCH("/bulk-status", userController.BulkUpdateStatus)
 		users.PATCH("/:id/reset-password", userController.ResetPassword)
+	}
+
+	postTypes := admin.Group("/post-types")
+	{
+		postTypes.GET("", postTypeController.GetPostTypes)
+		postTypes.GET("/:id", postTypeController.GetPostTypeByID)
+		postTypes.POST("", postTypeController.CreatePostType)
+		postTypes.PUT("/:id", postTypeController.UpdatePostType)
+		postTypes.DELETE("/:id", postTypeController.DeletePostType)
 	}
 
 	// 5. Start Server

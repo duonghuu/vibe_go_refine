@@ -8,14 +8,15 @@ package di
 
 import (
 	"github.com/google/wire"
+	"github.com/redis/go-redis/v9"
 	"go_refine_dashboard_be/internal/controller"
 	"go_refine_dashboard_be/internal/infrastructure/repository"
+	service5 "go_refine_dashboard_be/internal/usecases/auth/service"
 	service3 "go_refine_dashboard_be/internal/usecases/category/service"
 	service2 "go_refine_dashboard_be/internal/usecases/media/service"
+	service6 "go_refine_dashboard_be/internal/usecases/posttype/service"
 	"go_refine_dashboard_be/internal/usecases/product/service"
 	service4 "go_refine_dashboard_be/internal/usecases/user/service"
-	service5 "go_refine_dashboard_be/internal/usecases/auth/service"
-	"github.com/redis/go-redis/v9"
 	"gorm.io/gorm"
 )
 
@@ -56,6 +57,13 @@ func InitializeAuthController(db *gorm.DB, redisClient *redis.Client) *controlle
 	return authController
 }
 
+func InitializePostTypeController(db *gorm.DB, redisClient *redis.Client) *controller.PostTypeController {
+	postTypeRepository := repository.NewPostTypeRepository(db)
+	postTypeService := service6.NewPostTypeService(postTypeRepository, redisClient)
+	postTypeController := controller.NewPostTypeController(postTypeService)
+	return postTypeController
+}
+
 // wire.go:
 
 var ProductSet = wire.NewSet(repository.NewProductRepository, service.NewProductService, controller.NewProductController)
@@ -67,3 +75,5 @@ var CategorySet = wire.NewSet(repository.NewCategoryRepository, service3.NewCate
 var UserSet = wire.NewSet(repository.NewUserRepository, service4.NewUserService, controller.NewUserController)
 
 var AuthSet = wire.NewSet(repository.NewUserRepository, service5.NewAuthService, controller.NewAuthController)
+
+var PostTypeSet = wire.NewSet(repository.NewPostTypeRepository, service6.NewPostTypeService, controller.NewPostTypeController)

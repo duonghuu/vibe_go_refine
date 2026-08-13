@@ -634,6 +634,117 @@ paths:
       responses:
         '200':
           description: OK
+  /api/v1/admin/post-types:
+    get:
+      summary: Lấy danh sách loại bài viết
+      tags:
+        - Admin Post Type
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: query
+          name: _start
+          schema:
+            type: integer
+        - in: query
+          name: _end
+          schema:
+            type: integer
+        - in: query
+          name: _sort
+          schema:
+            type: string
+        - in: query
+          name: _order
+          schema:
+            type: string
+        - in: query
+          name: q
+          schema:
+            type: string
+        - in: query
+          name: status
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+    post:
+      summary: Tạo loại bài viết mới
+      tags:
+        - Admin Post Type
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                code: { type: string }
+                name: { type: string }
+                status: { type: string, enum: [ACTIVE, INACTIVE] }
+                sort_order: { type: integer }
+      responses:
+        '201':
+          description: Created
+  /api/v1/admin/post-types/{id}:
+    get:
+      summary: Lấy chi tiết loại bài viết
+      tags:
+        - Admin Post Type
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+    put:
+      summary: Cập nhật loại bài viết
+      tags:
+        - Admin Post Type
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name: { type: string }
+                status: { type: string, enum: [ACTIVE, INACTIVE] }
+                sort_order: { type: integer }
+      responses:
+        '200':
+          description: OK
+    delete:
+      summary: Xóa loại bài viết
+      tags:
+        - Admin Post Type
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
 components:
   securitySchemes:
     BearerAuth:
