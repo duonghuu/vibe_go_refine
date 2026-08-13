@@ -35,6 +35,7 @@ import {
 } from "./pages/categories";
 import { ProductCreate, ProductEdit, ProductList } from "./pages/products";
 import { UserList, UserCreate, UserEdit } from "./pages/users";
+import { PostTypeList, PostTypeCreate, PostTypeEdit } from "./pages/post-types";
 import { dataProvider } from "./providers/data";
 import { AdminMasterLayout } from "./components/layout";
 
@@ -91,6 +92,15 @@ function App() {
                       canDelete: false,
                     },
                   },
+                  {
+                    name: "post_types",
+                    list: "/post-types",
+                    create: "/post-types/create",
+                    edit: "/post-types/edit/:id",
+                    meta: {
+                      canDelete: true,
+                    },
+                  },
                 ]}
                 options={{
                   syncWithLocation: true,
@@ -133,6 +143,11 @@ function App() {
                       <Route index element={<UserList />} />
                       <Route path="create" element={<UserCreate />} />
                       <Route path="edit/:id" element={<UserEdit />} />
+                    </Route>
+                    <Route path="/post-types">
+                      <Route index element={<PostTypeList />} />
+                      <Route path="create" element={<PostTypeCreate />} />
+                      <Route path="edit/:id" element={<PostTypeEdit />} />
                     </Route>
                     <Route path="*" element={<ErrorComponent />} />
                   </Route>

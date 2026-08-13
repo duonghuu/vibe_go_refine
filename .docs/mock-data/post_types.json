@@ -1,0 +1,44 @@
+[
+  {
+    "id": 1,
+    "code": "NEWS",
+    "name": "Tin tức",
+    "status": "ACTIVE",
+    "sort_order": 1
+  },
+  {
+    "id": 2,
+    "code": "SERVICE",
+    "name": "Dịch vụ",
+    "status": "ACTIVE",
+    "sort_order": 2
+  },
+  {
+    "id": 3,
+    "code": "POLICY",
+    "name": "Chính sách",
+    "status": "ACTIVE",
+    "sort_order": 3
+  },
+  {
+    "id": 4,
+    "code": "GUIDE",
+    "name": "Hướng dẫn",
+    "status": "ACTIVE",
+    "sort_order": 4
+  },
+  {
+    "id": 5,
+    "code": "ABOUT",
+    "name": "Giới thiệu",
+    "status": "ACTIVE",
+    "sort_order": 5
+  },
+  {
+    "id": 6,
+    "code": "RECRUITMENT",
+    "name": "Tuyển dụng",
+    "status": "INACTIVE",
+    "sort_order": 6
+  }
+]
