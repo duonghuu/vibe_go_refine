@@ -87,6 +87,7 @@ func main() {
 	authController := di.InitializeAuthController(db, redisClient)
 	postTypeController := di.InitializePostTypeController(db, redisClient)
 	postMediaController := di.InitializePostMediaController(db, redisClient)
+	postMetaController := di.InitializePostMetaController(db, redisClient)
 
 	// 3. Setup Router
 	r := gin.Default()
@@ -181,6 +182,13 @@ func main() {
 		postMedia.POST("", postMediaController.CreatePostMedia)
 		postMedia.PUT("/:collection", postMediaController.SyncPostMedia)
 		postMedia.DELETE("/:media_id", postMediaController.DeletePostMedia)
+	}
+
+	postMeta := admin.Group("/posts/:postId/meta")
+	{
+		postMeta.GET("", postMetaController.GetPostMeta)
+		postMeta.PUT("", postMetaController.SyncPostMeta)
+		postMeta.DELETE("/:key", postMetaController.DeletePostMeta)
 	}
 
 	// 5. Start Server

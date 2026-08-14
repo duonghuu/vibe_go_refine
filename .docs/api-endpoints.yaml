@@ -745,12 +745,6 @@ paths:
       responses:
         '200':
           description: OK
-components:
-  securitySchemes:
-    BearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
 
   /api/v1/admin/posts/{post_id}/media:
     get:
@@ -857,3 +851,75 @@ components:
       responses:
         '204':
           description: No Content
+  /api/v1/admin/posts/{postId}/meta:
+    get:
+      summary: Lấy danh sách Meta của một Bài viết
+      tags:
+        - Admin Post Meta
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: postId
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
+    put:
+      summary: Đồng bộ (Sync) Meta cho Bài viết
+      tags:
+        - Admin Post Meta
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: postId
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                meta:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      key: { type: string }
+                      value: { type: string }
+      responses:
+        '200':
+          description: OK
+  /api/v1/admin/posts/{postId}/meta/{key}:
+    delete:
+      summary: Xóa một Meta cụ thể
+      tags:
+        - Admin Post Meta
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: postId
+          required: true
+          schema:
+            type: integer
+        - in: path
+          name: key
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+components:
+  securitySchemes:
+    BearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

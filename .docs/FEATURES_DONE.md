@@ -29,3 +29,4 @@
 - [2026-08-05 10:32:26] Đã sửa lỗi Refine không tự động redirect trang Login khi nhận mã 401: fix authProvider onError, thêm logic văng lỗi tại dataProvider.
 - [2026-08-14 10:28:00] Hoàn thành luồng Fullstack CRUD cho Post Types (Database models, Gin API, OpenAPI, đồng bộ UI Create/Edit trên Refine.js).
 - [2026-08-14 14:21:49] Đã hoàn thành thiết kế Idea, Backend Plan, Database Models, Migration và API cho tính năng quản lý Post Media.
+- [2026-08-14 16:29:00] Đã hoàn thành thiết kế Plan, Database (Models, Migrations) và API Endpoints cho tính năng quản lý Post Meta.
