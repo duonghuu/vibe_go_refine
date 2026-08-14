@@ -18,6 +18,7 @@ export interface IPostType {
 
 export const PostTypeList = () => {
   const { dataGridProps, setFilters } = useDataGrid<IPostType, HttpError>({
+    resource: "post-types",
     syncWithLocation: true,
   });
 
@@ -49,7 +50,10 @@ export const PostTypeList = () => {
         flex: 1,
         renderCell: function render({ row }) {
           return (
-            <Typography fontWeight="600" color="primary">
+            <Typography fontWeight="600" color="primary" sx={{ 
+              display: 'inline-flex', 
+              alignItems: 'center' 
+            }}>
               {row.code}
             </Typography>
           );

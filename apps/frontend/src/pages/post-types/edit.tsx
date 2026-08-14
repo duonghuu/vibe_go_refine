@@ -1,10 +1,25 @@
 import { Edit } from "@refinedev/mui";
 import { Box, Typography, Button, Stack } from "@mui/material";
 import { useForm } from "@refinedev/react-hook-form";
-import { PostTypeForm } from "./components/PostTypeForm";
+import { PostTypeForm, IPostType, IPostTypeForm } from "./components/PostTypeForm";
+import { HttpError, useNavigation } from "@refinedev/core";
 
 export const PostTypeEdit = () => {
-  const form = useForm();
+  const { list } = useNavigation();
+  
+  const form = useForm<IPostType, HttpError, IPostTypeForm>({
+    refineCoreProps: {
+      action: "edit",
+      resource: "post-types",
+      redirect: false,
+      onMutationSuccess: () => {
+        list("post-types");
+      },
+      meta: {
+        method: "put",
+      },
+    },
+  });
   const { saveButtonProps, refineCore: { formLoading } } = form;
 
   return (

@@ -1,6 +1,16 @@
 import { Card, CardContent, FormControl, FormControlLabel, FormHelperText, Grid, Radio, RadioGroup, TextField, Typography } from "@mui/material";
 import { UseFormReturnType } from "@refinedev/react-hook-form";
 import { Controller } from "react-hook-form";
+import { HttpError } from "@refinedev/core";
+
+export interface IPostType {
+  id: number;
+  code: string;
+  name: string;
+  status: string;
+  sort_order: number;
+  createdAt: string;
+}
 
 export interface IPostTypeForm {
   code: string;
@@ -10,7 +20,7 @@ export interface IPostTypeForm {
 }
 
 interface PostTypeFormProps {
-  form: UseFormReturnType<any, any, IPostTypeForm>;
+  form: UseFormReturnType<IPostType, HttpError, IPostTypeForm>;
   isEdit?: boolean;
 }
 

@@ -1,10 +1,21 @@
 import { Create } from "@refinedev/mui";
 import { Box, Typography, Button, Stack } from "@mui/material";
 import { useForm } from "@refinedev/react-hook-form";
-import { PostTypeForm } from "./components/PostTypeForm";
+import { PostTypeForm, IPostType, IPostTypeForm } from "./components/PostTypeForm";
+import { HttpError, useNavigation } from "@refinedev/core";
 
 export const PostTypeCreate = () => {
-  const form = useForm({
+  const { list } = useNavigation();
+
+  const form = useForm<IPostType, HttpError, IPostTypeForm>({
+    refineCoreProps: {
+      action: "create",
+      resource: "post-types",
+      redirect: false,
+      onMutationSuccess: () => {
+        list("post-types");
+      },
+    },
     defaultValues: {
       status: "ACTIVE",
       sort_order: 1

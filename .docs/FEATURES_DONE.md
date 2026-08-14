@@ -27,3 +27,4 @@
 - [2026-07-31 16:52:42] Lên kế hoạch Frontend và hoàn thành UI Login, viết AuthProvider (Refine), cấu hình Axios/Fetch chặn 401 tự động Refresh Token.
 - [2026-08-04 14:54:08] Đã thiết lập DB và code API Đăng nhập/Xác thực (JWT/Redis), thêm AuthMiddleware bảo vệ các API và cấu hình GORM Logger.
 - [2026-08-05 10:32:26] Đã sửa lỗi Refine không tự động redirect trang Login khi nhận mã 401: fix authProvider onError, thêm logic văng lỗi tại dataProvider.
+- [2026-08-14 10:28:00] Hoàn thành luồng Fullstack CRUD cho Post Types (Database models, Gin API, OpenAPI, đồng bộ UI Create/Edit trên Refine.js).

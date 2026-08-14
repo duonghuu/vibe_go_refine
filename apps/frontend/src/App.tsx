@@ -93,7 +93,7 @@ function App() {
                     },
                   },
                   {
-                    name: "post_types",
+                    name: "post-types",
                     list: "/post-types",
                     create: "/post-types/create",
                     edit: "/post-types/edit/:id",
