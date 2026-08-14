@@ -752,3 +752,108 @@ components:
       scheme: bearer
       bearerFormat: JWT
 
+  /api/v1/admin/posts/{post_id}/media:
+    get:
+      summary: Lấy danh sách Media của bài viết
+      tags:
+        - Admin Post Media
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: post_id
+          required: true
+          schema:
+            type: integer
+        - in: query
+          name: collection
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+    post:
+      summary: Liên kết Media vào bài viết
+      tags:
+        - Admin Post Media
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: post_id
+          required: true
+          schema:
+            type: integer
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                media_id: { type: integer }
+                collection: { type: string, enum: [thumbnail, gallery, attachment, content] }
+                sort_order: { type: integer }
+      responses:
+        '201':
+          description: Created
+  /api/v1/admin/posts/{post_id}/media/{collection}:
+    put:
+      summary: Đồng bộ (Sync) Media cho một bộ sưu tập
+      tags:
+        - Admin Post Media
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: post_id
+          required: true
+          schema:
+            type: integer
+        - in: path
+          name: collection
+          required: true
+          schema:
+            type: string
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                media:
+                  type: array
+                  items:
+                    type: object
+                    properties:
+                      id: { type: integer }
+                      sort_order: { type: integer }
+      responses:
+        '200':
+          description: OK
+  /api/v1/admin/posts/{post_id}/media/{media_id}:
+    delete:
+      summary: Gỡ liên kết Media khỏi bài viết
+      tags:
+        - Admin Post Media
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: post_id
+          required: true
+          schema:
+            type: integer
+        - in: path
+          name: media_id
+          required: true
+          schema:
+            type: integer
+        - in: query
+          name: collection
+          schema:
+            type: string
+      responses:
+        '204':
+          description: No Content

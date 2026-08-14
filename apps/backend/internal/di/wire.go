@@ -12,6 +12,7 @@ import (
 	userService "go_refine_dashboard_be/internal/usecases/user/service"
 	authService "go_refine_dashboard_be/internal/usecases/auth/service"
 	postTypeService "go_refine_dashboard_be/internal/usecases/posttype/service"
+	postMediaService "go_refine_dashboard_be/internal/usecases/postmedia/service"
 	"gorm.io/gorm"
 	"github.com/redis/go-redis/v9"
 
@@ -54,6 +55,12 @@ var PostTypeSet = wire.NewSet(
 	controller.NewPostTypeController,
 )
 
+var PostMediaSet = wire.NewSet(
+	repository.NewPostMediaRepository,
+	postMediaService.NewPostMediaService,
+	controller.NewPostMediaController,
+)
+
 func InitializeProductController(db *gorm.DB) *controller.ProductController {
 	wire.Build(ProductSet)
 	return &controller.ProductController{}
@@ -82,4 +89,9 @@ func InitializeAuthController(db *gorm.DB, redisClient *redis.Client) *controlle
 func InitializePostTypeController(db *gorm.DB, redisClient *redis.Client) *controller.PostTypeController {
 	wire.Build(PostTypeSet)
 	return &controller.PostTypeController{}
+}
+
+func InitializePostMediaController(db *gorm.DB, redisClient *redis.Client) *controller.PostMediaController {
+	wire.Build(PostMediaSet)
+	return &controller.PostMediaController{}
 }

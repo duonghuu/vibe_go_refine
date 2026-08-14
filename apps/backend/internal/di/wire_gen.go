@@ -14,6 +14,7 @@ import (
 	service5 "go_refine_dashboard_be/internal/usecases/auth/service"
 	service3 "go_refine_dashboard_be/internal/usecases/category/service"
 	service2 "go_refine_dashboard_be/internal/usecases/media/service"
+	service7 "go_refine_dashboard_be/internal/usecases/postmedia/service"
 	service6 "go_refine_dashboard_be/internal/usecases/posttype/service"
 	"go_refine_dashboard_be/internal/usecases/product/service"
 	service4 "go_refine_dashboard_be/internal/usecases/user/service"
@@ -64,6 +65,13 @@ func InitializePostTypeController(db *gorm.DB, redisClient *redis.Client) *contr
 	return postTypeController
 }
 
+func InitializePostMediaController(db *gorm.DB, redisClient *redis.Client) *controller.PostMediaController {
+	postMediaRepository := repository.NewPostMediaRepository(db)
+	postMediaService := service7.NewPostMediaService(postMediaRepository, redisClient)
+	postMediaController := controller.NewPostMediaController(postMediaService)
+	return postMediaController
+}
+
 // wire.go:
 
 var ProductSet = wire.NewSet(repository.NewProductRepository, service.NewProductService, controller.NewProductController)
@@ -77,3 +85,5 @@ var UserSet = wire.NewSet(repository.NewUserRepository, service4.NewUserService,
 var AuthSet = wire.NewSet(repository.NewUserRepository, service5.NewAuthService, controller.NewAuthController)
 
 var PostTypeSet = wire.NewSet(repository.NewPostTypeRepository, service6.NewPostTypeService, controller.NewPostTypeController)
+
+var PostMediaSet = wire.NewSet(repository.NewPostMediaRepository, service7.NewPostMediaService, controller.NewPostMediaController)
