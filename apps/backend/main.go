@@ -184,7 +184,7 @@ func main() {
 		postMedia.DELETE("/:media_id", postMediaController.DeletePostMedia)
 	}
 
-	postMeta := admin.Group("/posts/:postId/meta")
+	postMeta := admin.Group("/posts/:post_id/meta")
 	{
 		postMeta.GET("", postMetaController.GetPostMeta)
 		postMeta.PUT("", postMetaController.SyncPostMeta)

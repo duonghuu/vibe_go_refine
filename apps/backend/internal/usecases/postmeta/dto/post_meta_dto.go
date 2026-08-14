@@ -8,16 +8,16 @@ type MetaItemRequest struct {
 }
 
 type SyncPostMetaRequest struct {
-	PostID uint              `uri:"postId" binding:"required"`
+	PostID uint              `uri:"post_id" binding:"required"`
 	Meta   []MetaItemRequest `json:"meta" binding:"required,dive"`
 }
 
 type GetPostMetaRequest struct {
-	PostID uint `uri:"postId" binding:"required"`
+	PostID uint `uri:"post_id" binding:"required"`
 }
 
 type DeletePostMetaRequest struct {
-	PostID uint   `uri:"postId" binding:"required"`
+	PostID uint   `uri:"post_id" binding:"required"`
 	Key    string `uri:"key" binding:"required"`
 }
 
