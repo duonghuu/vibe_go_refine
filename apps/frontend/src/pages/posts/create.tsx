@@ -19,6 +19,7 @@ export interface IPostResponse {
   title: string;
   slug: string;
   content: string;
+  authorId: number;
   createdAt: string;
 }
 
@@ -45,7 +46,7 @@ export const PostCreate: React.FC = () => {
   const [searchParams] = useSearchParams();
   const typeCode = searchParams.get("type_code");
   
-  const { goBack } = useNavigation();
+  const { list } = useNavigation();
   const { open } = useNotification();
 
   useEffect(() => {
@@ -56,10 +57,10 @@ export const PostCreate: React.FC = () => {
         description: "Thiếu thông tin mã loại bài viết (type_code). Đang chuyển hướng...",
       });
       setTimeout(() => {
-        goBack();
+        list("products");
       }, 2000);
     }
-  }, [typeCode, goBack, open]);
+  }, [typeCode, list, open]);
 
   const {
     refineCore: { formLoading, onFinish },
@@ -74,7 +75,7 @@ export const PostCreate: React.FC = () => {
       resource: "posts",
       redirect: false,
       onMutationSuccess: () => {
-        goBack(); // Quay lại trang danh sách bài viết theo type
+        list("products"); // Quay lại trang danh sách bài viết theo type
       },
     },
     warnWhenUnsavedChanges: true,
@@ -129,7 +130,7 @@ export const PostCreate: React.FC = () => {
             <Button
               variant="outlined"
               color="secondary"
-              onClick={() => goBack()}
+              onClick={() => list("posts")}
               sx={{ borderRadius: "8px", textTransform: "none", fontWeight: "600", color: 'text.secondary', borderColor: '#D5D5D5' }}
             >
               Hủy
