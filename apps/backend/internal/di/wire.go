@@ -14,6 +14,7 @@ import (
 	postTypeService "go_refine_dashboard_be/internal/usecases/posttype/service"
 	postMediaService "go_refine_dashboard_be/internal/usecases/postmedia/service"
 	postMetaService "go_refine_dashboard_be/internal/usecases/postmeta/service"
+	postService "go_refine_dashboard_be/internal/usecases/post/service"
 	"gorm.io/gorm"
 	"github.com/redis/go-redis/v9"
 
@@ -68,6 +69,12 @@ var PostMetaSet = wire.NewSet(
 	controller.NewPostMetaController,
 )
 
+var PostSet = wire.NewSet(
+	repository.NewPostRepository,
+	postService.NewPostService,
+	controller.NewPostController,
+)
+
 func InitializeProductController(db *gorm.DB) *controller.ProductController {
 	wire.Build(ProductSet)
 	return &controller.ProductController{}
@@ -106,4 +113,9 @@ func InitializePostMediaController(db *gorm.DB, redisClient *redis.Client) *cont
 func InitializePostMetaController(db *gorm.DB, redisClient *redis.Client) *controller.PostMetaController {
 	wire.Build(PostMetaSet)
 	return &controller.PostMetaController{}
+}
+
+func InitializePostController(db *gorm.DB, redisClient *redis.Client) *controller.PostController {
+	wire.Build(PostSet)
+	return &controller.PostController{}
 }

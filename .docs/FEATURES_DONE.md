@@ -31,3 +31,4 @@
 - [2026-08-14 14:21:49] Đã hoàn thành thiết kế Idea, Backend Plan, Database Models, Migration và API cho tính năng quản lý Post Media.
 - [2026-08-14 16:29:00] Đã hoàn thành thiết kế Plan, Database (Models, Migrations) và API Endpoints cho tính năng quản lý Post Meta.
 - [2026-08-14 17:00:46] Hoàn thành Ý tưởng, Frontend Plan, UI Tạo mới bài viết và fix lỗi panic router Gin cho Post Meta.
+- [2026-08-17 11:15:00] Đã sửa frontend `/posts/create` dùng typeCode, hoàn thiện DB Schema, API POST tạo bài viết và sửa Makefile seed.

@@ -917,6 +917,27 @@ paths:
       responses:
         '200':
           description: OK
+  /api/v1/admin/posts:
+    post:
+      summary: Tạo bài viết mới
+      tags:
+        - Admin Posts
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                typeCode: { type: string }
+                title: { type: string }
+                slug: { type: string }
+                content: { type: string }
+      responses:
+        '201':
+          description: Created
 components:
   securitySchemes:
     BearerAuth:

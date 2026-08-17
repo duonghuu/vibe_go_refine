@@ -19,6 +19,7 @@ import (
 	service6 "go_refine_dashboard_be/internal/usecases/posttype/service"
 	"go_refine_dashboard_be/internal/usecases/product/service"
 	service4 "go_refine_dashboard_be/internal/usecases/user/service"
+	service9 "go_refine_dashboard_be/internal/usecases/post/service"
 	"gorm.io/gorm"
 )
 
@@ -80,6 +81,13 @@ func InitializePostMetaController(db *gorm.DB, redisClient *redis.Client) *contr
 	return postMetaController
 }
 
+func InitializePostController(db *gorm.DB, redisClient *redis.Client) *controller.PostController {
+	postRepository := repository.NewPostRepository(db)
+	postService := service9.NewPostService(postRepository, redisClient)
+	postController := controller.NewPostController(postService)
+	return postController
+}
+
 // wire.go:
 
 var ProductSet = wire.NewSet(repository.NewProductRepository, service.NewProductService, controller.NewProductController)
@@ -97,3 +105,5 @@ var PostTypeSet = wire.NewSet(repository.NewPostTypeRepository, service6.NewPost
 var PostMediaSet = wire.NewSet(repository.NewPostMediaRepository, service7.NewPostMediaService, controller.NewPostMediaController)
 
 var PostMetaSet = wire.NewSet(repository.NewPostMetaRepository, service8.NewPostMetaService, controller.NewPostMetaController)
+
+var PostSet = wire.NewSet(repository.NewPostRepository, service9.NewPostService, controller.NewPostController)
