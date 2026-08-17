@@ -1,4 +1,4 @@
-.PHONY: help dev dev-build prod prod-build down down-v restart logs logs-backend logs-frontend shell-backend shell-frontend shell-db shell-redis clean run-frontend run-backend migrate-up migrate-down
+.PHONY: help dev dev-build prod prod-build down down-v restart logs logs-backend logs-frontend shell-backend shell-frontend shell-db shell-redis clean run-frontend run-backend migrate-up migrate-down seed
 
 # Hiển thị menu help
 help:
@@ -18,6 +18,7 @@ help:
 	@echo "  make run-backend   - Chạy backend local (go run main.go)"
 	@echo "  make migrate-up    - Chạy DB migrations (cần cài golang-migrate)"
 	@echo "  make migrate-down  - Rollback toàn bộ DB migrations"
+	@echo "  make seed          - Chạy database seeder (tạo dữ liệu mẫu)"
 	@echo ""
 	@echo "🛑 Dừng & Dọn dẹp (Docker):"
 	@echo "  make down          - Dừng tất cả containers"
@@ -49,6 +50,9 @@ migrate-up:
 
 migrate-down:
 	docker exec -it vibe_backend_dev migrate -path database/migrations -database "mysql://root:root@tcp(db:3306)/vibe_db" down -all
+
+seed:
+	docker exec -it vibe_backend_dev go run ./cmd/seeder
 
 # --- DOCKER DEVELOPMENT ---
 dev:
