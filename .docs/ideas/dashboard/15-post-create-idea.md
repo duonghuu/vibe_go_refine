@@ -57,7 +57,7 @@
 *(Ghi chú: Nếu không có thiết lập phụ nào khác, form có thể dùng bố cục 1 cột)*
 
 1. **Thông tin ngầm (Hidden Data)**
-   * **Loại bài viết (type_id):** Không hiển thị chọn trên UI. Frontend sẽ tự động lấy giá trị này từ URL (ví dụ: `?type_id=1` hoặc route parameter) để submit ngầm xuống API.
+   * **Loại bài viết (type_id):** Không hiển thị chọn trên UI. Frontend sẽ tự động lấy giá trị này từ URL (ví dụ: `?type_code=NEWS` hoặc route parameter) để submit ngầm xuống API.
 
 ---
 
@@ -66,7 +66,7 @@
 * **Tiêu đề (title):** Bắt buộc nhập. Giới hạn độ dài tối đa phù hợp (ví dụ 255 ký tự).
 * **Đường dẫn (slug):** Bắt buộc nhập. Phải duy nhất, định dạng chuỗi thân thiện với URL (không dấu, các từ cách nhau bởi dấu gạch ngang). Nếu người dùng không nhập, Frontend tự động sinh từ `title`.
 * **Nội dung (content):** Bắt buộc nhập. Báo lỗi nếu để trống.
-* **Loại bài viết (type_id):** Bắt buộc. Hệ thống kiểm tra giá trị từ URL; nếu không có hoặc không hợp lệ, chặn submit và báo lỗi hoặc điều hướng về trang lỗi/danh sách.
+* **Loại bài viết (type_id):** Bắt buộc. Hệ thống kiểm tra giá trị từ URL (typeCode); nếu không có hoặc không hợp lệ, chặn submit và báo lỗi hoặc điều hướng về trang lỗi/danh sách.
 
 ---
 

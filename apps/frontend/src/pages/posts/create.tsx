@@ -15,7 +15,7 @@ import { HttpError, useNavigation, useNotification } from "@refinedev/core";
 
 export interface IPostResponse {
   id: number;
-  typeId: number;
+  typeCode: string;
   title: string;
   slug: string;
   content: string;
@@ -23,7 +23,7 @@ export interface IPostResponse {
 }
 
 export interface ICreatePostRequest {
-  typeId: number;
+  typeCode: string;
   title: string;
   slug: string;
   content: string;
@@ -43,24 +43,23 @@ const generateSlug = (text: string) => {
 
 export const PostCreate: React.FC = () => {
   const [searchParams] = useSearchParams();
-  const typeIdParam = searchParams.get("type_id");
-  const typeId = typeIdParam ? parseInt(typeIdParam, 10) : null;
+  const typeCode = searchParams.get("type_code");
   
   const { goBack } = useNavigation();
   const { open } = useNotification();
 
   useEffect(() => {
-    if (!typeId || isNaN(typeId)) {
+    if (!typeCode) {
       open?.({
         type: "error",
         message: "Lỗi truy cập",
-        description: "Thiếu thông tin loại bài viết (type_id). Đang chuyển hướng...",
+        description: "Thiếu thông tin mã loại bài viết (type_code). Đang chuyển hướng...",
       });
       setTimeout(() => {
         goBack();
       }, 2000);
     }
-  }, [typeId, goBack, open]);
+  }, [typeCode, goBack, open]);
 
   const {
     refineCore: { formLoading, onFinish },
@@ -92,16 +91,16 @@ export const PostCreate: React.FC = () => {
   }, [titleValue, setValue]);
 
   const onCustomSubmit = (data: ICreatePostRequest) => {
-    if (!typeId || isNaN(typeId)) return;
+    if (!typeCode) return;
     
     onFinish({
       ...data,
-      typeId: typeId,
+      typeCode: typeCode,
     });
   };
 
-  if (!typeId || isNaN(typeId)) {
-    return <Box p={3}>Đang kiểm tra thông tin loại bài viết...</Box>;
+  if (!typeCode) {
+    return <Box p={3}>Đang kiểm tra thông tin mã loại bài viết...</Box>;
   }
 
   return (
