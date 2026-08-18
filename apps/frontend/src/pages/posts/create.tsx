@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { Create } from "@refinedev/mui";
 import { useForm } from "@refinedev/react-hook-form";
-import { useSearchParams } from "react-router";
+import { useSearchParams, useNavigate } from "react-router";
 import {
   Box,
   Card,
@@ -45,8 +45,8 @@ const generateSlug = (text: string) => {
 export const PostCreate: React.FC = () => {
   const [searchParams] = useSearchParams();
   const typeCode = searchParams.get("type_code");
+  const navigate = useNavigate();
   
-  const { list } = useNavigation();
   const { open } = useNotification();
 
   useEffect(() => {
@@ -57,10 +57,10 @@ export const PostCreate: React.FC = () => {
         description: "Thiếu thông tin mã loại bài viết (type_code). Đang chuyển hướng...",
       });
       setTimeout(() => {
-        list("products");
+        navigate("/posts");
       }, 2000);
     }
-  }, [typeCode, list, open]);
+  }, [typeCode, navigate, open]);
 
   const {
     refineCore: { formLoading, onFinish },
@@ -75,7 +75,7 @@ export const PostCreate: React.FC = () => {
       resource: "posts",
       redirect: false,
       onMutationSuccess: () => {
-        list("products"); // Quay lại trang danh sách bài viết theo type
+        navigate(`/posts?type_code=${typeCode}`); // Quay lại trang danh sách bài viết theo type
       },
     },
     warnWhenUnsavedChanges: true,
@@ -130,7 +130,7 @@ export const PostCreate: React.FC = () => {
             <Button
               variant="outlined"
               color="secondary"
-              onClick={() => list("posts")}
+              onClick={() => navigate(`/posts?type_code=${typeCode}`)}
               sx={{ borderRadius: "8px", textTransform: "none", fontWeight: "600", color: 'text.secondary', borderColor: '#D5D5D5' }}
             >
               Hủy
