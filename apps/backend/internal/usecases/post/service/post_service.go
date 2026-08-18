@@ -14,6 +14,8 @@ import (
 
 type PostService interface {
 	CreatePost(ctx context.Context, authorID uint, req *dto.CreatePostRequest) (*dto.PostResponse, error)
+	GetPosts(ctx context.Context, query dto.GetPostsQuery) (*dto.PaginatedPostResponse, error)
+	DeletePost(ctx context.Context, id uint) error
 }
 
 type postService struct {
@@ -71,4 +73,67 @@ func (s *postService) CreatePost(ctx context.Context, authorID uint, req *dto.Cr
 		AuthorID:  post.AuthorID,
 		CreatedAt: post.CreatedAt,
 	}, nil
+}
+
+func (s *postService) GetPosts(ctx context.Context, query dto.GetPostsQuery) (*dto.PaginatedPostResponse, error) {
+	page := query.Page
+	if page < 1 {
+		page = 1
+	}
+	pageSize := query.PageSize
+	if pageSize < 1 {
+		pageSize = 10
+	}
+	offset := (page - 1) * pageSize
+
+	sort := ""
+	if query.SortBy != "" {
+		order := "asc"
+		if query.Order != "" {
+			order = query.Order
+		}
+		sort = fmt.Sprintf("%s %s", query.SortBy, order)
+	}
+
+	posts, total, err := s.postRepo.FindAndCount(ctx, query.Title, query.TypeCode, offset, pageSize, sort)
+	if err != nil {
+		return nil, fmt.Errorf("lỗi lấy danh sách bài viết: %v", err)
+	}
+
+	var data []dto.PostResponse
+	if len(posts) == 0 {
+		data = []dto.PostResponse{}
+	}
+	for _, p := range posts {
+		data = append(data, dto.PostResponse{
+			ID:        p.ID,
+			TypeCode:  p.TypeCode,
+			Title:     p.Title,
+			Slug:      p.Slug,
+			// Content is omitted in list
+			AuthorID:  p.AuthorID,
+			CreatedAt: p.CreatedAt,
+		})
+	}
+
+	return &dto.PaginatedPostResponse{
+		Data:  data,
+		Total: total,
+	}, nil
+}
+
+func (s *postService) DeletePost(ctx context.Context, id uint) error {
+	if err := s.postRepo.Delete(ctx, id); err != nil {
+		return fmt.Errorf("không thể xóa bài viết: %v", err)
+	}
+
+	// Invalidate Cache for posts list
+	pattern := "posts:list:*"
+	keys, err := s.redisClient.Keys(ctx, pattern).Result()
+	if err == nil && len(keys) > 0 {
+		s.redisClient.Del(ctx, keys...)
+	}
+
+	// Note: ideally we would invalidate specific type cache if we query the post first, but this is a broad invalidation
+	return nil
 }

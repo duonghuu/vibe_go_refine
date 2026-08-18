@@ -1,0 +1,29 @@
+[
+  {
+    "id": 1,
+    "typeCode": "NEWS",
+    "title": "Bản cập nhật hệ thống TechBite V1.2.0",
+    "slug": "ban-cap-nhat-he-thong-techbite-v1-2-0",
+    "content": "<p>Nội dung bản cập nhật với nhiều tính năng mới về quản trị sản phẩm.</p>",
+    "authorId": 1,
+    "createdAt": "2026-08-17T08:00:00Z"
+  },
+  {
+    "id": 2,
+    "typeCode": "NEWS",
+    "title": "Hướng dẫn sử dụng tính năng tạo Coupon",
+    "slug": "huong-dan-su-dung-tinh-nang-tao-coupon",
+    "content": "<p>Chi tiết cách tạo mã giảm giá cho khách hàng mới.</p>",
+    "authorId": 1,
+    "createdAt": "2026-08-16T15:30:00Z"
+  },
+  {
+    "id": 3,
+    "typeCode": "NEWS",
+    "title": "Bảo trì định kỳ máy chủ tháng 8",
+    "slug": "bao-tri-dinh-ky-may-chu-thang-8",
+    "content": "<p>Hệ thống sẽ bảo trì từ 23h ngày 20/08 đến 01h ngày 21/08.</p>",
+    "authorId": 2,
+    "createdAt": "2026-08-15T09:15:00Z"
+  }
+]

@@ -18,3 +18,8 @@ type PostResponse struct {
 	AuthorID  uint      `json:"authorId"`
 	CreatedAt time.Time `json:"createdAt"`
 }
+
+type PaginatedPostResponse struct {
+	Data  []PostResponse `json:"data"`
+	Total int64          `json:"total"`
+}

@@ -918,6 +918,43 @@ paths:
         '200':
           description: OK
   /api/v1/admin/posts:
+    get:
+      summary: Lấy danh sách bài viết (Phân trang & Lọc)
+      tags:
+        - Admin Posts
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: query
+          name: current
+          schema:
+            type: integer
+            default: 1
+        - in: query
+          name: pageSize
+          schema:
+            type: integer
+            default: 10
+        - in: query
+          name: title_like
+          schema:
+            type: string
+        - in: query
+          name: typeCode
+          schema:
+            type: string
+        - in: query
+          name: sortBy
+          schema:
+            type: string
+        - in: query
+          name: order
+          schema:
+            type: string
+            enum: [asc, desc]
+      responses:
+        '200':
+          description: OK
     post:
       summary: Tạo bài viết mới
       tags:
@@ -938,6 +975,22 @@ paths:
       responses:
         '201':
           description: Created
+  /api/v1/admin/posts/{id}:
+    delete:
+      summary: Xóa bài viết
+      tags:
+        - Admin Posts
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: OK
 components:
   securitySchemes:
     BearerAuth:

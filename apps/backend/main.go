@@ -179,7 +179,9 @@ func main() {
 
 	posts := admin.Group("/posts")
 	{
+		posts.GET("", postController.GetPosts)
 		posts.POST("", postController.CreatePost)
+		posts.DELETE("/:post_id", postController.DeletePost)
 	}
 
 	postMedia := admin.Group("/posts/:post_id/media")
