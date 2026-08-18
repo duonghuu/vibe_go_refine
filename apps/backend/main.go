@@ -180,8 +180,10 @@ func main() {
 
 	postCategories := admin.Group("/post-categories")
 	{
+		postCategories.GET("", postCategoryController.GetPostCategories)
 		postCategories.GET("/tree", postCategoryController.GetPostCategoryTree)
 		postCategories.POST("", postCategoryController.CreatePostCategory)
+		postCategories.DELETE("/:id", postCategoryController.DeletePostCategory)
 	}
 
 	posts := admin.Group("/posts")

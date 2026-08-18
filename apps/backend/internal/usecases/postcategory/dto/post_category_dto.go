@@ -29,3 +29,8 @@ type PostCategoryTreeResponse struct {
 	Name     string `json:"name"` // Có thể được format thêm prefix "--" theo level
 	TypeCode string `json:"typeCode"`
 }
+
+type PaginatedPostCategoryResponse struct {
+	Data  []PostCategoryResponse `json:"data"`
+	Total int64                  `json:"total"`
+}

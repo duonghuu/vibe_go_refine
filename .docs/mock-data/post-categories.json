@@ -1,0 +1,50 @@
+[
+  {
+    "id": 1,
+    "typeCode": "NEWS",
+    "name": "Tin trong nước",
+    "slug": "tin-trong-nuoc",
+    "parentId": null,
+    "description": "Các tin tức thời sự trong nước",
+    "imageUrl": "https://picsum.photos/seed/news1/60/60",
+    "sortOrder": 1,
+    "status": "ACTIVE",
+    "createdAt": "2026-08-18T10:00:00Z"
+  },
+  {
+    "id": 2,
+    "typeCode": "NEWS",
+    "name": "Tin quốc tế",
+    "slug": "tin-quoc-te",
+    "parentId": null,
+    "description": "Các tin tức thời sự quốc tế",
+    "imageUrl": "https://picsum.photos/seed/news2/60/60",
+    "sortOrder": 2,
+    "status": "ACTIVE",
+    "createdAt": "2026-08-18T10:05:00Z"
+  },
+  {
+    "id": 3,
+    "typeCode": "NEWS",
+    "name": "Kinh tế",
+    "slug": "kinh-te",
+    "parentId": 1,
+    "description": "Tin tức kinh tế trong nước",
+    "imageUrl": "https://picsum.photos/seed/news3/60/60",
+    "sortOrder": 3,
+    "status": "ACTIVE",
+    "createdAt": "2026-08-18T10:10:00Z"
+  },
+  {
+    "id": 4,
+    "typeCode": "GUIDES",
+    "name": "Hướng dẫn sử dụng",
+    "slug": "huong-dan-su-dung",
+    "parentId": null,
+    "description": "Cẩm nang hướng dẫn người dùng",
+    "imageUrl": "https://picsum.photos/seed/guide1/60/60",
+    "sortOrder": 1,
+    "status": "INACTIVE",
+    "createdAt": "2026-08-18T10:15:00Z"
+  }
+]

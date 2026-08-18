@@ -17,6 +17,8 @@ import (
 type PostCategoryService interface {
 	GetPostCategoryTree(ctx context.Context, typeCode string) ([]dto.PostCategoryTreeResponse, error)
 	CreatePostCategory(ctx context.Context, req *dto.CreatePostCategoryRequest) (*dto.PostCategoryResponse, error)
+	GetPostCategories(ctx context.Context, skip, limit int, sortField, sortOrder, query, status, typeCode string) (*dto.PaginatedPostCategoryResponse, error)
+	DeletePostCategory(ctx context.Context, id uint) error
 }
 
 type postCategoryService struct {
@@ -115,4 +117,35 @@ func (s *postCategoryService) CreatePostCategory(ctx context.Context, req *dto.C
 
 	s.invalidateCache(ctx, item.TypeCode)
 	return mapEntityToResponse(item), nil
+}
+
+func (s *postCategoryService) GetPostCategories(ctx context.Context, skip, limit int, sortField, sortOrder, query, status, typeCode string) (*dto.PaginatedPostCategoryResponse, error) {
+	items, total, err := s.repo.FindAll(ctx, skip, limit, sortField, sortOrder, query, status, typeCode)
+	if err != nil {
+		return nil, err
+	}
+
+	res := make([]dto.PostCategoryResponse, 0, len(items))
+	for _, item := range items {
+		res = append(res, *mapEntityToResponse(&item))
+	}
+
+	return &dto.PaginatedPostCategoryResponse{
+		Data:  res,
+		Total: total,
+	}, nil
+}
+
+func (s *postCategoryService) DeletePostCategory(ctx context.Context, id uint) error {
+	category, err := s.repo.FindByID(ctx, id)
+	if err != nil {
+		return err
+	}
+
+	if err := s.repo.Delete(ctx, id); err != nil {
+		return err
+	}
+
+	s.invalidateCache(ctx, category.TypeCode)
+	return nil
 }
