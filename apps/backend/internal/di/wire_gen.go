@@ -14,12 +14,13 @@ import (
 	service5 "go_refine_dashboard_be/internal/usecases/auth/service"
 	service3 "go_refine_dashboard_be/internal/usecases/category/service"
 	service2 "go_refine_dashboard_be/internal/usecases/media/service"
+	service9 "go_refine_dashboard_be/internal/usecases/post/service"
+	service10 "go_refine_dashboard_be/internal/usecases/postcategory/service"
 	service7 "go_refine_dashboard_be/internal/usecases/postmedia/service"
 	service8 "go_refine_dashboard_be/internal/usecases/postmeta/service"
 	service6 "go_refine_dashboard_be/internal/usecases/posttype/service"
 	"go_refine_dashboard_be/internal/usecases/product/service"
 	service4 "go_refine_dashboard_be/internal/usecases/user/service"
-	service9 "go_refine_dashboard_be/internal/usecases/post/service"
 	"gorm.io/gorm"
 )
 
@@ -88,6 +89,13 @@ func InitializePostController(db *gorm.DB, redisClient *redis.Client) *controlle
 	return postController
 }
 
+func InitializePostCategoryController(db *gorm.DB, redisClient *redis.Client) *controller.PostCategoryController {
+	postCategoryRepository := repository.NewPostCategoryRepository(db)
+	postCategoryService := service10.NewPostCategoryService(postCategoryRepository, redisClient)
+	postCategoryController := controller.NewPostCategoryController(postCategoryService)
+	return postCategoryController
+}
+
 // wire.go:
 
 var ProductSet = wire.NewSet(repository.NewProductRepository, service.NewProductService, controller.NewProductController)
@@ -107,3 +115,5 @@ var PostMediaSet = wire.NewSet(repository.NewPostMediaRepository, service7.NewPo
 var PostMetaSet = wire.NewSet(repository.NewPostMetaRepository, service8.NewPostMetaService, controller.NewPostMetaController)
 
 var PostSet = wire.NewSet(repository.NewPostRepository, service9.NewPostService, controller.NewPostController)
+
+var PostCategorySet = wire.NewSet(repository.NewPostCategoryRepository, service10.NewPostCategoryService, controller.NewPostCategoryController)

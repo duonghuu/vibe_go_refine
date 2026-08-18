@@ -745,6 +745,47 @@ paths:
       responses:
         '200':
           description: OK
+  /api/v1/admin/post-categories/tree:
+    get:
+      summary: Lấy danh sách cây danh mục bài viết theo loại bài viết
+      tags:
+        - Admin Post Category
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: query
+          name: typeCode
+          required: true
+          schema:
+            type: string
+      responses:
+        '200':
+          description: OK
+  /api/v1/admin/post-categories:
+    post:
+      summary: Tạo mới danh mục bài viết
+      tags:
+        - Admin Post Category
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                typeCode: { type: string }
+                name: { type: string }
+                slug: { type: string }
+                parentId: { type: integer, nullable: true }
+                description: { type: string }
+                imageUrl: { type: string }
+                sortOrder: { type: integer }
+                status: { type: string, enum: [ACTIVE, INACTIVE] }
+      responses:
+        '201':
+          description: Created
 
   /api/v1/admin/posts/{post_id}/media:
     get:

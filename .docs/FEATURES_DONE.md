@@ -34,3 +34,4 @@
 - [2026-08-17 11:15:00] Đã sửa frontend `/posts/create` dùng typeCode, hoàn thiện DB Schema, API POST tạo bài viết và sửa Makefile seed.
 - [2026-08-17 13:08:48] Hoàn thiện tích hợp API cho trang thêm bài viết (posts/create), chuẩn hoá type và cập nhật điều hướng dùng list.
 - [2026-08-18 08:51:24] Đã hoàn thành lên kế hoạch backend và code API List/Delete bài viết, đồng bộ giao diện UI PostList với ProductList.
+- [2026-08-18 13:16:00] Hoàn thành BE & UI Thêm danh mục bài viết. Tạo API CRUD, xử lý migrate DB bảng post_categories, tích hợp giao diện Refine.

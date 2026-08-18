@@ -1,0 +1,23 @@
+CREATE TABLE `post_categories` (
+  `id` int unsigned NOT NULL AUTO_INCREMENT,
+  `type_code` varchar(50) NOT NULL,
+  `name` varchar(255) NOT NULL,
+  `slug` varchar(255) NOT NULL,
+  `parent_id` int unsigned DEFAULT NULL,
+  `description` text,
+  `image_url` varchar(500) DEFAULT NULL,
+  `sort_order` int DEFAULT '0',
+  `status` varchar(20) DEFAULT 'ACTIVE',
+  `created_at` datetime(3) DEFAULT NULL,
+  `updated_at` datetime(3) DEFAULT NULL,
+  `deleted_at` datetime(3) DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `idx_post_categories_slug` (`slug`),
+  KEY `idx_post_categories_type_code` (`type_code`),
+  KEY `idx_post_categories_parent_id` (`parent_id`),
+  KEY `idx_post_categories_sort_order` (`sort_order`),
+  KEY `idx_post_categories_status` (`status`),
+  KEY `idx_post_categories_deleted_at` (`deleted_at`),
+  CONSTRAINT `fk_post_categories_parent` FOREIGN KEY (`parent_id`) REFERENCES `post_categories` (`id`) ON DELETE SET NULL ON UPDATE CASCADE,
+  CONSTRAINT `fk_post_categories_type` FOREIGN KEY (`type_code`) REFERENCES `post_types` (`code`) ON DELETE RESTRICT ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

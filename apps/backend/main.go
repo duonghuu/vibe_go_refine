@@ -89,6 +89,7 @@ func main() {
 	postMediaController := di.InitializePostMediaController(db, redisClient)
 	postMetaController := di.InitializePostMetaController(db, redisClient)
 	postController := di.InitializePostController(db, redisClient)
+	postCategoryController := di.InitializePostCategoryController(db, redisClient)
 
 	// 3. Setup Router
 	r := gin.Default()
@@ -175,6 +176,12 @@ func main() {
 		postTypes.POST("", postTypeController.CreatePostType)
 		postTypes.PUT("/:id", postTypeController.UpdatePostType)
 		postTypes.DELETE("/:id", postTypeController.DeletePostType)
+	}
+
+	postCategories := admin.Group("/post-categories")
+	{
+		postCategories.GET("/tree", postCategoryController.GetPostCategoryTree)
+		postCategories.POST("", postCategoryController.CreatePostCategory)
 	}
 
 	posts := admin.Group("/posts")
