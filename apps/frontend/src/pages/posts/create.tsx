@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Create } from "@refinedev/mui";
+import { Create, useAutocomplete } from "@refinedev/mui";
 import { useForm } from "@refinedev/react-hook-form";
 import { useSearchParams, useNavigate } from "react-router";
 import {
@@ -10,8 +10,11 @@ import {
   Typography,
   Button,
   Stack,
+  Grid,
+  Autocomplete,
 } from "@mui/material";
-import { HttpError, useNavigation, useNotification } from "@refinedev/core";
+import { HttpError, useNotification } from "@refinedev/core";
+import { Controller } from "react-hook-form";
 
 export interface IPostResponse {
   id: number;
@@ -20,6 +23,7 @@ export interface IPostResponse {
   slug: string;
   content: string;
   authorId: number;
+  categoryId?: number;
   createdAt: string;
 }
 
@@ -28,6 +32,7 @@ export interface ICreatePostRequest {
   title: string;
   slug: string;
   content: string;
+  categoryId?: number;
 }
 
 const generateSlug = (text: string) => {
@@ -65,6 +70,7 @@ export const PostCreate: React.FC = () => {
   const {
     refineCore: { formLoading, onFinish },
     register,
+    control,
     handleSubmit,
     setValue,
     formState: { errors },
@@ -82,6 +88,20 @@ export const PostCreate: React.FC = () => {
   });
 
   const titleValue = watch("title");
+
+  const { autocompleteProps: categoryAutocompleteProps } = useAutocomplete({
+    resource: "post-categories",
+    filters: [
+      {
+        field: "typeCode",
+        operator: "eq",
+        value: typeCode || "",
+      },
+    ],
+    queryOptions: {
+      enabled: !!typeCode,
+    },
+  });
 
   useEffect(() => {
     if (titleValue) {
@@ -148,54 +168,107 @@ export const PostCreate: React.FC = () => {
         }
       >
         <Box component="form" autoComplete="off">
-          <Card sx={{ borderRadius: "14px", border: "1px solid #D5D5D5", boxShadow: "none" }}>
-            <CardContent sx={{ p: 3 }}>
-              <Typography variant="h6" fontWeight="600" mb={3} color="text.primary">
-                Thông tin cơ bản
-              </Typography>
-              <TextField
-                {...register("title", { required: "Tiêu đề là bắt buộc" })}
-                error={!!errors.title}
-                helperText={errors.title?.message as string}
-                label="Tiêu đề (*)"
-                margin="normal"
-                variant="outlined"
-                fullWidth
-                sx={{ mb: 3 }}
-                InputProps={{ sx: { borderRadius: "8px" } }}
-              />
-              <TextField
-                {...register("slug", {
-                  required: "Đường dẫn (slug) là bắt buộc",
-                  pattern: {
-                    value: /^[a-z0-9-]+$/,
-                    message: "Slug chỉ chứa chữ thường, số và dấu gạch ngang",
-                  },
-                })}
-                error={!!errors.slug}
-                helperText={errors.slug?.message as string}
-                label="Đường dẫn (Slug) (*)"
-                margin="normal"
-                variant="outlined"
-                fullWidth
-                sx={{ mb: 3 }}
-                InputLabelProps={{ shrink: !!watch("slug") || undefined }}
-                InputProps={{ sx: { borderRadius: "8px" } }}
-              />
-              <TextField
-                {...register("content", { required: "Nội dung là bắt buộc" })}
-                error={!!errors.content}
-                helperText={errors.content?.message as string}
-                label="Nội dung (*)"
-                margin="normal"
-                variant="outlined"
-                fullWidth
-                multiline
-                rows={15}
-                InputProps={{ sx: { borderRadius: "8px" } }}
-              />
-            </CardContent>
-          </Card>
+          <Grid container spacing={3}>
+            {/* Cột chính */}
+            <Grid item xs={12} md={8}>
+              <Card sx={{ borderRadius: "14px", border: "1px solid #D5D5D5", boxShadow: "none" }}>
+                <CardContent sx={{ p: 3 }}>
+                  <Typography variant="h6" fontWeight="600" mb={3} color="text.primary">
+                    Thông tin cơ bản
+                  </Typography>
+                  <TextField
+                    {...register("title", { required: "Tiêu đề là bắt buộc" })}
+                    error={!!errors.title}
+                    helperText={errors.title?.message as string}
+                    label="Tiêu đề (*)"
+                    margin="normal"
+                    variant="outlined"
+                    fullWidth
+                    sx={{ mb: 3 }}
+                    InputProps={{ sx: { borderRadius: "8px" } }}
+                  />
+                  <TextField
+                    {...register("slug", {
+                      required: "Đường dẫn (slug) là bắt buộc",
+                      pattern: {
+                        value: /^[a-z0-9-]+$/,
+                        message: "Slug chỉ chứa chữ thường, số và dấu gạch ngang",
+                      },
+                    })}
+                    error={!!errors.slug}
+                    helperText={errors.slug?.message as string}
+                    label="Đường dẫn (Slug) (*)"
+                    margin="normal"
+                    variant="outlined"
+                    fullWidth
+                    sx={{ mb: 3 }}
+                    InputLabelProps={{ shrink: !!watch("slug") || undefined }}
+                    InputProps={{ sx: { borderRadius: "8px" } }}
+                  />
+                  <TextField
+                    {...register("content", { required: "Nội dung là bắt buộc" })}
+                    error={!!errors.content}
+                    helperText={errors.content?.message as string}
+                    label="Nội dung (*)"
+                    margin="normal"
+                    variant="outlined"
+                    fullWidth
+                    multiline
+                    rows={15}
+                    InputProps={{ sx: { borderRadius: "8px" } }}
+                  />
+                </CardContent>
+              </Card>
+            </Grid>
+
+            {/* Cột phụ */}
+            <Grid item xs={12} md={4}>
+              <Card sx={{ borderRadius: "14px", border: "1px solid #D5D5D5", boxShadow: "none" }}>
+                <CardContent sx={{ p: 3 }}>
+                  <Typography variant="h6" fontWeight="600" mb={3} color="text.primary">
+                    Phân loại
+                  </Typography>
+                  <Controller
+                    control={control}
+                    name="categoryId"
+                    render={({ field }) => (
+                      <Autocomplete
+                        {...categoryAutocompleteProps}
+                        {...field}
+                        onChange={(_, value) => {
+                          field.onChange(value?.id ?? null);
+                        }}
+                        getOptionLabel={(item) => {
+                          return (
+                            categoryAutocompleteProps?.options?.find(
+                              (p) => p?.id?.toString() === item?.id?.toString() || p?.id?.toString() === item?.toString()
+                            )?.name ?? ""
+                          );
+                        }}
+                        isOptionEqualToValue={(option, value) =>
+                          value === undefined || option?.id?.toString() === (value?.id ?? value)?.toString()
+                        }
+                        renderInput={(params) => (
+                          <TextField
+                            {...params}
+                            label="Danh mục bài viết"
+                            margin="normal"
+                            variant="outlined"
+                            error={!!errors.categoryId}
+                            helperText={errors.categoryId?.message as string}
+                            InputProps={{
+                              ...params.InputProps,
+                              sx: { borderRadius: "8px" },
+                            }}
+                          />
+                        )}
+                      />
+                    )}
+                  />
+                </CardContent>
+              </Card>
+            </Grid>
+          </Grid>
         </Box>
       </Create>
     </Box>

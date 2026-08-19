@@ -40,11 +40,12 @@ func (s *postService) CreatePost(ctx context.Context, authorID uint, req *dto.Cr
 	}
 
 	post := &entity.Post{
-		TypeCode: req.TypeCode,
-		Title:    req.Title,
-		Slug:     req.Slug,
-		Content:  req.Content,
-		AuthorID: authorID,
+		TypeCode:   req.TypeCode,
+		Title:      req.Title,
+		Slug:       req.Slug,
+		Content:    req.Content,
+		AuthorID:   authorID,
+		CategoryID: req.CategoryID,
 	}
 
 	if err := s.postRepo.Create(ctx, post); err != nil {
@@ -65,13 +66,14 @@ func (s *postService) CreatePost(ctx context.Context, authorID uint, req *dto.Cr
 	}
 
 	return &dto.PostResponse{
-		ID:        post.ID,
-		TypeCode:  post.TypeCode,
-		Title:     post.Title,
-		Slug:      post.Slug,
-		Content:   post.Content,
-		AuthorID:  post.AuthorID,
-		CreatedAt: post.CreatedAt,
+		ID:         post.ID,
+		TypeCode:   post.TypeCode,
+		Title:      post.Title,
+		Slug:       post.Slug,
+		Content:    post.Content,
+		AuthorID:   post.AuthorID,
+		CategoryID: post.CategoryID,
+		CreatedAt:  post.CreatedAt,
 	}, nil
 }
 
@@ -106,13 +108,14 @@ func (s *postService) GetPosts(ctx context.Context, query dto.GetPostsQuery) (*d
 	}
 	for _, p := range posts {
 		data = append(data, dto.PostResponse{
-			ID:        p.ID,
-			TypeCode:  p.TypeCode,
-			Title:     p.Title,
-			Slug:      p.Slug,
+			ID:         p.ID,
+			TypeCode:   p.TypeCode,
+			Title:      p.Title,
+			Slug:       p.Slug,
 			// Content is omitted in list
-			AuthorID:  p.AuthorID,
-			CreatedAt: p.CreatedAt,
+			AuthorID:   p.AuthorID,
+			CategoryID: p.CategoryID,
+			CreatedAt:  p.CreatedAt,
 		})
 	}
 

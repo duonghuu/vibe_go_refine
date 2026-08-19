@@ -1013,6 +1013,7 @@ paths:
                 title: { type: string }
                 slug: { type: string }
                 content: { type: string }
+                categoryId: { type: integer, nullable: true }
       responses:
         '201':
           description: Created

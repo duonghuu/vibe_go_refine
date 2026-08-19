@@ -56,7 +56,10 @@
 
 *(Ghi chú: Nếu không có thiết lập phụ nào khác, form có thể dùng bố cục 1 cột)*
 
-1. **Thông tin ngầm (Hidden Data)**
+1. **Thông tin phân loại (Categorization)**
+   * **Danh mục bài viết (category_id):** (Select / Dropdown - Không bắt buộc). Lấy danh sách từ bảng `post_categories` dựa theo `typeCode`. Hỗ trợ chọn danh mục cha/con. Có thể dùng Autocomplete nếu danh mục dài.
+
+2. **Thông tin ngầm (Hidden Data)**
    * **Loại bài viết (type_id):** Không hiển thị chọn trên UI. Frontend sẽ tự động lấy giá trị này từ URL (ví dụ: `?type_code=NEWS` hoặc route parameter) để submit ngầm xuống API.
 
 ---

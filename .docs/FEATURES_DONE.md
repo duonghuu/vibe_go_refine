@@ -35,3 +35,5 @@
 - [2026-08-17 13:08:48] Hoàn thiện tích hợp API cho trang thêm bài viết (posts/create), chuẩn hoá type và cập nhật điều hướng dùng list.
 - [2026-08-18 08:51:24] Đã hoàn thành lên kế hoạch backend và code API List/Delete bài viết, đồng bộ giao diện UI PostList với ProductList.
 - [2026-08-18 13:16:00] Hoàn thành BE & UI Thêm danh mục bài viết. Tạo API CRUD, xử lý migrate DB bảng post_categories, tích hợp giao diện Refine.
+- [2026-08-18 16:30:51] Đã sửa lỗi redirect trong trang tạo bài viết mới, đảm bảo quay về danh sách bài viết theo đúng type_code khi lưu thành công hoặc hủy.
+- [2026-08-19 08:44:27] Hoàn thiện bổ sung Category vào chức năng Thêm mới bài viết (Create Post): Cập nhật DB, API (DTO/Service) và UI Refine.js Layout 2 cột.
