@@ -182,7 +182,9 @@ func main() {
 	{
 		postCategories.GET("", postCategoryController.GetPostCategories)
 		postCategories.GET("/tree", postCategoryController.GetPostCategoryTree)
+		postCategories.GET("/:id", postCategoryController.GetPostCategory)
 		postCategories.POST("", postCategoryController.CreatePostCategory)
+		postCategories.PUT("/:id", postCategoryController.UpdatePostCategory)
 		postCategories.DELETE("/:id", postCategoryController.DeletePostCategory)
 	}
 

@@ -14,6 +14,7 @@ type PostCategoryRepository interface {
 	FindByID(ctx context.Context, id uint) (*entity.PostCategory, error)
 	Create(ctx context.Context, category *entity.PostCategory) error
 	FindAll(ctx context.Context, skip, limit int, sortField, sortOrder, query, status, typeCode string) ([]entity.PostCategory, int64, error)
+	Update(ctx context.Context, category *entity.PostCategory) error
 	Delete(ctx context.Context, id uint) error
 }
 
@@ -88,6 +89,10 @@ func (r *postCategoryRepository) FindAll(ctx context.Context, skip, limit int, s
 	}
 
 	return items, total, nil
+}
+
+func (r *postCategoryRepository) Update(ctx context.Context, category *entity.PostCategory) error {
+	return r.db.WithContext(ctx).Save(category).Error
 }
 
 func (r *postCategoryRepository) Delete(ctx context.Context, id uint) error {

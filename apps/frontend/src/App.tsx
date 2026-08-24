@@ -37,7 +37,7 @@ import { ProductCreate, ProductEdit, ProductList } from "./pages/products";
 import { UserList, UserCreate, UserEdit } from "./pages/users";
 import { PostTypeList, PostTypeCreate, PostTypeEdit } from "./pages/post-types";
 import { PostCreate, PostList } from "./pages/posts";
-import { PostCategoryCreate, PostCategoryList } from "./pages/post-categories";
+import { PostCategoryCreate, PostCategoryList, PostCategoryEdit } from "./pages/post-categories";
 import { dataProvider } from "./providers/data";
 import { AdminMasterLayout } from "./components/layout";
 
@@ -176,6 +176,7 @@ function App() {
                     <Route path="/post-categories">
                       <Route index element={<PostCategoryList />} />
                       <Route path="create" element={<PostCategoryCreate />} />
+                      <Route path="edit/:id" element={<PostCategoryEdit />} />
                     </Route>
                     <Route path="*" element={<ErrorComponent />} />
                   </Route>

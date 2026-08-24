@@ -37,3 +37,4 @@
 - [2026-08-18 13:16:00] Hoàn thành BE & UI Thêm danh mục bài viết. Tạo API CRUD, xử lý migrate DB bảng post_categories, tích hợp giao diện Refine.
 - [2026-08-18 16:30:51] Đã sửa lỗi redirect trong trang tạo bài viết mới, đảm bảo quay về danh sách bài viết theo đúng type_code khi lưu thành công hoặc hủy.
 - [2026-08-19 08:44:27] Hoàn thiện bổ sung Category vào chức năng Thêm mới bài viết (Create Post): Cập nhật DB, API (DTO/Service) và UI Refine.js Layout 2 cột.
+- [2026-08-24 13:47:04] Hoàn thiện trang chỉnh sửa danh mục bài viết, bổ sung dữ liệu danh mục cha và lọc danh mục hiện tại/các danh mục con.

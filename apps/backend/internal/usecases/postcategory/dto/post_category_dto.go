@@ -11,6 +11,16 @@ type CreatePostCategoryRequest struct {
 	Status      string `json:"status" binding:"omitempty,oneof=ACTIVE INACTIVE"`
 }
 
+type UpdatePostCategoryRequest struct {
+	Name        string `json:"name" binding:"required,max=255"`
+	Slug        string `json:"slug" binding:"required,max=255"`
+	ParentID    *uint  `json:"parentId"` // Nullable
+	Description string `json:"description"`
+	ImageURL    string `json:"imageUrl"`
+	SortOrder   int    `json:"sortOrder" binding:"omitempty,min=0"`
+	Status      string `json:"status" binding:"omitempty,oneof=ACTIVE INACTIVE"`
+}
+
 type PostCategoryResponse struct {
 	ID          uint   `json:"id"`
 	TypeCode    string `json:"typeCode"`

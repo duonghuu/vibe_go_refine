@@ -68,6 +68,60 @@ func (c *PostCategoryController) CreatePostCategory(ctx *gin.Context) {
 	ctx.JSON(http.StatusCreated, gin.H{"data": item})
 }
 
+func (c *PostCategoryController) GetPostCategory(ctx *gin.Context) {
+	id, err := strconv.ParseUint(ctx.Param("id"), 10, 32)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "ID không hợp lệ"})
+		return
+	}
+
+	item, err := c.postCategoryService.GetPostCategoryByID(ctx.Request.Context(), uint(id))
+	if err != nil {
+		if err.Error() == "Không tìm thấy danh mục bài viết" {
+			ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+			return
+		}
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"data": item})
+}
+
+func (c *PostCategoryController) UpdatePostCategory(ctx *gin.Context) {
+	id, err := strconv.ParseUint(ctx.Param("id"), 10, 32)
+	if err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "ID không hợp lệ"})
+		return
+	}
+
+	var req dto.UpdatePostCategoryRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	item, err := c.postCategoryService.UpdatePostCategory(ctx.Request.Context(), uint(id), &req)
+	if err != nil {
+		if err.Error() == "Slug đã tồn tại" {
+			ctx.JSON(http.StatusConflict, gin.H{"error": err.Error()})
+			return
+		}
+		if err.Error() == "Không tìm thấy danh mục bài viết" {
+			ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+			return
+		}
+		if err.Error() == "Danh mục cha không tồn tại" || err.Error() == "Danh mục cha không thuộc cùng loại bài viết" || err.Error() == "Không thể chọn danh mục hiện tại làm danh mục cha" {
+			ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+			return
+		}
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"data": item})
+}
+
 func (c *PostCategoryController) GetPostCategories(ctx *gin.Context) {
 	skip, _ := strconv.Atoi(ctx.DefaultQuery("_start", "0"))
 	end, _ := strconv.Atoi(ctx.DefaultQuery("_end", "10"))
