@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { Create, useAutocomplete } from "@refinedev/mui";
+import { Create } from "@refinedev/mui";
 import { useForm } from "@refinedev/react-hook-form";
 import { useSearchParams, useNavigate } from "react-router";
 import {
@@ -13,7 +13,7 @@ import {
   Grid,
   Autocomplete,
 } from "@mui/material";
-import { HttpError, useNotification } from "@refinedev/core";
+import { HttpError, useNotification, useSelect } from "@refinedev/core";
 import { Controller } from "react-hook-form";
 
 export interface IPostResponse {
@@ -33,6 +33,17 @@ export interface ICreatePostRequest {
   slug: string;
   content: string;
   categoryId?: number;
+}
+
+interface IPostCategoryOption {
+  id: number;
+  name: string;
+  parentId: number | null;
+  typeCode: string;
+}
+
+interface IHierarchicalCategoryOption extends IPostCategoryOption {
+  level: number;
 }
 
 const generateSlug = (text: string) => {
@@ -89,8 +100,10 @@ export const PostCreate: React.FC = () => {
 
   const titleValue = watch("title");
 
-  const { autocompleteProps: categoryAutocompleteProps } = useAutocomplete({
+  const { query: categoryQuery } = useSelect<IPostCategoryOption, HttpError>({
     resource: "post-categories",
+    optionLabel: "name",
+    optionValue: "id",
     filters: [
       {
         field: "typeCode",
@@ -101,7 +114,47 @@ export const PostCreate: React.FC = () => {
     queryOptions: {
       enabled: !!typeCode,
     },
+    pagination: {
+      mode: "off",
+    },
   });
+
+  const categoryOptions = React.useMemo<IHierarchicalCategoryOption[]>(() => {
+    const categories = categoryQuery.data?.data ?? [];
+    const childrenByParent = new Map<number | null, IPostCategoryOption[]>();
+
+    categories.forEach((category) => {
+      const children = childrenByParent.get(category.parentId) ?? [];
+      children.push(category);
+      childrenByParent.set(category.parentId, children);
+    });
+
+    const flatten = (
+      parentId: number | null,
+      level: number,
+      visited: Set<number>,
+    ): IHierarchicalCategoryOption[] => {
+      return (childrenByParent.get(parentId) ?? []).flatMap((category) => {
+        if (visited.has(category.id)) {
+          return [];
+        }
+
+        const nextVisited = new Set(visited).add(category.id);
+        return [
+          { ...category, level },
+          ...flatten(category.id, level + 1, nextVisited),
+        ];
+      });
+    };
+
+    const roots = flatten(null, 0, new Set<number>());
+    const rootIds = new Set(roots.map((category) => category.id));
+    const orphanedCategories = categories.filter(
+      (category) => !rootIds.has(category.id),
+    );
+
+    return [...roots, ...orphanedCategories.map((category) => ({ ...category, level: 0 }))];
+  }, [categoryQuery.data?.data]);
 
   useEffect(() => {
     if (titleValue) {
@@ -233,21 +286,28 @@ export const PostCreate: React.FC = () => {
                     name="categoryId"
                     render={({ field }) => (
                       <Autocomplete
-                        {...categoryAutocompleteProps}
-                        {...field}
-                        onChange={(_, value) => {
-                          field.onChange(value?.id ?? null);
-                        }}
-                        getOptionLabel={(item) => {
-                          return (
-                            categoryAutocompleteProps?.options?.find(
-                              (p) => p?.id?.toString() === item?.id?.toString() || p?.id?.toString() === item?.toString()
-                            )?.name ?? ""
-                          );
-                        }}
+                        options={categoryOptions}
+                        loading={categoryQuery.isLoading}
+                        value={categoryOptions.find((option) => option.id === field.value) ?? null}
+                        onChange={(_, value) => field.onChange(value?.id ?? null)}
+                        getOptionLabel={(option) => option.name}
                         isOptionEqualToValue={(option, value) =>
-                          value === undefined || option?.id?.toString() === (value?.id ?? value)?.toString()
+                          option.id === value.id
                         }
+                        renderOption={(props, option) => (
+                          <li {...props} key={option.id}>
+                            <Box
+                              component="span"
+                              sx={{
+                                pl: option.level * 2,
+                                color: option.level > 0 ? "text.secondary" : "text.primary",
+                              }}
+                            >
+                              {option.level > 0 ? "└─ " : ""}
+                              {option.name}
+                            </Box>
+                          </li>
+                        )}
                         renderInput={(params) => (
                           <TextField
                             {...params}
