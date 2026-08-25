@@ -36,7 +36,7 @@ import {
 import { ProductCreate, ProductEdit, ProductList } from "./pages/products";
 import { UserList, UserCreate, UserEdit } from "./pages/users";
 import { PostTypeList, PostTypeCreate, PostTypeEdit } from "./pages/post-types";
-import { PostCreate, PostList } from "./pages/posts";
+import { PostCreate, PostEdit, PostList } from "./pages/posts";
 import { PostCategoryCreate, PostCategoryList, PostCategoryEdit } from "./pages/post-categories";
 import { dataProvider } from "./providers/data";
 import { AdminMasterLayout } from "./components/layout";
@@ -107,6 +107,7 @@ function App() {
                     name: "posts",
                     list: "/posts",
                     create: "/posts/create",
+                    edit: "/posts/edit/:id",
                     meta: {
                       canDelete: true,
                     },
@@ -172,6 +173,7 @@ function App() {
                     <Route path="/posts">
                       <Route index element={<PostList />} />
                       <Route path="create" element={<PostCreate />} />
+                      <Route path="edit/:id" element={<PostEdit />} />
                     </Route>
                     <Route path="/post-categories">
                       <Route index element={<PostCategoryList />} />

@@ -38,3 +38,5 @@
 - [2026-08-18 16:30:51] Đã sửa lỗi redirect trong trang tạo bài viết mới, đảm bảo quay về danh sách bài viết theo đúng type_code khi lưu thành công hoặc hủy.
 - [2026-08-19 08:44:27] Hoàn thiện bổ sung Category vào chức năng Thêm mới bài viết (Create Post): Cập nhật DB, API (DTO/Service) và UI Refine.js Layout 2 cột.
 - [2026-08-24 13:47:04] Hoàn thiện trang chỉnh sửa danh mục bài viết, bổ sung dữ liệu danh mục cha và lọc danh mục hiện tại/các danh mục con.
+- [2026-08-25 10:41:03] Cập nhật trường categoryId khi tạo bài viết, hiển thị danh mục bài viết theo cấu trúc phân cấp cha-con.
+- [2026-08-25 13:24:29] Hoàn thành Frontend Plan, UI Refine và API GET/PUT chỉnh sửa bài viết Admin, tích hợp validation, phân quyền, cache invalidation và xử lý trạng thái dữ liệu.

@@ -191,7 +191,9 @@ func main() {
 	posts := admin.Group("/posts")
 	{
 		posts.GET("", postController.GetPosts)
+		posts.GET("/:post_id", middleware.RoleMiddleware("ADMIN", "STAFF"), postController.GetPostByID)
 		posts.POST("", postController.CreatePost)
+		posts.PUT("/:post_id", middleware.RoleMiddleware("ADMIN", "STAFF"), postController.UpdatePost)
 		posts.DELETE("/:post_id", postController.DeletePost)
 	}
 

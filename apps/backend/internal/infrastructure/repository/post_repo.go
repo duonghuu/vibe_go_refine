@@ -10,8 +10,11 @@ import (
 
 type PostRepository interface {
 	Create(ctx context.Context, post *entity.Post) error
+	FindByID(ctx context.Context, id uint) (*entity.Post, error)
 	CheckSlugExists(ctx context.Context, slug string) (bool, error)
+	CheckSlugExistsExceptID(ctx context.Context, slug string, id uint) (bool, error)
 	FindAndCount(ctx context.Context, title string, typeCode string, offset int, limit int, sort string) ([]entity.Post, int64, error)
+	Update(ctx context.Context, post *entity.Post) error
 	Delete(ctx context.Context, id uint) error
 }
 
@@ -27,9 +30,28 @@ func (r *postRepository) Create(ctx context.Context, post *entity.Post) error {
 	return r.db.WithContext(ctx).Create(post).Error
 }
 
+func (r *postRepository) FindByID(ctx context.Context, id uint) (*entity.Post, error) {
+	var post entity.Post
+	if err := r.db.WithContext(ctx).First(&post, id).Error; err != nil {
+		return nil, err
+	}
+	return &post, nil
+}
+
 func (r *postRepository) CheckSlugExists(ctx context.Context, slug string) (bool, error) {
 	var count int64
 	if err := r.db.WithContext(ctx).Model(&entity.Post{}).Where("slug = ?", slug).Count(&count).Error; err != nil {
+		return false, err
+	}
+	return count > 0, nil
+}
+
+func (r *postRepository) CheckSlugExistsExceptID(ctx context.Context, slug string, id uint) (bool, error) {
+	var count int64
+	if err := r.db.WithContext(ctx).
+		Model(&entity.Post{}).
+		Where("slug = ? AND id <> ?", slug, id).
+		Count(&count).Error; err != nil {
 		return false, err
 	}
 	return count > 0, nil
@@ -67,6 +89,22 @@ func (r *postRepository) FindAndCount(ctx context.Context, title string, typeCod
 	}
 
 	return posts, total, nil
+}
+
+func (r *postRepository) Update(ctx context.Context, post *entity.Post) error {
+	if err := r.db.WithContext(ctx).
+		Model(&entity.Post{}).
+		Where("id = ?", post.ID).
+		Updates(map[string]interface{}{
+			"title":       post.Title,
+			"slug":        post.Slug,
+			"content":     post.Content,
+			"category_id": post.CategoryID,
+		}).Error; err != nil {
+		return err
+	}
+
+	return r.db.WithContext(ctx).First(post, post.ID).Error
 }
 
 func (r *postRepository) Delete(ctx context.Context, id uint) error {

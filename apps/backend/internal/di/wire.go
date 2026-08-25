@@ -72,6 +72,7 @@ var PostMetaSet = wire.NewSet(
 
 var PostSet = wire.NewSet(
 	repository.NewPostRepository,
+	repository.NewPostCategoryRepository,
 	postService.NewPostService,
 	controller.NewPostController,
 )

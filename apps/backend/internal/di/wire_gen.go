@@ -84,7 +84,8 @@ func InitializePostMetaController(db *gorm.DB, redisClient *redis.Client) *contr
 
 func InitializePostController(db *gorm.DB, redisClient *redis.Client) *controller.PostController {
 	postRepository := repository.NewPostRepository(db)
-	postService := service9.NewPostService(postRepository, redisClient)
+	postCategoryRepository := repository.NewPostCategoryRepository(db)
+	postService := service9.NewPostService(postRepository, postCategoryRepository, redisClient)
 	postController := controller.NewPostController(postService)
 	return postController
 }
@@ -114,6 +115,6 @@ var PostMediaSet = wire.NewSet(repository.NewPostMediaRepository, service7.NewPo
 
 var PostMetaSet = wire.NewSet(repository.NewPostMetaRepository, service8.NewPostMetaService, controller.NewPostMetaController)
 
-var PostSet = wire.NewSet(repository.NewPostRepository, service9.NewPostService, controller.NewPostController)
+var PostSet = wire.NewSet(repository.NewPostRepository, repository.NewPostCategoryRepository, service9.NewPostService, controller.NewPostController)
 
 var PostCategorySet = wire.NewSet(repository.NewPostCategoryRepository, service10.NewPostCategoryService, controller.NewPostCategoryController)

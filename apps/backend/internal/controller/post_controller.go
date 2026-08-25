@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"errors"
 	"fmt"
 	"net/http"
 
@@ -17,6 +18,26 @@ type PostController struct {
 func NewPostController(postService service.PostService) *PostController {
 	return &PostController{
 		postService: postService,
+	}
+}
+
+func writePostServiceError(ctx *gin.Context, err error) {
+	switch {
+	case errors.Is(err, service.ErrPostNotFound):
+		ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+	case errors.Is(err, service.ErrPostInvalidInput):
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	case errors.Is(err, service.ErrPostSlugConflict):
+		ctx.JSON(http.StatusConflict, gin.H{
+			"error":  err.Error(),
+			"fields": gin.H{"slug": err.Error()},
+		})
+	case errors.Is(err, service.ErrPostCategoryNotFound):
+		ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error()})
+	case errors.Is(err, service.ErrPostCategoryTypeMismatch):
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+	default:
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 	}
 }
 
@@ -41,11 +62,52 @@ func (c *PostController) CreatePost(ctx *gin.Context) {
 
 	post, err := c.postService.CreatePost(ctx.Request.Context(), authorID, &req)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		writePostServiceError(ctx, err)
 		return
 	}
 
 	ctx.JSON(http.StatusCreated, gin.H{"data": post})
+}
+
+func (c *PostController) GetPostByID(ctx *gin.Context) {
+	var uri dto.GetPostByIDURI
+	if err := ctx.ShouldBindUri(&uri); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "ID không hợp lệ"})
+		return
+	}
+
+	post, err := c.postService.GetPostByID(ctx.Request.Context(), uri.ID)
+	if err != nil {
+		writePostServiceError(ctx, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{"data": post})
+}
+
+func (c *PostController) UpdatePost(ctx *gin.Context) {
+	var uri dto.UpdatePostURI
+	if err := ctx.ShouldBindUri(&uri); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "ID không hợp lệ"})
+		return
+	}
+
+	var req dto.UpdatePostRequest
+	if err := ctx.ShouldBindJSON(&req); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "Dữ liệu không hợp lệ: " + err.Error()})
+		return
+	}
+
+	post, err := c.postService.UpdatePost(ctx.Request.Context(), uri.ID, &req)
+	if err != nil {
+		writePostServiceError(ctx, err)
+		return
+	}
+
+	ctx.JSON(http.StatusOK, gin.H{
+		"data":    post,
+		"message": "Cập nhật bài viết thành công",
+	})
 }
 
 func (c *PostController) GetPosts(ctx *gin.Context) {
@@ -79,7 +141,7 @@ func (c *PostController) DeletePost(ctx *gin.Context) {
 	}
 
 	if err := c.postService.DeletePost(ctx.Request.Context(), id); err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		writePostServiceError(ctx, err)
 		return
 	}
 

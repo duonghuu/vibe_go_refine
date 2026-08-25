@@ -1078,7 +1078,88 @@ paths:
       responses:
         '201':
           description: Created
-  /api/v1/admin/posts/{id}:
+  /api/v1/admin/posts/{post_id}:
+    x-code-files:
+      - apps/backend/internal/controller/post_controller.go
+      - apps/backend/internal/usecases/post/service/post_service.go
+      - apps/backend/internal/infrastructure/repository/post_repo.go
+      - apps/backend/internal/usecases/post/dto/post_dto.go
+    get:
+      summary: Lấy chi tiết bài viết
+      tags:
+        - Admin Posts
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: post_id
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      responses:
+        '200':
+          description: Thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PostResponse'
+        '400':
+          description: ID không hợp lệ
+        '401':
+          description: Unauthorized hoặc token bị blacklist
+        '403':
+          description: Không có quyền truy cập
+        '404':
+          description: Không tìm thấy bài viết
+        '500':
+          description: Lỗi hệ thống
+    put:
+      summary: Cập nhật bài viết
+      tags:
+        - Admin Posts
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: post_id
+          required: true
+          schema:
+            type: integer
+            minimum: 1
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePostRequest'
+      responses:
+        '200':
+          description: Cập nhật thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PostResponse'
+                  message:
+                    type: string
+        '400':
+          description: Dữ liệu không hợp lệ hoặc category không cùng typeCode
+        '401':
+          description: Unauthorized hoặc token bị blacklist
+        '403':
+          description: Không có quyền chỉnh sửa
+        '404':
+          description: Không tìm thấy bài viết hoặc danh mục
+        '409':
+          description: Slug đã tồn tại
+        '500':
+          description: Lỗi hệ thống
     delete:
       summary: Xóa bài viết
       tags:
@@ -1087,7 +1168,7 @@ paths:
         - BearerAuth: []
       parameters:
         - in: path
-          name: id
+          name: post_id
           required: true
           schema:
             type: integer
@@ -1095,6 +1176,50 @@ paths:
         '200':
           description: OK
 components:
+  schemas:
+    UpdatePostRequest:
+      type: object
+      required:
+        - title
+        - slug
+        - content
+      properties:
+        title:
+          type: string
+          maxLength: 255
+        slug:
+          type: string
+          maxLength: 255
+          pattern: '^[a-z0-9-]+$'
+        content:
+          type: string
+        categoryId:
+          type: integer
+          nullable: true
+    PostResponse:
+      type: object
+      properties:
+        id:
+          type: integer
+        typeCode:
+          type: string
+        title:
+          type: string
+        slug:
+          type: string
+        content:
+          type: string
+        authorId:
+          type: integer
+        categoryId:
+          type: integer
+          nullable: true
+        createdAt:
+          type: string
+          format: date-time
+        updatedAt:
+          type: string
+          format: date-time
   securitySchemes:
     BearerAuth:
       type: http
