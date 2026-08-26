@@ -40,6 +40,10 @@ func main() {
 	log.Println("Database connection established. Starting seeder...")
 
 	SeedUsers(db)
+	SeedPostTypes(db)
+	SeedPostCategories(db)
+	SeedPosts(db)
+	SeedPostSEOMeta(db)
 	SeedCategories(db)
 	SeedProducts(db)
 

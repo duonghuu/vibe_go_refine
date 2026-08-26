@@ -43,3 +43,4 @@
 - [2026-08-26 09:13:00] Hoàn thiện tích hợp hiển thị thumbnail/gallery trong Post Edit, chuẩn hóa URL ảnh backend và mapping nested media response.
 - [2026-08-26 11:33:44] Hoàn thiện frontend plan và UI quản lý SEO cho bài viết, tích hợp SEO Meta Card, fallback preview, validation và luồng lưu SEO vào Post Create/Edit.
 - [2026-08-26 13:28:04] Hoàn thiện Backend API SEO Meta, tích hợp Refine data provider và hoàn tất migration SEO cùng quan hệ Post Meta.
+- [2026-08-26 13:54:29] Hoàn thành backend seeders cho post types, cây post categories 3 cấp, posts theo danh mục và SEO meta cho từng bài viết.
