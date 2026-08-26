@@ -41,3 +41,4 @@
 - [2026-08-25 10:41:03] Cập nhật trường categoryId khi tạo bài viết, hiển thị danh mục bài viết theo cấu trúc phân cấp cha-con.
 - [2026-08-25 13:24:29] Hoàn thành Frontend Plan, UI Refine và API GET/PUT chỉnh sửa bài viết Admin, tích hợp validation, phân quyền, cache invalidation và xử lý trạng thái dữ liệu.
 - [2026-08-26 09:13:00] Hoàn thiện tích hợp hiển thị thumbnail/gallery trong Post Edit, chuẩn hóa URL ảnh backend và mapping nested media response.
+- [2026-08-26 11:33:44] Hoàn thiện frontend plan và UI quản lý SEO cho bài viết, tích hợp SEO Meta Card, fallback preview, validation và luồng lưu SEO vào Post Create/Edit.

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from "react";
+import React, { useEffect, useMemo, useRef, useState } from "react";
 import { Edit } from "@refinedev/mui";
 import { useForm } from "@refinedev/react-hook-form";
 import { HttpError, useNotification, useSelect } from "@refinedev/core";
@@ -25,6 +25,8 @@ import {
 import { IPostResponse } from "./create";
 import { PostMediaCard } from "./post-media-components";
 import { usePostMedia } from "./use-post-media";
+import { PostSeoCard } from "./post-seo-components";
+import { UsePostSeoResult, usePostSeo } from "./use-post-seo";
 
 interface IUpdatePostRequest {
   title: string;
@@ -98,6 +100,7 @@ export const PostEdit: React.FC = () => {
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
   const postId = id && Number.isInteger(Number(id)) && Number(id) > 0 ? Number(id) : undefined;
   const postMedia = usePostMedia(postId);
+  const postSeoRef = useRef<UsePostSeoResult | null>(null);
 
   const {
     refineCore: { formLoading, onFinish, query: postQuery },
@@ -117,6 +120,9 @@ export const PostEdit: React.FC = () => {
         const resolvedTypeCode = postQuery?.data?.data?.typeCode ?? searchParams.get("type_code");
         try {
           if (postId) await postMedia.sync(postId);
+          if (postId && postSeoRef.current?.isDirty) {
+            await postSeoRef.current.save(postId);
+          }
           open?.({ type: "success", message: "Cập nhật bài viết thành công", description: "Bài viết và hình ảnh đã được lưu." });
           navigate(resolvedTypeCode ? `/posts?type_code=${resolvedTypeCode}` : "/posts");
         } catch (error) {
@@ -137,6 +143,13 @@ export const PostEdit: React.FC = () => {
   const postData = postQuery?.data?.data;
   const typeCode = postData?.typeCode ?? searchParams.get("type_code") ?? "";
   const isValidId = Boolean(postId);
+  const postSeo = usePostSeo(postId, {
+    title: postData?.title ?? "",
+    slug: postData?.slug ?? "",
+    content: postData?.content ?? "",
+    thumbnailUrl: postMedia.thumbnail?.thumbnailUrl ?? postMedia.thumbnail?.originalUrl,
+  });
+  postSeoRef.current = postSeo;
 
   const { query: categoryQuery } = useSelect<IPostCategoryOption, HttpError>({
     resource: "post-categories",
@@ -194,7 +207,7 @@ export const PostEdit: React.FC = () => {
   };
 
   const handleCancel = () => {
-    if (isDirty || postMedia.isDirty) {
+    if (isDirty || postMedia.isDirty || postSeo.isDirty) {
       setCancelDialogOpen(true);
       return;
     }
@@ -258,7 +271,7 @@ export const PostEdit: React.FC = () => {
       </Typography>
 
       <Edit
-        isLoading={formLoading || postQuery?.isLoading || postMedia.isSyncing}
+        isLoading={formLoading || postQuery?.isLoading || postMedia.isSyncing || postSeo.isSaving}
         title=""
         wrapperProps={{
           sx: {
@@ -288,8 +301,11 @@ export const PostEdit: React.FC = () => {
               type="submit"
               variant="contained"
               color="success"
-              disabled={formLoading || postQuery?.isLoading || postMedia.isUploading || postMedia.isSyncing}
-              onClick={handleSubmit((data) => onFinish(data))}
+              disabled={formLoading || postQuery?.isLoading || postMedia.isUploading || postMedia.isSyncing || postSeo.isSaving}
+              onClick={handleSubmit(async (data) => {
+                const seoValid = await postSeo.form.trigger();
+                if (seoValid) onFinish(data);
+              })}
               sx={{
                 borderRadius: 1,
                 textTransform: "none",
@@ -454,6 +470,16 @@ export const PostEdit: React.FC = () => {
                   onRetry={() => { void postMedia.load(); }}
                 />
               </Box>
+              <Box mt={3}>
+                <PostSeoCard
+                  form={postSeo.form}
+                  preview={postSeo.preview}
+                  isLoading={postSeo.isLoading}
+                  isSaving={postSeo.isSaving}
+                  error={postSeo.error}
+                  onRetry={postSeo.retry}
+                />
+              </Box>
             </Grid2>
           </Grid2>
         </Box>
@@ -463,7 +489,7 @@ export const PostEdit: React.FC = () => {
         <DialogTitle>Hủy thay đổi?</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Bạn có thay đổi chưa được lưu. Nếu rời trang, các thay đổi này sẽ bị mất.
+            Bạn có thay đổi bài viết, hình ảnh hoặc SEO chưa được lưu. Nếu rời trang, các thay đổi này sẽ bị mất.
           </DialogContentText>
         </DialogContent>
         <DialogActions>

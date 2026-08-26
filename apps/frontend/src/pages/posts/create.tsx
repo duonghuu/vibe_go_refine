@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Create } from "@refinedev/mui";
 import { useForm } from "@refinedev/react-hook-form";
 import { useSearchParams, useNavigate } from "react-router";
@@ -22,6 +22,8 @@ import { HttpError, useNotification, useSelect } from "@refinedev/core";
 import { Controller } from "react-hook-form";
 import { PostMediaCard } from "./post-media-components";
 import { usePostMedia } from "./use-post-media";
+import { PostSeoCard } from "./post-seo-components";
+import { UsePostSeoResult, usePostSeo } from "./use-post-seo";
 
 export interface IPostResponse {
   id: number;
@@ -79,6 +81,7 @@ export const PostCreate: React.FC = () => {
   
   const { open } = useNotification();
   const postMedia = usePostMedia();
+  const postSeoRef = useRef<UsePostSeoResult | null>(null);
 
   useEffect(() => {
     if (!typeCode) {
@@ -115,6 +118,9 @@ export const PostCreate: React.FC = () => {
         }
         try {
           await postMedia.sync(createdId);
+          if (postSeoRef.current?.isDirty) {
+            await postSeoRef.current.save(createdId);
+          }
           open?.({ type: "success", message: "Tạo bài viết thành công", description: "Bài viết và hình ảnh đã được lưu." });
           navigate(`/posts?type_code=${typeCode}`);
         } catch (error) {
@@ -126,6 +132,13 @@ export const PostCreate: React.FC = () => {
   });
 
   const titleValue = watch("title");
+  const postSeo = usePostSeo(undefined, {
+    title: titleValue ?? "",
+    slug: watch("slug") ?? "",
+    content: watch("content") ?? "",
+    thumbnailUrl: postMedia.thumbnail?.thumbnailUrl ?? postMedia.thumbnail?.originalUrl,
+  });
+  postSeoRef.current = postSeo;
 
   const { query: categoryQuery } = useSelect<IPostCategoryOption, HttpError>({
     resource: "post-categories",
@@ -191,9 +204,11 @@ export const PostCreate: React.FC = () => {
     }
   }, [titleValue, setValue]);
 
-  const onCustomSubmit = (data: ICreatePostRequest) => {
+  const onCustomSubmit = async (data: ICreatePostRequest) => {
     if (!typeCode) return;
     if (postMedia.isUploading || postMedia.uploadingCount > 0) return;
+    const seoValid = await postSeo.form.trigger();
+    if (!seoValid) return;
     
     onFinish({
       ...data,
@@ -202,7 +217,7 @@ export const PostCreate: React.FC = () => {
   };
 
   const handleCancel = () => {
-    if (isDirty || postMedia.isDirty) {
+    if (isDirty || postMedia.isDirty || postSeo.isDirty) {
       setCancelDialogOpen(true);
       return;
     }
@@ -247,7 +262,7 @@ export const PostCreate: React.FC = () => {
             <Button
               variant="contained"
               color="primary"
-              disabled={formLoading || postMedia.isUploading || postMedia.isSyncing}
+              disabled={formLoading || postMedia.isUploading || postMedia.isSyncing || postSeo.isSaving}
               onClick={handleSubmit(onCustomSubmit)}
               sx={{ borderRadius: "8px", textTransform: "none", fontWeight: "600", bgcolor: 'primary.main', boxShadow: 'none', '&:hover': { bgcolor: 'primary.dark', boxShadow: 'none' } }}
             >
@@ -379,6 +394,16 @@ export const PostCreate: React.FC = () => {
                   onRetry={() => { void postMedia.load(); }}
                 />
               </Box>
+              <Box mt={3}>
+                <PostSeoCard
+                  form={postSeo.form}
+                  preview={postSeo.preview}
+                  isLoading={postSeo.isLoading}
+                  isSaving={postSeo.isSaving}
+                  error={postSeo.error}
+                  onRetry={postSeo.retry}
+                />
+              </Box>
             </Grid>
           </Grid>
         </Box>
@@ -387,7 +412,7 @@ export const PostCreate: React.FC = () => {
         <DialogTitle>Hủy tạo bài viết?</DialogTitle>
         <DialogContent>
           <DialogContentText>
-            Bạn có dữ liệu hoặc hình ảnh chưa lưu. Nếu rời trang, các thay đổi này sẽ bị mất.
+            Bạn có dữ liệu, hình ảnh hoặc SEO chưa lưu. Nếu rời trang, các thay đổi này sẽ bị mất.
           </DialogContentText>
         </DialogContent>
         <DialogActions>

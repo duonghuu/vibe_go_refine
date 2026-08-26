@@ -5,7 +5,6 @@
 * **Dự án:** TechBite.
 * **Tính năng:** Thông tin mở rộng bài viết (Post Meta).
 * **Mục đích:** Quản lý thông tin metadata linh hoạt cho bài viết dưới dạng Key-Value (ví dụ: cấu hình SEO title/description, custom fields, rating, luợt xem, các cấu hình tuỳ biến khác không nằm trong cấu trúc bảng `posts` cố định).
-* **Lưu ý quan trọng:** Tính năng này chỉ xử lý ở Backend API, **không cần giao diện (UI) độc lập**. Các thao tác liên kết/cập nhật meta sẽ được tích hợp trực tiếp vào màn hình Thêm/Sửa Bài viết.
 
 ---
 
