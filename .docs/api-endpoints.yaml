@@ -853,6 +853,10 @@ paths:
       summary: Lấy danh sách Media của bài viết
       tags:
         - Admin Post Media
+      x-code-files:
+        - apps/backend/internal/controller/post_media_controller.go
+        - apps/backend/internal/usecases/postmedia/service/post_media_service.go
+        - apps/backend/internal/infrastructure/repository/post_media_repo.go
       security:
         - BearerAuth: []
       parameters:
@@ -868,12 +872,32 @@ paths:
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PostMediaResponse'
+                  total:
+                    type: integer
+        '400': { description: Collection hoặc Post ID không hợp lệ }
+        '404': { description: Không tìm thấy bài viết }
+        '401': { description: Unauthorized hoặc token bị blacklist }
+        '403': { description: Không có quyền truy cập }
+        '500': { description: Lỗi hệ thống }
     post:
       summary: Liên kết Media vào bài viết
       tags:
         - Admin Post Media
       security:
         - BearerAuth: []
+      x-code-files:
+        - apps/backend/internal/controller/post_media_controller.go
+        - apps/backend/internal/usecases/postmedia/service/post_media_service.go
+        - apps/backend/internal/infrastructure/repository/post_media_repo.go
       parameters:
         - in: path
           name: post_id
@@ -887,12 +911,23 @@ paths:
             schema:
               type: object
               properties:
-                media_id: { type: integer }
+                media_id: { type: integer, minimum: 1 }
                 collection: { type: string, enum: [thumbnail, gallery, attachment, content] }
                 sort_order: { type: integer }
       responses:
         '201':
           description: Created
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PostMediaResponse'
+        '400': { description: Dữ liệu Media không hợp lệ }
+        '403': { description: Không có quyền sử dụng Media }
+        '404': { description: Không tìm thấy Post hoặc Media }
+        '500': { description: Lỗi hệ thống }
   /api/v1/admin/posts/{post_id}/media/{collection}:
     put:
       summary: Đồng bộ (Sync) Media cho một bộ sưu tập
@@ -900,6 +935,10 @@ paths:
         - Admin Post Media
       security:
         - BearerAuth: []
+      x-code-files:
+        - apps/backend/internal/controller/post_media_controller.go
+        - apps/backend/internal/usecases/postmedia/service/post_media_service.go
+        - apps/backend/internal/infrastructure/repository/post_media_repo.go
       parameters:
         - in: path
           name: post_id
@@ -928,6 +967,20 @@ paths:
       responses:
         '200':
           description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message: { type: string }
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/PostMediaResponse'
+        '400': { description: Collection, thumbnail hoặc danh sách Media không hợp lệ }
+        '403': { description: Không có quyền sử dụng Media }
+        '404': { description: Không tìm thấy Post hoặc Media }
+        '500': { description: Lỗi hệ thống }
   /api/v1/admin/posts/{post_id}/media/{media_id}:
     delete:
       summary: Gỡ liên kết Media khỏi bài viết
@@ -935,6 +988,10 @@ paths:
         - Admin Post Media
       security:
         - BearerAuth: []
+      x-code-files:
+        - apps/backend/internal/controller/post_media_controller.go
+        - apps/backend/internal/usecases/postmedia/service/post_media_service.go
+        - apps/backend/internal/infrastructure/repository/post_media_repo.go
       parameters:
         - in: path
           name: post_id
@@ -953,6 +1010,10 @@ paths:
       responses:
         '204':
           description: No Content
+        '400': { description: URI hoặc collection không hợp lệ }
+        '403': { description: Không có quyền gỡ Media }
+        '404': { description: Không tìm thấy Post hoặc Media }
+        '500': { description: Lỗi hệ thống }
   /api/v1/admin/posts/{postId}/meta:
     get:
       summary: Lấy danh sách Meta của một Bài viết
@@ -1220,6 +1281,27 @@ components:
         updatedAt:
           type: string
           format: date-time
+    MediaResponse:
+      type: object
+      properties:
+        id: { type: integer }
+        fileName: { type: string }
+        originalUrl: { type: string }
+        thumbnailUrl: { type: string, nullable: true }
+        mediumUrl: { type: string, nullable: true }
+        mimeType: { type: string }
+        size: { type: integer, format: int64 }
+        status: { type: string, enum: [temporary, attached] }
+    PostMediaResponse:
+      type: object
+      properties:
+        id: { type: integer }
+        postId: { type: integer }
+        mediaId: { type: integer }
+        collection: { type: string, enum: [thumbnail, gallery] }
+        sortOrder: { type: integer }
+        media:
+          $ref: '#/components/schemas/MediaResponse'
   securitySchemes:
     BearerAuth:
       type: http

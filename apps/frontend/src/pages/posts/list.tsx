@@ -15,6 +15,7 @@ import {
   InputAdornment,
   Typography,
   Stack,
+  Avatar,
 } from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
 import { IPostResponse } from "./create";
@@ -76,6 +77,26 @@ export const PostList: React.FC = () => {
 
   const columns = useMemo<GridColDef<IPostResponse>[]>(
     () => [
+      {
+        field: "thumbnailUrl",
+        headerName: "Ảnh",
+        width: 76,
+        sortable: false,
+        renderCell: function render({ row }) {
+          return row.thumbnailUrl ? (
+            <Avatar
+              variant="rounded"
+              src={row.thumbnailUrl}
+              alt={row.title}
+              sx={{ width: 42, height: 42 }}
+            />
+          ) : (
+            <Avatar variant="rounded" sx={{ width: 42, height: 42, bgcolor: "action.hover", color: "text.disabled" }}>
+              <SearchIcon fontSize="small" />
+            </Avatar>
+          );
+        },
+      },
       {
         field: "id",
         headerName: "ID",
@@ -241,7 +262,7 @@ export const PostList: React.FC = () => {
           columns={columns}
           autoHeight
           rowHeight={80}
-          density="standard"
+          density="compact"
           disableColumnMenu
           checkboxSelection
           sx={{

@@ -198,6 +198,7 @@ func main() {
 	}
 
 	postMedia := admin.Group("/posts/:post_id/media")
+	postMedia.Use(middleware.RoleMiddleware("ADMIN", "STAFF"))
 	{
 		postMedia.GET("", postMediaController.GetPostMedia)
 		postMedia.POST("", postMediaController.CreatePostMedia)

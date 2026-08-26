@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { Create } from "@refinedev/mui";
 import { useForm } from "@refinedev/react-hook-form";
 import { useSearchParams, useNavigate } from "react-router";
@@ -12,9 +12,16 @@ import {
   Stack,
   Grid,
   Autocomplete,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
 } from "@mui/material";
 import { HttpError, useNotification, useSelect } from "@refinedev/core";
 import { Controller } from "react-hook-form";
+import { PostMediaCard } from "./post-media-components";
+import { usePostMedia } from "./use-post-media";
 
 export interface IPostResponse {
   id: number;
@@ -25,6 +32,7 @@ export interface IPostResponse {
   authorId: number;
   categoryId?: number;
   createdAt: string;
+  thumbnailUrl?: string | null;
 }
 
 export interface ICreatePostRequest {
@@ -33,6 +41,11 @@ export interface ICreatePostRequest {
   slug: string;
   content: string;
   categoryId?: number;
+}
+
+interface ICreatedPostPayload {
+  id?: number;
+  data?: { id?: number };
 }
 
 interface IPostCategoryOption {
@@ -62,8 +75,10 @@ export const PostCreate: React.FC = () => {
   const [searchParams] = useSearchParams();
   const typeCode = searchParams.get("type_code");
   const navigate = useNavigate();
+  const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
   
   const { open } = useNotification();
+  const postMedia = usePostMedia();
 
   useEffect(() => {
     if (!typeCode) {
@@ -84,15 +99,27 @@ export const PostCreate: React.FC = () => {
     control,
     handleSubmit,
     setValue,
-    formState: { errors },
+    formState: { errors, isDirty },
     watch,
   } = useForm<IPostResponse, HttpError, ICreatePostRequest>({
     refineCoreProps: {
       action: "create",
       resource: "posts",
       redirect: false,
-      onMutationSuccess: () => {
-        navigate(`/posts?type_code=${typeCode}`); // Quay lại trang danh sách bài viết theo type
+      onMutationSuccess: async (response: unknown) => {
+        const createdResponse = response as ICreatedPostPayload | undefined;
+        const createdId = createdResponse?.data?.id ?? createdResponse?.id;
+        if (!createdId) {
+          open?.({ type: "error", message: "Không lấy được mã bài viết", description: "Bài viết đã tạo nhưng chưa thể đồng bộ hình ảnh." });
+          return;
+        }
+        try {
+          await postMedia.sync(createdId);
+          open?.({ type: "success", message: "Tạo bài viết thành công", description: "Bài viết và hình ảnh đã được lưu." });
+          navigate(`/posts?type_code=${typeCode}`);
+        } catch (error) {
+          open?.({ type: "error", message: "Không thể đồng bộ hình ảnh", description: error instanceof Error ? error.message : "Vui lòng mở trang chỉnh sửa để thử lại." });
+        }
       },
     },
     warnWhenUnsavedChanges: true,
@@ -166,11 +193,20 @@ export const PostCreate: React.FC = () => {
 
   const onCustomSubmit = (data: ICreatePostRequest) => {
     if (!typeCode) return;
+    if (postMedia.isUploading || postMedia.uploadingCount > 0) return;
     
     onFinish({
       ...data,
       typeCode: typeCode,
     });
+  };
+
+  const handleCancel = () => {
+    if (isDirty || postMedia.isDirty) {
+      setCancelDialogOpen(true);
+      return;
+    }
+    navigate(`/posts?type_code=${typeCode}`);
   };
 
   if (!typeCode) {
@@ -203,7 +239,7 @@ export const PostCreate: React.FC = () => {
             <Button
               variant="outlined"
               color="secondary"
-              onClick={() => navigate(`/posts?type_code=${typeCode}`)}
+              onClick={handleCancel}
               sx={{ borderRadius: "8px", textTransform: "none", fontWeight: "600", color: 'text.secondary', borderColor: '#D5D5D5' }}
             >
               Hủy
@@ -211,7 +247,7 @@ export const PostCreate: React.FC = () => {
             <Button
               variant="contained"
               color="primary"
-              disabled={formLoading}
+              disabled={formLoading || postMedia.isUploading || postMedia.isSyncing}
               onClick={handleSubmit(onCustomSubmit)}
               sx={{ borderRadius: "8px", textTransform: "none", fontWeight: "600", bgcolor: 'primary.main', boxShadow: 'none', '&:hover': { bgcolor: 'primary.dark', boxShadow: 'none' } }}
             >
@@ -327,10 +363,38 @@ export const PostCreate: React.FC = () => {
                   />
                 </CardContent>
               </Card>
+              <Box mt={3}>
+                <PostMediaCard
+                  thumbnail={postMedia.thumbnail}
+                  gallery={postMedia.gallery}
+                  isUploading={postMedia.isUploading}
+                  uploadingCount={postMedia.uploadingCount}
+                  isLoading={postMedia.isLoading}
+                  error={postMedia.error}
+                  onUploadThumbnail={(file) => { void postMedia.uploadThumbnail(file); }}
+                  onUploadGallery={(files) => { void postMedia.uploadGallery(files); }}
+                  onRemoveThumbnail={() => { void postMedia.removeThumbnail(); }}
+                  onRemoveGalleryItem={(mediaId) => { void postMedia.removeGalleryItem(mediaId); }}
+                  onReorderGallery={postMedia.reorderGallery}
+                  onRetry={() => { void postMedia.load(); }}
+                />
+              </Box>
             </Grid>
           </Grid>
         </Box>
       </Create>
+      <Dialog open={cancelDialogOpen} onClose={() => setCancelDialogOpen(false)}>
+        <DialogTitle>Hủy tạo bài viết?</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Bạn có dữ liệu hoặc hình ảnh chưa lưu. Nếu rời trang, các thay đổi này sẽ bị mất.
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setCancelDialogOpen(false)} color="secondary">Tiếp tục chỉnh sửa</Button>
+          <Button onClick={() => navigate(`/posts?type_code=${typeCode}`)} color="primary" variant="contained">Rời trang</Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
 };

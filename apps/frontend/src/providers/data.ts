@@ -3,7 +3,7 @@ import { API_URL } from "./constants";
 
 import { refreshTokenFn } from "./axiosInstance";
 
-const customHttpClient = async (url: string, options: RequestInit = {}) => {
+export const authenticatedFetch = async (url: string, options: RequestInit = {}): Promise<Response> => {
   const token = localStorage.getItem("accessToken");
   if (token) {
     options.headers = {
@@ -35,13 +35,43 @@ const customHttpClient = async (url: string, options: RequestInit = {}) => {
       throw e;
     }
   }
-  return response as any;
+  return response;
+};
+
+/**
+ * Gateway for custom Refine resources (uploads and nested post-media actions).
+ * Keeping authentication and JSON/FormData handling here prevents components
+ * and feature hooks from spreading raw fetch calls across the application.
+ */
+export const customRequest = async (params: {
+  url: string;
+  method?: "GET" | "POST" | "PUT" | "PATCH" | "DELETE";
+  payload?: unknown;
+  headers?: HeadersInit;
+}): Promise<Response> => {
+  const isFormData = typeof FormData !== "undefined" && params.payload instanceof FormData;
+  const headers = new Headers(params.headers);
+  if (!isFormData && params.payload !== undefined && !headers.has("Content-Type")) {
+    headers.set("Content-Type", "application/json");
+  }
+
+  const body = isFormData || typeof params.payload === "string"
+    ? params.payload as BodyInit | undefined
+    : params.payload === undefined
+      ? undefined
+      : JSON.stringify(params.payload);
+
+  return authenticatedFetch(params.url, {
+    method: params.method ?? "GET",
+    headers,
+    body,
+  });
 };
 
 const simpleRest = createSimpleRestDataProvider({
   apiURL: `${API_URL}/admin`,
   kyOptions: {
-    fetch: customHttpClient as any,
+    fetch: authenticatedFetch as typeof fetch,
   },
 });
 

@@ -23,6 +23,8 @@ import {
   Typography,
 } from "@mui/material";
 import { IPostResponse } from "./create";
+import { PostMediaCard } from "./post-media-components";
+import { usePostMedia } from "./use-post-media";
 
 interface IUpdatePostRequest {
   title: string;
@@ -94,6 +96,8 @@ export const PostEdit: React.FC = () => {
   const navigate = useNavigate();
   const { open } = useNotification();
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
+  const postId = id && Number.isInteger(Number(id)) && Number(id) > 0 ? Number(id) : undefined;
+  const postMedia = usePostMedia(postId);
 
   const {
     refineCore: { formLoading, onFinish, query: postQuery },
@@ -109,14 +113,15 @@ export const PostEdit: React.FC = () => {
       meta: {
         method: "put",
       },
-      onMutationSuccess: () => {
+      onMutationSuccess: async () => {
         const resolvedTypeCode = postQuery?.data?.data?.typeCode ?? searchParams.get("type_code");
-        open?.({
-          type: "success",
-          message: "Cập nhật bài viết thành công",
-          description: "Các thay đổi đã được lưu.",
-        });
-        navigate(resolvedTypeCode ? `/posts?type_code=${resolvedTypeCode}` : "/posts");
+        try {
+          if (postId) await postMedia.sync(postId);
+          open?.({ type: "success", message: "Cập nhật bài viết thành công", description: "Bài viết và hình ảnh đã được lưu." });
+          navigate(resolvedTypeCode ? `/posts?type_code=${resolvedTypeCode}` : "/posts");
+        } catch (error) {
+          open?.({ type: "error", message: "Không thể đồng bộ hình ảnh", description: error instanceof Error ? error.message : "Vui lòng thử lại." });
+        }
       },
       onMutationError: (error) => {
         open?.({
@@ -131,7 +136,7 @@ export const PostEdit: React.FC = () => {
 
   const postData = postQuery?.data?.data;
   const typeCode = postData?.typeCode ?? searchParams.get("type_code") ?? "";
-  const isValidId = Boolean(id && Number.isInteger(Number(id)) && Number(id) > 0);
+  const isValidId = Boolean(postId);
 
   const { query: categoryQuery } = useSelect<IPostCategoryOption, HttpError>({
     resource: "post-categories",
@@ -189,7 +194,7 @@ export const PostEdit: React.FC = () => {
   };
 
   const handleCancel = () => {
-    if (isDirty) {
+    if (isDirty || postMedia.isDirty) {
       setCancelDialogOpen(true);
       return;
     }
@@ -253,7 +258,7 @@ export const PostEdit: React.FC = () => {
       </Typography>
 
       <Edit
-        isLoading={formLoading || postQuery?.isLoading}
+        isLoading={formLoading || postQuery?.isLoading || postMedia.isSyncing}
         title=""
         wrapperProps={{
           sx: {
@@ -283,7 +288,7 @@ export const PostEdit: React.FC = () => {
               type="submit"
               variant="contained"
               color="success"
-              disabled={formLoading || postQuery?.isLoading}
+              disabled={formLoading || postQuery?.isLoading || postMedia.isUploading || postMedia.isSyncing}
               onClick={handleSubmit((data) => onFinish(data))}
               sx={{
                 borderRadius: 1,
@@ -433,6 +438,22 @@ export const PostEdit: React.FC = () => {
                   />
                 </CardContent>
               </Card>
+              <Box mt={3}>
+                <PostMediaCard
+                  thumbnail={postMedia.thumbnail}
+                  gallery={postMedia.gallery}
+                  isUploading={postMedia.isUploading}
+                  uploadingCount={postMedia.uploadingCount}
+                  isLoading={postMedia.isLoading}
+                  error={postMedia.error}
+                  onUploadThumbnail={(file) => { void postMedia.uploadThumbnail(file); }}
+                  onUploadGallery={(files) => { void postMedia.uploadGallery(files); }}
+                  onRemoveThumbnail={() => { void postMedia.removeThumbnail(); }}
+                  onRemoveGalleryItem={(mediaId) => { void postMedia.removeGalleryItem(mediaId); }}
+                  onReorderGallery={postMedia.reorderGallery}
+                  onRetry={() => { void postMedia.load(); }}
+                />
+              </Box>
             </Grid2>
           </Grid2>
         </Box>

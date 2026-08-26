@@ -40,3 +40,4 @@
 - [2026-08-24 13:47:04] Hoàn thiện trang chỉnh sửa danh mục bài viết, bổ sung dữ liệu danh mục cha và lọc danh mục hiện tại/các danh mục con.
 - [2026-08-25 10:41:03] Cập nhật trường categoryId khi tạo bài viết, hiển thị danh mục bài viết theo cấu trúc phân cấp cha-con.
 - [2026-08-25 13:24:29] Hoàn thành Frontend Plan, UI Refine và API GET/PUT chỉnh sửa bài viết Admin, tích hợp validation, phân quyền, cache invalidation và xử lý trạng thái dữ liệu.
+- [2026-08-26 09:13:00] Hoàn thiện tích hợp hiển thị thumbnail/gallery trong Post Edit, chuẩn hóa URL ảnh backend và mapping nested media response.
