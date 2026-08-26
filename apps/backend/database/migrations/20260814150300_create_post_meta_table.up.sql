@@ -6,6 +6,5 @@ CREATE TABLE `post_meta` (
   `created_at` datetime(3) DEFAULT NULL,
   `updated_at` datetime(3) DEFAULT NULL,
   PRIMARY KEY (`id`),
-  UNIQUE KEY `idx_post_meta_post_key` (`post_id`,`key`),
-  CONSTRAINT `fk_post_meta_post` FOREIGN KEY (`post_id`) REFERENCES `posts` (`id`) ON DELETE CASCADE ON UPDATE CASCADE
+  UNIQUE KEY `idx_post_meta_post_key` (`post_id`,`key`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;

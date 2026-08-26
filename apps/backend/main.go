@@ -90,6 +90,7 @@ func main() {
 	postMetaController := di.InitializePostMetaController(db, redisClient)
 	postController := di.InitializePostController(db, redisClient)
 	postCategoryController := di.InitializePostCategoryController(db, redisClient)
+	seoMetaController := di.InitializeSEOMetaController(db, redisClient)
 
 	// 3. Setup Router
 	r := gin.Default()
@@ -211,6 +212,14 @@ func main() {
 		postMeta.GET("", postMetaController.GetPostMeta)
 		postMeta.PUT("", postMetaController.SyncPostMeta)
 		postMeta.DELETE("/:key", postMetaController.DeletePostMeta)
+	}
+
+	seoMeta := admin.Group("/seo-meta")
+	seoMeta.Use(middleware.RoleMiddleware("ADMIN", "STAFF"))
+	{
+		seoMeta.GET("/:entityType/:entityId", seoMetaController.Get)
+		seoMeta.PUT("/:entityType/:entityId", seoMetaController.Put)
+		seoMeta.DELETE("/:entityType/:entityId", seoMetaController.Delete)
 	}
 
 	// 5. Start Server

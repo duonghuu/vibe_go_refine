@@ -1236,6 +1236,83 @@ paths:
       responses:
         '200':
           description: OK
+  /api/v1/admin/seo-meta/{entityType}/{entityId}:
+    get:
+      summary: Lấy SEO Meta của entity
+      tags: [Admin SEO Meta]
+      security: [{ BearerAuth: [] }]
+      x-source-files:
+        - apps/backend/internal/controller/seo_meta_controller.go
+        - apps/backend/internal/usecases/seometa/service/seo_meta_service.go
+      parameters:
+        - in: path
+          name: entityType
+          required: true
+          schema: { type: string, enum: [post, product, post_category, product_category, page] }
+        - in: path
+          name: entityId
+          required: true
+          schema: { type: integer, minimum: 1 }
+      responses:
+        '200': { description: Thành công, content: { application/json: { schema: { $ref: '#/components/schemas/SEOMetaResponseEnvelope' } } } }
+        '400': { description: URI hoặc entity type không hợp lệ }
+        '401': { description: Unauthorized }
+        '403': { description: Forbidden }
+        '404': { description: Entity không tồn tại hoặc đã bị xóa mềm }
+        '500': { description: Internal Server Error }
+    put:
+      summary: Upsert SEO Meta của entity
+      tags: [Admin SEO Meta]
+      security: [{ BearerAuth: [] }]
+      x-source-files:
+        - apps/backend/internal/controller/seo_meta_controller.go
+        - apps/backend/internal/usecases/seometa/service/seo_meta_service.go
+        - apps/backend/internal/infrastructure/repository/seo_meta_repo.go
+      parameters:
+        - in: path
+          name: entityType
+          required: true
+          schema: { type: string, enum: [post, product, post_category, product_category, page] }
+        - in: path
+          name: entityId
+          required: true
+          schema: { type: integer, minimum: 1 }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/UpsertSEOMetaRequest' }
+      responses:
+        '200': { description: Cập nhật thành công, content: { application/json: { schema: { $ref: '#/components/schemas/UpsertSEOMetaResponse' } } } }
+        '400': { description: URI hoặc entity type không hợp lệ }
+        '401': { description: Unauthorized }
+        '403': { description: Forbidden }
+        '404': { description: Entity không tồn tại hoặc đã bị xóa mềm }
+        '422': { description: Dữ liệu SEO không hợp lệ }
+        '500': { description: Internal Server Error }
+    delete:
+      summary: Xóa SEO Meta của entity
+      tags: [Admin SEO Meta]
+      security: [{ BearerAuth: [] }]
+      x-source-files:
+        - apps/backend/internal/controller/seo_meta_controller.go
+        - apps/backend/internal/usecases/seometa/service/seo_meta_service.go
+      parameters:
+        - in: path
+          name: entityType
+          required: true
+          schema: { type: string, enum: [post, product, post_category, product_category, page] }
+        - in: path
+          name: entityId
+          required: true
+          schema: { type: integer, minimum: 1 }
+      responses:
+        '200': { description: Xóa thành công }
+        '400': { description: URI hoặc entity type không hợp lệ }
+        '401': { description: Unauthorized }
+        '403': { description: Forbidden }
+        '404': { description: Entity không tồn tại hoặc đã bị xóa mềm }
+        '500': { description: Internal Server Error }
 components:
   schemas:
     UpdatePostRequest:
@@ -1302,6 +1379,42 @@ components:
         sortOrder: { type: integer }
         media:
           $ref: '#/components/schemas/MediaResponse'
+    UpsertSEOMetaRequest:
+      type: object
+      properties:
+        meta_title: { type: string, maxLength: 255, nullable: true }
+        meta_description: { type: string, maxLength: 500, nullable: true }
+        meta_keywords: { type: string, maxLength: 500, nullable: true }
+        canonical_url: { type: string, format: uri, maxLength: 500, nullable: true }
+        og_title: { type: string, maxLength: 255, nullable: true }
+        og_description: { type: string, maxLength: 500, nullable: true }
+        og_image: { type: string, format: uri, maxLength: 500, nullable: true }
+        og_type: { type: string, maxLength: 100, nullable: true }
+        twitter_title: { type: string, maxLength: 255, nullable: true }
+        twitter_description: { type: string, maxLength: 500, nullable: true }
+        twitter_image: { type: string, format: uri, maxLength: 500, nullable: true }
+        twitter_card: { type: string, maxLength: 100, nullable: true }
+        robots: { type: string, enum: ['index,follow', 'noindex,follow', 'noindex,nofollow'], nullable: true }
+        schema_json: { type: object, nullable: true, additionalProperties: true }
+    SEOMetaResponse:
+      allOf:
+        - $ref: '#/components/schemas/UpsertSEOMetaRequest'
+        - type: object
+          properties:
+            entity_type: { type: string }
+            entity_id: { type: integer }
+            resolved_title: { type: string }
+            resolved_description: { type: string }
+            resolved_canonical_url: { type: string }
+    SEOMetaResponseEnvelope:
+      type: object
+      properties:
+        data: { $ref: '#/components/schemas/SEOMetaResponse' }
+    UpsertSEOMetaResponse:
+      type: object
+      properties:
+        data: { $ref: '#/components/schemas/SEOMetaResponse' }
+        message: { type: string }
   securitySchemes:
     BearerAuth:
       type: http

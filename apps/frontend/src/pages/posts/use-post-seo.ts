@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useForm, UseFormReturn } from "react-hook-form";
-import { getPostSeo, savePostSeo } from "./post-seo-api";
+import { HttpError, useNotification, useOne, useUpdate } from "@refinedev/core";
+import { normalizePostSeo, RawPostSeo, toPostSeoPayload } from "./post-seo-api";
 import {
   emptyPostSeoValues,
   IPostSeoContext,
@@ -78,40 +79,29 @@ export const usePostSeo = (
     defaultValues: emptyPostSeoValues,
     mode: "onBlur",
   });
+  const { open } = useNotification();
+  const seoQuery = useOne<RawPostSeo, HttpError>({
+    resource: "seo-meta",
+    id: postId ? `post/${postId}` : undefined,
+    queryOptions: { enabled: Boolean(postId), retry: false },
+  });
+  const seoMutation = useUpdate<RawPostSeo, HttpError, ReturnType<typeof toPostSeoPayload>>();
   const [data, setData] = useState<IPostSeoResponse | null>(null);
-  const [isLoading, setIsLoading] = useState(Boolean(postId));
-  const [isSaving, setIsSaving] = useState(false);
-  const [isError, setIsError] = useState(false);
-  const [error, setError] = useState<Error | null>(null);
   const values = form.watch();
 
-  const load = useCallback(async () => {
-    if (!postId) {
-      setIsLoading(false);
-      return;
+  useEffect(() => {
+    if (seoQuery.result) {
+      const normalized = normalizePostSeo(seoQuery.result);
+      setData(normalized);
+      form.reset(responseToFormValues(normalized));
     }
-
-    setIsLoading(true);
-    setIsError(false);
-    setError(null);
-
-    try {
-      const result = await getPostSeo(postId);
-      setData(result);
-      form.reset(result ? responseToFormValues(result) : emptyPostSeoValues);
-    } catch (loadError) {
-      const normalizedError =
-        loadError instanceof Error ? loadError : new Error("Không thể tải thông tin SEO.");
-      setIsError(true);
-      setError(normalizedError);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [form, postId]);
+  }, [form, seoQuery.result]);
 
   useEffect(() => {
-    void load();
-  }, [load]);
+    if (seoQuery.query.error) {
+      open?.({ type: "error", message: "Không thể tải thông tin SEO.", description: seoQuery.query.error.message });
+    }
+  }, [open, seoQuery.query.error]);
 
   const save = useCallback(async (targetPostId: number) => {
     const valid = await form.trigger();
@@ -119,24 +109,23 @@ export const usePostSeo = (
       throw new Error("Vui lòng kiểm tra các trường SEO.");
     }
 
-    setIsSaving(true);
-    setIsError(false);
-    setError(null);
-
     try {
-      const result = await savePostSeo(targetPostId, form.getValues());
-      setData(result);
-      form.reset(responseToFormValues(result));
+      const result = await seoMutation.mutateAsync({
+        resource: "seo-meta",
+        id: `post/${targetPostId}`,
+        values: toPostSeoPayload(form.getValues()),
+      });
+      const normalized = normalizePostSeo(result.data);
+      setData(normalized);
+      form.reset(responseToFormValues(normalized));
+      open?.({ type: "success", message: "Đã lưu thông tin SEO." });
     } catch (saveError) {
       const normalizedError =
         saveError instanceof Error ? saveError : new Error("Không thể lưu thông tin SEO.");
-      setIsError(true);
-      setError(normalizedError);
+      open?.({ type: "error", message: "Không thể lưu thông tin SEO.", description: normalizedError.message });
       throw normalizedError;
-    } finally {
-      setIsSaving(false);
     }
-  }, [form]);
+  }, [form, open, seoMutation]);
 
   const preview = useMemo(
     () => getPreview(values, context, data),
@@ -145,14 +134,14 @@ export const usePostSeo = (
 
   return {
     data,
-    isLoading,
-    isSaving,
-    isError,
-    error,
+    isLoading: Boolean(postId) && seoQuery.query.isLoading,
+    isSaving: seoMutation.mutation.isPending,
+    isError: Boolean(seoQuery.query.error),
+    error: seoQuery.query.error ? new Error(seoQuery.query.error.message) : null,
     isDirty: form.formState.isDirty,
     form,
     preview,
     save,
-    retry: load,
+    retry: async () => { await seoQuery.query.refetch(); },
   };
 };

@@ -1,5 +1,3 @@
-import { customRequest } from "../../providers/data";
-import { API_URL } from "../../providers/constants";
 import {
   IPostSeoFormValues,
   IPostSeoResponse,
@@ -9,7 +7,7 @@ import {
   SeoTwitterCard,
 } from "./post-seo-types";
 
-interface RawPostSeo {
+export interface RawPostSeo {
   entity_type?: string;
   entity_id?: number;
   entityType?: string;
@@ -61,33 +59,6 @@ interface RawPostSeo {
   resolvedTwitterImage?: string | null;
 }
 
-interface ApiErrorBody {
-  error?: unknown;
-  message?: unknown;
-  fields?: unknown;
-}
-
-const unwrapData = <T,>(body: unknown): T => {
-  if (typeof body === "object" && body !== null && "data" in body) {
-    return (body as { data: T }).data;
-  }
-  return body as T;
-};
-
-const getErrorMessage = async (response: Response, fallback: string): Promise<string> => {
-  try {
-    const body: unknown = await response.json();
-    if (typeof body === "object" && body !== null) {
-      const parsed = body as ApiErrorBody;
-      if (typeof parsed.message === "string" && parsed.message) return parsed.message;
-      if (typeof parsed.error === "string" && parsed.error) return parsed.error;
-    }
-  } catch {
-    // Keep the fallback for non-JSON responses.
-  }
-  return fallback;
-};
-
 const asSeoRobots = (value: string | null | undefined): SeoRobots => {
   if (value === "noindex,follow" || value === "noindex,nofollow") return value;
   return "index,follow";
@@ -103,7 +74,7 @@ const asTwitterCard = (value: string | null | undefined): SeoTwitterCard | null 
   return null;
 };
 
-const normalizeResponse = (raw: RawPostSeo): IPostSeoResponse => ({
+export const normalizePostSeo = (raw: RawPostSeo): IPostSeoResponse => ({
   entityType: raw.entityType === "post" ? "post" : "post",
   entityId: raw.entityId ?? raw.entity_id ?? 0,
   metaTitle: raw.metaTitle ?? raw.meta_title ?? null,
@@ -137,20 +108,6 @@ const normalizeResponse = (raw: RawPostSeo): IPostSeoResponse => ({
     raw.resolvedTwitterImage ?? raw.resolved_twitter_image ?? raw.twitterImage ?? raw.twitter_image ?? null,
 });
 
-export const getPostSeo = async (postId: number): Promise<IPostSeoResponse | null> => {
-  const response = await customRequest({
-    url: `${API_URL}/admin/seo-meta/post/${postId}`,
-  });
-
-  if (response.status === 404) return null;
-  if (!response.ok) {
-    throw new Error(await getErrorMessage(response, "Không thể tải thông tin SEO."));
-  }
-
-  const body: unknown = await response.json();
-  return normalizeResponse(unwrapData<RawPostSeo>(body));
-};
-
 const toNullable = (value: string): string | null => {
   const normalized = value.trim();
   return normalized.length > 0 ? normalized : null;
@@ -163,10 +120,7 @@ const parseSchema = (value: string): JsonValue | null => {
   return parsed as JsonValue;
 };
 
-export const savePostSeo = async (
-  postId: number,
-  values: IPostSeoFormValues,
-): Promise<IPostSeoResponse> => {
+export const toPostSeoPayload = (values: IPostSeoFormValues) => {
   let schemaJson: JsonValue | null = null;
   try {
     schemaJson = parseSchema(values.schemaJsonText);
@@ -191,17 +145,5 @@ export const savePostSeo = async (
     schema_json: schemaJson,
   };
 
-  const response = await customRequest({
-    url: `${API_URL}/admin/seo-meta/post/${postId}`,
-    method: "PUT",
-    payload,
-  });
-
-  if (!response.ok) {
-    throw new Error(await getErrorMessage(response, "Không thể lưu thông tin SEO."));
-  }
-
-  const body: unknown = await response.json();
-  return normalizeResponse(unwrapData<RawPostSeo>(body));
+  return payload;
 };
-

@@ -20,6 +20,7 @@ import (
 	service8 "go_refine_dashboard_be/internal/usecases/postmeta/service"
 	service6 "go_refine_dashboard_be/internal/usecases/posttype/service"
 	"go_refine_dashboard_be/internal/usecases/product/service"
+	service11 "go_refine_dashboard_be/internal/usecases/seometa/service"
 	service4 "go_refine_dashboard_be/internal/usecases/user/service"
 	"gorm.io/gorm"
 )
@@ -97,6 +98,14 @@ func InitializePostCategoryController(db *gorm.DB, redisClient *redis.Client) *c
 	return postCategoryController
 }
 
+func InitializeSEOMetaController(db *gorm.DB, redisClient *redis.Client) *controller.SEOMetaController {
+	seoMetaRepository := repository.NewSEOMetaRepository(db)
+	entityRegistry := repository.NewEntityRegistry(db)
+	seoService := service11.NewSEOService(seoMetaRepository, entityRegistry, redisClient)
+	seoMetaController := controller.NewSEOMetaController(seoService)
+	return seoMetaController
+}
+
 // wire.go:
 
 var ProductSet = wire.NewSet(repository.NewProductRepository, service.NewProductService, controller.NewProductController)
@@ -118,3 +127,5 @@ var PostMetaSet = wire.NewSet(repository.NewPostMetaRepository, service8.NewPost
 var PostSet = wire.NewSet(repository.NewPostRepository, repository.NewPostCategoryRepository, service9.NewPostService, controller.NewPostController)
 
 var PostCategorySet = wire.NewSet(repository.NewPostCategoryRepository, service10.NewPostCategoryService, controller.NewPostCategoryController)
+
+var SEOMetaSet = wire.NewSet(repository.NewSEOMetaRepository, repository.NewEntityRegistry, service11.NewSEOService, controller.NewSEOMetaController)

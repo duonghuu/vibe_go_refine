@@ -4,20 +4,21 @@
 package di
 
 import (
+	"github.com/redis/go-redis/v9"
 	"go_refine_dashboard_be/internal/controller"
 	"go_refine_dashboard_be/internal/infrastructure/repository"
-	mediaService "go_refine_dashboard_be/internal/usecases/media/service"
-	"go_refine_dashboard_be/internal/usecases/product/service"
-	categoryService "go_refine_dashboard_be/internal/usecases/category/service"
-	userService "go_refine_dashboard_be/internal/usecases/user/service"
 	authService "go_refine_dashboard_be/internal/usecases/auth/service"
-	postTypeService "go_refine_dashboard_be/internal/usecases/posttype/service"
-	postMediaService "go_refine_dashboard_be/internal/usecases/postmedia/service"
-	postMetaService "go_refine_dashboard_be/internal/usecases/postmeta/service"
+	categoryService "go_refine_dashboard_be/internal/usecases/category/service"
+	mediaService "go_refine_dashboard_be/internal/usecases/media/service"
 	postService "go_refine_dashboard_be/internal/usecases/post/service"
 	postCategoryService "go_refine_dashboard_be/internal/usecases/postcategory/service"
+	postMediaService "go_refine_dashboard_be/internal/usecases/postmedia/service"
+	postMetaService "go_refine_dashboard_be/internal/usecases/postmeta/service"
+	postTypeService "go_refine_dashboard_be/internal/usecases/posttype/service"
+	"go_refine_dashboard_be/internal/usecases/product/service"
+	seoMetaService "go_refine_dashboard_be/internal/usecases/seometa/service"
+	userService "go_refine_dashboard_be/internal/usecases/user/service"
 	"gorm.io/gorm"
-	"github.com/redis/go-redis/v9"
 
 	"github.com/google/wire"
 )
@@ -83,6 +84,13 @@ var PostCategorySet = wire.NewSet(
 	controller.NewPostCategoryController,
 )
 
+var SEOMetaSet = wire.NewSet(
+	repository.NewSEOMetaRepository,
+	repository.NewEntityRegistry,
+	seoMetaService.NewSEOService,
+	controller.NewSEOMetaController,
+)
+
 func InitializeProductController(db *gorm.DB) *controller.ProductController {
 	wire.Build(ProductSet)
 	return &controller.ProductController{}
@@ -131,4 +139,9 @@ func InitializePostController(db *gorm.DB, redisClient *redis.Client) *controlle
 func InitializePostCategoryController(db *gorm.DB, redisClient *redis.Client) *controller.PostCategoryController {
 	wire.Build(PostCategorySet)
 	return &controller.PostCategoryController{}
+}
+
+func InitializeSEOMetaController(db *gorm.DB, redisClient *redis.Client) *controller.SEOMetaController {
+	wire.Build(SEOMetaSet)
+	return &controller.SEOMetaController{}
 }
