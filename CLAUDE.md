@@ -9,7 +9,9 @@ Khi người dùng gõ một trong các lệnh (trigger) dưới đây, **bướ
 - `/code-api` hoặc `viết api`: Bắt buộc đọc file `.agent/skills/code-api/SKILL.md`
 - `/code-db` hoặc `viết db`: Bắt buộc đọc file `.agent/skills/code-db/SKILL.md`
 - `/code-ui` hoặc `viết ui`: Bắt buộc đọc file `.agent/skills/code-ui/SKILL.md`
+- `/code-ui-webview` hoặc `viết ui webview`: Bắt buộc đọc file `.agent/skills/code-ui-webview/SKILL.md`
 - `/integrate-api`: Bắt buộc đọc file `.agent/skills/integrate-api/SKILL.md`
+- `/integrate-api-webview`: Bắt buộc đọc file `.agent/skills/integrate-api-webview/SKILL.md`
 - `/system-planner`: Bắt buộc đọc file `.agent/skills/system-planner/SKILL.md`
 - `/save-context`: Bắt buộc đọc file `.agent/skills/save-context/SKILL.md`
 - `/docker-expert`: Bắt buộc đọc file `.agent/skills/docker-expert/SKILL.md`

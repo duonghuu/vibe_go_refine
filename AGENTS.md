@@ -14,8 +14,10 @@ instructions when the user's request matches one of these triggers:
 | `/code-api`, `viết api` | `.agents/skills/code-api/SKILL.md` |
 | `/code-db`, `viết schema` | `.agents/skills/code-db/SKILL.md` |
 | `/code-ui`, `code giao diện` | `.agents/skills/code-ui/SKILL.md` |
+| `/code-ui-webview`, `code giao diện webview` | `.agents/skills/code-ui-webview/SKILL.md` |
 | Docker/containerization work | `.agents/skills/docker-expert/SKILL.md` |
 | `/integrate`, `nối api` | `.agents/skills/integrate-api/SKILL.md` |
+| `/integrate-webview`, `nối api webview` | `.agents/skills/integrate-api-webview/SKILL.md` |
 | `/save`, `lưu ngữ cảnh` | `.agents/skills/save-context/SKILL.md` |
 | `/plan-backend`, `quy hoạch hệ thống` | `.agents/skills/system-planner/SKILL.md` |
 
