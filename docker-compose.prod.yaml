@@ -1,5 +1,3 @@
-version: '3.8'
-
 services:
   backend:
     build:
@@ -46,6 +44,29 @@ services:
       - backend_network
     depends_on:
       - backend
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+      restart_policy:
+        condition: on-failure
+
+  webview:
+    build:
+      context: ./apps/webview
+      dockerfile: ../../dockerfiles/webview/Dockerfile.prod
+    container_name: vibe_webview_prod
+    ports:
+      - "3000:3000"
+    networks:
+      - frontend_network
+    healthcheck:
+      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3000/').then(r => process.exit(r.ok ? 0 : 1)).catch(() => process.exit(1))"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
     deploy:
       resources:
         limits:

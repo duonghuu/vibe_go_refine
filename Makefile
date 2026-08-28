@@ -1,4 +1,4 @@
-.PHONY: help dev dev-build prod prod-build down down-v restart logs logs-backend logs-frontend shell-backend shell-frontend shell-db shell-redis clean run-frontend run-backend migrate-up migrate-down seed
+.PHONY: help dev dev-build prod prod-build down down-v restart logs logs-backend logs-frontend logs-webview shell-backend shell-frontend shell-webview shell-db shell-redis clean run-frontend run-backend run-webview migrate-up migrate-down seed
 
 # Hiển thị menu help
 help:
@@ -15,6 +15,7 @@ help:
 	@echo ""
 	@echo "💻 Chạy Local (Trên máy Host):"
 	@echo "  make run-frontend  - Chạy frontend local (npm run dev)"
+	@echo "  make run-webview   - Chạy riêng Webview dev (foreground)"
 	@echo "  make run-backend   - Chạy backend local (go run main.go)"
 	@echo "  make migrate-up    - Chạy DB migrations (cần cài golang-migrate)"
 	@echo "  make migrate-down  - Rollback toàn bộ DB migrations"
@@ -30,10 +31,12 @@ help:
 	@echo "  make logs          - Xem logs của tất cả services"
 	@echo "  make logs-backend  - Xem logs của service backend"
 	@echo "  make logs-frontend - Xem logs của service frontend"
+	@echo "  make logs-webview  - Xem logs của service webview"
 	@echo ""
 	@echo "💻 Truy cập Shell Container (Môi trường Dev):"
 	@echo "  make shell-backend - Truy cập vào shell của backend"
 	@echo "  make shell-frontend- Truy cập vào shell của frontend"
+	@echo "  make shell-webview - Truy cập vào shell của webview"
 	@echo "  make shell-db      - Truy cập vào db (MySQL CLI)"
 	@echo "  make shell-redis   - Truy cập vào redis (Redis CLI)"
 	@echo "================================================================"
@@ -41,6 +44,9 @@ help:
 # --- LOCAL DEVELOPMENT (Host Machine) ---
 run-frontend:
 	docker compose -f docker-compose.dev.yaml exec frontend npm run dev
+
+run-webview:
+	docker compose -f docker-compose.dev.yaml up webview
 
 run-backend:
 	docker compose -f docker-compose.dev.yaml exec -e GOTOOLCHAIN=auto backend air -c .air.toml
@@ -92,12 +98,18 @@ logs-backend:
 logs-frontend:
 	docker compose -f docker-compose.dev.yaml logs -f frontend
 
+logs-webview:
+	docker compose -f docker-compose.dev.yaml logs -f webview
+
 # --- SHELL ACCESS ---
 shell-backend:
 	docker exec -it vibe_backend_dev sh
 
 shell-frontend:
 	docker exec -it vibe_frontend_dev sh
+
+shell-webview:
+	docker exec -it vibe_webview_dev sh
 
 shell-db:
 	docker exec -it vibe_db_dev mysql -u root -proot vibe_db

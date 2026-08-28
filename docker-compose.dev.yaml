@@ -47,6 +47,24 @@ services:
       - vibe_network
     restart: always
 
+  webview:
+    build:
+      context: ./apps/webview
+      dockerfile: ../../dockerfiles/webview/Dockerfile.dev
+    container_name: vibe_webview_dev
+    volumes:
+      - ./apps/webview:/app
+      - webview_node_modules:/app/node_modules
+      - webview_next_cache:/app/.next
+    tty: true
+    ports:
+      - "3000:3000"
+    environment:
+      NODE_ENV: development
+    networks:
+      - vibe_network
+    restart: always
+
   db:
     image: mysql:8.0
     container_name: vibe_db_dev
@@ -89,3 +107,5 @@ volumes:
   go-modules:
   db_data:
   redis_data:
+  webview_node_modules:
+  webview_next_cache:
