@@ -1,4 +1,6 @@
-export type PageStatus = "DRAFT" | "PUBLISHED";
+import type { PageStatus } from "./page-form-types";
+
+export type { PageStatus } from "./page-form-types";
 
 export interface IPageListItem {
   id: number;

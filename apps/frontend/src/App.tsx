@@ -38,7 +38,7 @@ import { UserList, UserCreate, UserEdit } from "./pages/users";
 import { PostTypeList, PostTypeCreate, PostTypeEdit } from "./pages/post-types";
 import { PostCreate, PostEdit, PostList } from "./pages/posts";
 import { PostCategoryCreate, PostCategoryList, PostCategoryEdit } from "./pages/post-categories";
-import { PageList } from "./pages/pages";
+import { PageCreate, PageEdit, PageList } from "./pages/pages";
 import { dataProvider } from "./providers/data";
 import { AdminMasterLayout } from "./components/layout";
 
@@ -186,6 +186,8 @@ function App() {
                     </Route>
                     <Route path="/pages">
                       <Route index element={<PageList />} />
+                      <Route path="create" element={<PageCreate />} />
+                      <Route path="edit/:id" element={<PageEdit />} />
                     </Route>
                     <Route path="*" element={<ErrorComponent />} />
                   </Route>

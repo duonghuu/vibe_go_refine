@@ -45,3 +45,5 @@
 - [2026-08-26 13:28:04] Hoàn thiện Backend API SEO Meta, tích hợp Refine data provider và hoàn tất migration SEO cùng quan hệ Post Meta.
 - [2026-08-26 13:54:29] Hoàn thành backend seeders cho post types, cây post categories 3 cấp, posts theo danh mục và SEO meta cho từng bài viết.
 - [2026-08-28 13:55:23] Hoàn thành Dockerization Webview Next.js: Dockerfile dev/prod standalone, Compose dev/prod, non-root runtime, healthcheck và Makefile commands.
+- [2026-08-31 14:15:45] Đồng bộ nút Tạo mới của Page List với Post List bằng Refine default buttons và createButtonProps.
+- [2026-08-31 14:31:12] Hoàn thành UI Admin Edit Page với Refine GET/PUT, validation, status, URL preview, loading/error state và cảnh báo thay đổi chưa lưu.
