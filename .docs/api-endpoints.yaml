@@ -1396,6 +1396,103 @@ paths:
         '403': { description: Không có quyền truy cập }
         '404': { description: Không tìm thấy trang }
         '500': { description: Lỗi hệ thống }
+  /api/v1/admin/pages/{page_id}/media:
+    x-code-files:
+      - apps/backend/internal/controller/page_media_controller.go
+      - apps/backend/internal/usecases/pagemedia/service/page_media_service.go
+      - apps/backend/internal/infrastructure/repository/page_media_repo.go
+      - apps/backend/internal/usecases/pagemedia/dto/page_media_dto.go
+      - apps/backend/internal/domain/page/entity/page_media.go
+    get:
+      summary: Lấy media của trang
+      tags: [Admin Page Media]
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - in: path
+          name: page_id
+          required: true
+          schema: { type: integer, minimum: 1 }
+        - in: query
+          name: collection
+          schema: { type: string, enum: [thumbnail, gallery] }
+      responses:
+        '200': { description: Thành công, content: { application/json: { schema: { $ref: '#/components/schemas/PageMediaListResponse' } } } }
+        '400': { description: URI hoặc collection không hợp lệ }
+        '401': { description: Unauthorized hoặc token bị blacklist }
+        '403': { description: Không có quyền truy cập }
+        '404': { description: Không tìm thấy trang }
+        '500': { description: Lỗi hệ thống }
+    post:
+      summary: Gắn media vào trang
+      tags: [Admin Page Media]
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - in: path
+          name: page_id
+          required: true
+          schema: { type: integer, minimum: 1 }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/CreatePageMediaRequest' }
+      responses:
+        '201': { description: Gắn media thành công }
+        '400': { description: Dữ liệu không hợp lệ }
+        '401': { description: Unauthorized }
+        '403': { description: Staff không sở hữu media }
+        '404': { description: Không tìm thấy Page hoặc Media }
+        '500': { description: Lỗi hệ thống }
+  /api/v1/admin/pages/{page_id}/media/{collection}:
+    put:
+      summary: Đồng bộ collection media của trang
+      tags: [Admin Page Media]
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - in: path
+          name: page_id
+          required: true
+          schema: { type: integer, minimum: 1 }
+        - in: path
+          name: collection
+          required: true
+          schema: { type: string, enum: [thumbnail, gallery] }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: { $ref: '#/components/schemas/SyncPageMediaRequest' }
+      responses:
+        '200': { description: Đồng bộ thành công }
+        '400': { description: Dữ liệu hoặc thứ tự media không hợp lệ }
+        '401': { description: Unauthorized }
+        '403': { description: Staff không sở hữu media }
+        '404': { description: Không tìm thấy Page hoặc Media }
+        '500': { description: Lỗi hệ thống }
+  /api/v1/admin/pages/{page_id}/media/{media_id}:
+    delete:
+      summary: Gỡ media khỏi trang
+      tags: [Admin Page Media]
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - in: path
+          name: page_id
+          required: true
+          schema: { type: integer, minimum: 1 }
+        - in: path
+          name: media_id
+          required: true
+          schema: { type: integer, minimum: 1 }
+        - in: query
+          name: collection
+          schema: { type: string, enum: [thumbnail, gallery] }
+      responses:
+        '204': { description: Gỡ liên kết thành công }
+        '400': { description: Collection không hợp lệ hoặc bắt buộc }
+        '401': { description: Unauthorized }
+        '403': { description: Không có quyền sử dụng media }
+        '404': { description: Không tìm thấy Page, Media hoặc liên kết }
+        '500': { description: Lỗi hệ thống }
   /api/v1/admin/seo-meta/{entityType}/{entityId}:
     get:
       summary: Lấy SEO Meta của entity
@@ -1475,6 +1572,53 @@ paths:
         '500': { description: Internal Server Error }
 components:
   schemas:
+    CreatePageMediaRequest:
+      type: object
+      required: [media_id, collection]
+      properties:
+        media_id: { type: integer, minimum: 1 }
+        collection: { type: string, enum: [thumbnail, gallery] }
+        sort_order: { type: integer, minimum: 0 }
+    SyncPageMediaRequest:
+      type: object
+      required: [media]
+      properties:
+        media:
+          type: array
+          maxItems: 100
+          items:
+            type: object
+            required: [id, sort_order]
+            properties:
+              id: { type: integer, minimum: 1 }
+              sort_order: { type: integer, minimum: 0 }
+    PageMediaResponse:
+      type: object
+      properties:
+        id: { type: integer }
+        pageId: { type: integer }
+        mediaId: { type: integer }
+        collection: { type: string, enum: [thumbnail, gallery] }
+        sortOrder: { type: integer }
+        media: { $ref: '#/components/schemas/PageMediaAssetResponse' }
+    PageMediaAssetResponse:
+      type: object
+      properties:
+        id: { type: integer }
+        fileName: { type: string }
+        originalUrl: { type: string }
+        thumbnailUrl: { type: string }
+        mediumUrl: { type: string }
+        mimeType: { type: string }
+        size: { type: integer, format: int64 }
+        status: { type: string, enum: [temporary, attached] }
+    PageMediaListResponse:
+      type: object
+      properties:
+        data:
+          type: array
+          items: { $ref: '#/components/schemas/PageMediaResponse' }
+        total: { type: integer, format: int64 }
     CreatePageRequest:
       type: object
       required:

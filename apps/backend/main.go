@@ -92,6 +92,7 @@ func main() {
 	postCategoryController := di.InitializePostCategoryController(db, redisClient)
 	seoMetaController := di.InitializeSEOMetaController(db, redisClient)
 	pageController := di.InitializePageController(db, redisClient)
+	pageMediaController := di.InitializePageMediaController(db, redisClient)
 
 	// 3. Setup Router
 	r := gin.Default()
@@ -231,6 +232,15 @@ func main() {
 		pages.GET("/:page_id", pageController.GetPageByID)
 		pages.PUT("/:page_id", pageController.UpdatePage)
 		pages.DELETE("/:page_id", pageController.DeletePage)
+	}
+
+	pageMedia := admin.Group("/pages/:page_id/media")
+	pageMedia.Use(middleware.RoleMiddleware("ADMIN", "STAFF"))
+	{
+		pageMedia.GET("", pageMediaController.GetPageMedia)
+		pageMedia.POST("", pageMediaController.CreatePageMedia)
+		pageMedia.PUT("/:collection", pageMediaController.SyncPageMedia)
+		pageMedia.DELETE("/:media_id", pageMediaController.DeletePageMedia)
 	}
 
 	// 5. Start Server

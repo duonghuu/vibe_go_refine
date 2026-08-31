@@ -18,9 +18,15 @@ import (
 	"go_refine_dashboard_be/internal/usecases/media/dto"
 )
 
+var (
+	ErrMediaNotFound  = errors.New("media không tồn tại")
+	ErrMediaForbidden = errors.New("không có quyền xóa media này")
+	ErrMediaAttached  = errors.New("media đang được liên kết, không thể xóa")
+)
+
 type MediaService interface {
 	UploadFile(ctx context.Context, file *multipart.FileHeader, userId uint) (*dto.UploadMediaResponse, error)
-	DeleteFile(ctx context.Context, id uint, userId uint) error
+	DeleteFile(ctx context.Context, id uint, userId uint, role string) error
 }
 
 type mediaService struct {
@@ -52,7 +58,7 @@ func (s *mediaService) UploadFile(ctx context.Context, fileHeader *multipart.Fil
 
 	// Detect content type
 	contentType := http.DetectContentType(buffer[:n])
-	
+
 	// Only allow images (can be customized)
 	if contentType != "image/jpeg" && contentType != "image/png" && contentType != "image/webp" {
 		return nil, errors.New("invalid file type: only JPEG, PNG, WEBP are allowed")
@@ -111,15 +117,17 @@ func (s *mediaService) UploadFile(ctx context.Context, fileHeader *multipart.Fil
 	}, nil
 }
 
-func (s *mediaService) DeleteFile(ctx context.Context, id uint, userId uint) error {
+func (s *mediaService) DeleteFile(ctx context.Context, id uint, userId uint, role string) error {
 	media, err := s.mediaRepo.GetByID(ctx, id)
 	if err != nil {
-		return errors.New("media not found")
+		return ErrMediaNotFound
 	}
 
-	// Authorize (simulate since no real auth right now)
-	if media.OwnerID != userId {
-		return errors.New("unauthorized to delete this file")
+	if media.Status == entity.MediaStatusAttached {
+		return ErrMediaAttached
+	}
+	if role != "ADMIN" && media.OwnerID != userId {
+		return ErrMediaForbidden
 	}
 
 	// Delete from DB

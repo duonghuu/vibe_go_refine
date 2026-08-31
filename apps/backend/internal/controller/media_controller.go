@@ -1,12 +1,12 @@
 package controller
 
 import (
+	"errors"
 	"net/http"
 	"strconv"
 
 	"go_refine_dashboard_be/internal/usecases/media/service"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/gin-gonic/gin"
 )
 
@@ -21,7 +21,6 @@ func NewMediaController(mediaService service.MediaService) *MediaController {
 }
 
 func (c *MediaController) UploadFile(ctx *gin.Context) {
-	spew.Dump("UploadFile")
 	// Parse Multipart Form with 5MB limit
 	err := ctx.Request.ParseMultipartForm(5 << 20)
 	if err != nil {
@@ -35,10 +34,14 @@ func (c *MediaController) UploadFile(ctx *gin.Context) {
 		return
 	}
 
-	// Mock User ID since authentication is temporarily disabled
-	var mockUserId uint = 1
+	userID, role, err := mediaIdentity(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
+	}
 
-	response, err := c.mediaService.UploadFile(ctx.Request.Context(), file, mockUserId)
+	_ = role
+	response, err := c.mediaService.UploadFile(ctx.Request.Context(), file, userID)
 	if err != nil {
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
 		return
@@ -55,14 +58,46 @@ func (c *MediaController) DeleteFile(ctx *gin.Context) {
 		return
 	}
 
-	// Mock User ID since authentication is temporarily disabled
-	var mockUserId uint = 1
-
-	err = c.mediaService.DeleteFile(ctx.Request.Context(), uint(id), mockUserId)
+	userID, role, err := mediaIdentity(ctx)
 	if err != nil {
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": err.Error()})
+		return
+	}
+
+	err = c.mediaService.DeleteFile(ctx.Request.Context(), uint(id), userID, role)
+	if err != nil {
+		switch {
+		case errors.Is(err, service.ErrMediaNotFound):
+			ctx.JSON(http.StatusNotFound, gin.H{"error": err.Error(), "code": "NOT_FOUND"})
+		case errors.Is(err, service.ErrMediaForbidden):
+			ctx.JSON(http.StatusForbidden, gin.H{"error": err.Error(), "code": "FORBIDDEN"})
+		case errors.Is(err, service.ErrMediaAttached):
+			ctx.JSON(http.StatusConflict, gin.H{"error": err.Error(), "code": "MEDIA_ATTACHED"})
+		default:
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "internal_error", "code": "INTERNAL_ERROR"})
+		}
 		return
 	}
 
 	ctx.JSON(http.StatusOK, gin.H{"message": "deleted successfully"})
+}
+
+func mediaIdentity(ctx *gin.Context) (uint, string, error) {
+	value, exists := ctx.Get("userId")
+	if !exists {
+		return 0, "", errors.New("không tìm thấy thông tin người dùng")
+	}
+	userID, ok := value.(uint)
+	if !ok || userID == 0 {
+		return 0, "", errors.New("thông tin định danh không hợp lệ")
+	}
+	roleValue, exists := ctx.Get("role")
+	if !exists {
+		return 0, "", errors.New("không tìm thấy vai trò người dùng")
+	}
+	role, ok := roleValue.(string)
+	if !ok || role == "" {
+		return 0, "", errors.New("vai trò không hợp lệ")
+	}
+	return userID, role, nil
 }
