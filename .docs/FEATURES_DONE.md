@@ -47,3 +47,4 @@
 - [2026-08-28 13:55:23] Hoàn thành Dockerization Webview Next.js: Dockerfile dev/prod standalone, Compose dev/prod, non-root runtime, healthcheck và Makefile commands.
 - [2026-08-31 14:15:45] Đồng bộ nút Tạo mới của Page List với Post List bằng Refine default buttons và createButtonProps.
 - [2026-08-31 14:31:12] Hoàn thành UI Admin Edit Page với Refine GET/PUT, validation, status, URL preview, loading/error state và cảnh báo thay đổi chưa lưu.
+- [2026-08-31 14:45:51] Hoàn thành DB schema và API POST tạo Page, gồm GORM entity, migration, validation, phân quyền ADMIN/STAFF, kiểm tra slug trùng, cache invalidation, Wire DI và OpenAPI.

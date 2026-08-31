@@ -10,6 +10,7 @@ import (
 	authService "go_refine_dashboard_be/internal/usecases/auth/service"
 	categoryService "go_refine_dashboard_be/internal/usecases/category/service"
 	mediaService "go_refine_dashboard_be/internal/usecases/media/service"
+	pageService "go_refine_dashboard_be/internal/usecases/page/service"
 	postService "go_refine_dashboard_be/internal/usecases/post/service"
 	postCategoryService "go_refine_dashboard_be/internal/usecases/postcategory/service"
 	postMediaService "go_refine_dashboard_be/internal/usecases/postmedia/service"
@@ -91,6 +92,12 @@ var SEOMetaSet = wire.NewSet(
 	controller.NewSEOMetaController,
 )
 
+var PageSet = wire.NewSet(
+	repository.NewPageRepository,
+	pageService.NewPageService,
+	controller.NewPageController,
+)
+
 func InitializeProductController(db *gorm.DB) *controller.ProductController {
 	wire.Build(ProductSet)
 	return &controller.ProductController{}
@@ -144,4 +151,9 @@ func InitializePostCategoryController(db *gorm.DB, redisClient *redis.Client) *c
 func InitializeSEOMetaController(db *gorm.DB, redisClient *redis.Client) *controller.SEOMetaController {
 	wire.Build(SEOMetaSet)
 	return &controller.SEOMetaController{}
+}
+
+func InitializePageController(db *gorm.DB, redisClient *redis.Client) *controller.PageController {
+	wire.Build(PageSet)
+	return &controller.PageController{}
 }

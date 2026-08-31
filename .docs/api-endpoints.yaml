@@ -1236,6 +1236,45 @@ paths:
       responses:
         '200':
           description: OK
+  /api/v1/admin/pages:
+    x-code-files:
+      - apps/backend/internal/controller/page_controller.go
+      - apps/backend/internal/usecases/page/service/page_service.go
+      - apps/backend/internal/infrastructure/repository/page_repo.go
+      - apps/backend/internal/usecases/page/dto/page_dto.go
+      - apps/backend/internal/domain/page/entity/page.go
+    post:
+      summary: Tạo trang tĩnh mới
+      tags:
+        - Admin Pages
+      security:
+        - BearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/CreatePageRequest'
+      responses:
+        '201':
+          description: Tạo trang thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PageResponse'
+        '400':
+          description: Dữ liệu đầu vào không hợp lệ
+        '401':
+          description: Unauthorized hoặc token bị blacklist
+        '403':
+          description: Không có quyền truy cập
+        '409':
+          description: Slug trang đã tồn tại
+        '500':
+          description: Lỗi hệ thống
   /api/v1/admin/seo-meta/{entityType}/{entityId}:
     get:
       summary: Lấy SEO Meta của entity
@@ -1315,6 +1354,37 @@ paths:
         '500': { description: Internal Server Error }
 components:
   schemas:
+    CreatePageRequest:
+      type: object
+      required:
+        - title
+        - slug
+        - content
+        - status
+      properties:
+        title:
+          type: string
+          maxLength: 255
+        slug:
+          type: string
+          maxLength: 255
+          pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$'
+        content:
+          type: string
+        status:
+          type: string
+          enum: [DRAFT, PUBLISHED]
+    PageResponse:
+      type: object
+      properties:
+        id: { type: integer }
+        title: { type: string }
+        slug: { type: string }
+        content: { type: string }
+        status: { type: string, enum: [DRAFT, PUBLISHED] }
+        authorId: { type: integer }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
     UpdatePostRequest:
       type: object
       required:
