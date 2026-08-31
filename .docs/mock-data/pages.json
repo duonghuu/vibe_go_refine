@@ -1,0 +1,29 @@
+[
+  {
+    "id": 1,
+    "title": "Giới thiệu về TechBite",
+    "slug": "gioi-thieu",
+    "status": "PUBLISHED",
+    "authorId": 1,
+    "createdAt": "2026-08-28T09:00:00Z",
+    "updatedAt": "2026-08-30T14:30:00Z"
+  },
+  {
+    "id": 2,
+    "title": "Chính sách bảo mật",
+    "slug": "chinh-sach-bao-mat",
+    "status": "PUBLISHED",
+    "authorId": 2,
+    "createdAt": "2026-08-25T10:15:00Z",
+    "updatedAt": "2026-08-29T08:45:00Z"
+  },
+  {
+    "id": 3,
+    "title": "Điều khoản sử dụng",
+    "slug": "dieu-khoan-su-dung",
+    "status": "DRAFT",
+    "authorId": 1,
+    "createdAt": "2026-08-27T13:20:00Z",
+    "updatedAt": "2026-08-28T16:10:00Z"
+  }
+]
