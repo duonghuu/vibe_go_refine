@@ -1,69 +1,38 @@
 import Image from "next/image";
+import AnimatedCounter from "@/components/animated-counter";
+import InteractiveHeader from "@/components/interactive-header";
+import TestimonialCarousel from "@/components/testimonial-carousel";
+import { articles, services, stats, testimonials } from "@/components/home-data";
 
-export default function Home() {
+const Home = () => {
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
-        <Image
-          className="dark:invert h-5 w-[100px]"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={100}
-          height={20}
-          priority
-        />
-        <div className="flex flex-col items-center gap-6 text-center sm:items-start sm:text-left">
-          <h1 className="max-w-xs text-3xl font-semibold leading-10 tracking-tight text-black dark:text-zinc-50">
-            To get started, edit the{" "}
-            <code className="rounded bg-black/[.06] px-1.5 py-0.5 font-mono text-[0.9em] dark:bg-white/[.08]">
-              page.tsx
-            </code>{" "}
-            file.
-          </h1>
-          <p className="max-w-md text-lg leading-8 text-zinc-600 dark:text-zinc-400">
-            Looking for a starting point or more instructions? Head over to{" "}
-            <a
-              href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Templates
-            </a>{" "}
-            or the{" "}
-            <a
-              href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-              className="font-medium text-zinc-950 dark:text-zinc-50"
-            >
-              Learning
-            </a>{" "}
-            center.
-          </p>
-        </div>
-        <div className="flex flex-col gap-4 text-base font-medium sm:flex-row">
-          <a
-            className="flex h-12 w-full items-center justify-center gap-2 rounded-full bg-foreground px-5 text-background transition-colors hover:bg-[#383838] dark:hover:bg-[#ccc] md:w-[158px]"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <Image
-              className="dark:invert h-[14px] w-4"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={16}
-              height={14}
-            />
-            Deploy Now
-          </a>
-          <a
-            className="flex h-12 w-full items-center justify-center rounded-full border border-solid border-black/[.08] px-5 transition-colors hover:border-transparent hover:bg-black/[.04] dark:border-white/[.145] dark:hover:bg-[#1a1a1a] md:w-[158px]"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Documentation
-          </a>
-        </div>
+    <>
+      <InteractiveHeader />
+      <main>
+        <section className="relative bg-[url('/images/bg/home-1.jpg')] bg-cover bg-[10%_0%] py-48 before:absolute before:inset-0 before:bg-black/50" aria-labelledby="hero-title">
+          <div className="relative mx-auto max-w-7xl px-5 lg:px-8"><span className="mb-3 block text-white">Prepare for new future</span><h1 id="hero-title" className="mb-10 max-w-3xl text-4xl font-semibold leading-tight text-white sm:text-6xl lg:text-7xl">Our work is<br />presentation of our<br />capabilities.</h1><a href="#contact" className="inline-flex items-center rounded-full bg-[#f75757] px-10 py-4 text-xs uppercase text-white transition-colors hover:bg-[#dd0b0b]">Get started <i className="fa fa-angle-right ml-3 text-base" /></a></div>
+        </section>
+
+        <section className="py-24" aria-labelledby="intro-title"><div className="mx-auto max-w-7xl px-5 lg:px-8"><div className="mb-16 max-w-3xl"><span className="text-sm uppercase tracking-wide text-[#f75757]">We are creative &amp; expert people</span><h2 id="intro-title" className="mt-3 text-3xl font-semibold leading-tight text-[#242424] md:text-4xl">We work with business &amp; provide solution to client with their business problem</h2></div><div className="grid gap-10 md:grid-cols-3">{[["ti-desktop", "Modern & Responsive design"], ["ti-medall", "Awarded licensed company"], ["ti-layers-alt", "Build your website Professionally"]].map(([icon, title]) => <article key={title}><i className={`${icon} text-6xl text-[#f75757]`} /><h3 className="mt-6 mb-3 text-xl font-semibold text-[#242424]">{title}</h3><p className="leading-8 text-black/65">Lorem ipsum dolor sit amet, consectetur adipisicing elit. Odit, ducimus.</p></article>)}</div></div></section>
+
+        <section id="about" className="relative py-24" aria-labelledby="about-title"><div className="absolute inset-y-0 left-0 hidden w-[45%] bg-[url('/images/about/home-8.jpg')] bg-cover bg-center lg:block" /><div className="mx-auto max-w-7xl px-5 lg:px-8"><div className="ml-auto max-w-2xl lg:pl-20"><span className="text-sm uppercase tracking-wide text-[#f75757]">What we are</span><h2 id="about-title" className="relative mt-3 mb-8 text-3xl font-semibold leading-tight text-[#242424] md:text-4xl">We are dynamic team of creative people</h2><div className="relative pl-0 md:pl-20"><h3 className="mb-3 text-xl font-semibold text-[#242424]">We are Perfect Solution</h3><p className="mb-10 leading-8 text-black/65">We provide consulting services in the area of IFRS and management reporting, helping companies to reach their highest level. We optimize business processes, making them easier.</p><a href="#contact" className="inline-flex rounded-full bg-[#f75757] px-8 py-4 text-xs uppercase text-white transition-colors hover:bg-[#dd0b0b]">Get started</a></div></div></div></section>
+
+        <section className="py-24" aria-label="Company statistics"><div className="mx-auto grid max-w-7xl grid-cols-2 gap-10 px-5 md:grid-cols-4 lg:px-8">{stats.map((stat) => <div key={stat.label} className="text-center"><h3 className="mb-0 text-3xl font-semibold text-[#242424] md:text-5xl"><AnimatedCounter value={stat.value} suffix={stat.suffix} /></h3><p className="text-[#808080]">{stat.label}</p></div>)}</div></section>
+
+        <section id="services" className="border-t border-black/5 py-24" aria-labelledby="services-title"><div className="mx-auto max-w-7xl px-5 lg:px-8"><div className="mx-auto mb-16 max-w-2xl text-center"><span className="text-sm uppercase tracking-wide text-[#f75757]">Our Services</span><h2 id="services-title" className="mt-3 text-3xl font-semibold leading-tight text-[#242424] md:text-4xl">We provide a wide range of creative services</h2></div><div className="grid gap-x-12 gap-y-14 md:grid-cols-2 lg:grid-cols-3">{services.map((service) => <article key={service.title} className="relative pl-20"><i className={`${service.icon} absolute left-0 top-1 text-5xl text-[#242424]/40`} /><h3 className="mb-3 text-xl font-semibold text-[#242424]">{service.title}</h3><p className="leading-8 text-black/65">{service.description}</p></article>)}</div></div></section>
+
+        <section id="contact" className="relative bg-[url('/images/bg/home-3.jpg')] bg-cover bg-center py-28 before:absolute before:inset-0 before:bg-black/50" aria-labelledby="cta-title"><div className="relative mx-auto max-w-7xl px-5 lg:px-8"><div className="max-w-lg rounded bg-white p-10"><span className="text-sm uppercase tracking-wide text-[#f75757]">We create for you</span><h2 id="cta-title" className="mt-2 mb-5 text-3xl font-semibold leading-tight text-[#242424]">Entrust Your Project to Our Best Team of Professionals</h2><p className="mb-4 text-xl text-black/65">Have any project on mind? For immidiate support :</p><h3 className="text-2xl font-semibold text-[#242424]"><i className="ti-mobile mr-3 text-[#f75757]" />+23 876 65 455</h3></div></div></section>
+
+        <section className="py-24" aria-labelledby="testimonial-title"><div className="mx-auto max-w-7xl px-5 lg:px-8"><div className="mb-10 max-w-2xl"><span className="text-sm uppercase tracking-wide text-[#f75757]">Clients testimonial</span><h2 id="testimonial-title" className="mt-3 text-3xl font-semibold leading-tight text-[#242424] md:text-4xl">Check what&apos;s our clients say about us</h2></div><TestimonialCarousel items={testimonials} /></div></section>
+
+        <section id="latest-news" className="relative bg-[url('/images/bg/home-5.jpg')] bg-cover bg-center py-24 before:absolute before:inset-0 before:bg-black/80" aria-labelledby="news-title"><div className="relative mx-auto max-w-7xl px-5 lg:px-8"><div className="mx-auto mb-16 max-w-2xl text-center"><span className="text-sm uppercase tracking-wide text-[#f75757]">Latest News</span><h2 id="news-title" className="mt-3 text-3xl font-semibold leading-tight text-white md:text-4xl">Latest articles to enrich knowledge</h2></div><div className="grid gap-10 md:grid-cols-3">{articles.map((article) => <article key={article.title}><Image src={article.image} alt="" width={1600} height={1088} className="h-56 w-full rounded object-cover" /><div className="mt-5"><div className="text-sm text-white/50"><a href="#latest-news">Design</a><span className="mx-2">/</span><a href="#latest-news">Ui/Ux</a><span className="mx-2">/</span><span><i className="fa fa-user mr-2" />admin</span></div><h3 className="mt-4 mb-8 text-2xl font-semibold leading-snug text-white"><a href="#latest-news">{article.title}</a></h3><a href="#latest-news" className="inline-flex rounded-full border-2 border-[#f75757] px-6 py-3 text-xs uppercase text-white transition-colors hover:bg-[#f75757]">Learn More</a></div></article>)}</div></div></section>
+
+        <section id="quote" className="relative py-20"><div className="mx-auto max-w-7xl px-5 lg:px-8"><div className="flex flex-col items-start justify-between gap-8 rounded border border-black/5 bg-[#f5f8f9] p-10 md:flex-row md:items-center"><div><span className="text-sm uppercase tracking-wide text-[#f75757]">For Every type business</span><h2 className="mt-2 text-2xl font-semibold text-[#242424]">Entrust Your Project to Our Best Team of Professionals</h2></div><a href="#contact" className="shrink-0 rounded-full bg-[#f75757] px-8 py-4 text-xs uppercase text-white transition-colors hover:bg-[#dd0b0b]">Contact Us</a></div></div></section>
       </main>
-    </div>
+
+      <footer className="py-20" aria-label="Footer"><div className="mx-auto max-w-7xl px-5 lg:px-8"><div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-4"><div><h3 className="mb-5 text-lg font-semibold text-[#242424]">Company</h3><ul className="space-y-3 leading-7 text-black/65"><li><a href="#">Terms &amp; Conditions</a></li><li><a href="#">Privacy Policy</a></li><li><a href="#contact">Support</a></li><li><a href="#">FAQ</a></li></ul></div><div><h3 className="mb-5 text-lg font-semibold text-[#242424]">Quick Links</h3><ul className="space-y-3 leading-7 text-black/65"><li><a href="#about">About</a></li><li><a href="#services">Services</a></li><li><a href="#">Team</a></li><li><a href="#contact">Contact</a></li></ul></div><div><h3 className="mb-5 text-lg font-semibold text-[#242424]">Subscribe Us</h3><p className="mb-4 leading-8 text-black/65">Subscribe to get latest news article and resources</p><form className="max-w-xs" action="#"><input type="text" className="mb-3 h-12 w-full border border-black/5 bg-[#f5f8f9] px-4 outline-none focus:border-[#f75757]" placeholder="Subscribe Now ..." aria-label="Subscribe email" /><button type="button" className="rounded bg-[#f75757] px-6 py-3 text-xs uppercase text-white hover:bg-[#dd0b0b]">Subscribe</button></form></div><div><div className="mb-5 text-2xl font-semibold tracking-wide">Mega<span className="text-[#f75757]">kit.</span></div><h6 className="mb-2 text-sm"><a href="mailto:support@gmail.com">Support@megakit.com</a></h6><a href="tel:+23-456-6588" className="text-xl text-[#f75757]">+23-456-6588</a></div></div><div className="mt-12 grid gap-5 border-t border-black/5 pt-6 text-sm text-black/65 md:grid-cols-3"><p>© Copyright Reserved to <span className="text-[#f75757]">Megakit.</span> by <a href="https://themefisher.com/" target="_blank" rel="noreferrer">Themefisher</a></p><p>Distributed by <a href="https://themewagon.com/" target="_blank" rel="noreferrer">Themewagon</a></p><div className="flex gap-4 md:justify-end"><a href="https://www.facebook.com/themefisher" target="_blank" rel="noreferrer">Facebook</a><a href="https://twitter.com/themefisher" target="_blank" rel="noreferrer">Twitter</a><a href="https://www.pinterest.com/themefisher/" target="_blank" rel="noreferrer">Linkedin</a></div></div></div></footer>
+    </>
   );
-}
+};
+
+export default Home;
