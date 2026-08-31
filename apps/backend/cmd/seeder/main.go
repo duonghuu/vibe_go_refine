@@ -46,6 +46,8 @@ func main() {
 	SeedPostSEOMeta(db)
 	SeedCategories(db)
 	SeedProducts(db)
+	SeedPages(db)
+	SeedPageMedia(db)
 
 	log.Println("Seeding completed successfully.")
 }
