@@ -48,3 +48,4 @@
 - [2026-08-31 14:15:45] Đồng bộ nút Tạo mới của Page List với Post List bằng Refine default buttons và createButtonProps.
 - [2026-08-31 14:31:12] Hoàn thành UI Admin Edit Page với Refine GET/PUT, validation, status, URL preview, loading/error state và cảnh báo thay đổi chưa lưu.
 - [2026-08-31 14:45:51] Hoàn thành DB schema và API POST tạo Page, gồm GORM entity, migration, validation, phân quyền ADMIN/STAFF, kiểm tra slug trùng, cache invalidation, Wire DI và OpenAPI.
+- [2026-08-31 15:00:29] Hoàn thành API quản trị Page List và Page Edit: phân trang, tìm kiếm, soft delete, detail, cập nhật, kiểm tra slug, cache invalidation, RBAC, Wire DI và OpenAPI.

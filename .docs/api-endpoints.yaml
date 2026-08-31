@@ -1243,6 +1243,42 @@ paths:
       - apps/backend/internal/infrastructure/repository/page_repo.go
       - apps/backend/internal/usecases/page/dto/page_dto.go
       - apps/backend/internal/domain/page/entity/page.go
+    get:
+      summary: Lấy danh sách trang tĩnh
+      tags:
+        - Admin Pages
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: query
+          name: current
+          schema: { type: integer, minimum: 1, default: 1 }
+        - in: query
+          name: pageSize
+          schema: { type: integer, minimum: 1, maximum: 100, default: 10 }
+        - in: query
+          name: title_like
+          schema: { type: string, maxLength: 255 }
+        - in: query
+          name: status
+          schema: { type: string, enum: [DRAFT, PUBLISHED] }
+        - in: query
+          name: sortBy
+          schema: { type: string, enum: [id, title, slug, updated_at], default: updated_at }
+        - in: query
+          name: order
+          schema: { type: string, enum: [asc, desc], default: desc }
+      responses:
+        '200':
+          description: Lấy danh sách thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PaginatedPageResponse'
+        '400': { description: Tham số truy vấn không hợp lệ }
+        '401': { description: Unauthorized hoặc token bị blacklist }
+        '403': { description: Không có quyền truy cập }
+        '500': { description: Lỗi hệ thống }
     post:
       summary: Tạo trang tĩnh mới
       tags:
@@ -1275,6 +1311,91 @@ paths:
           description: Slug trang đã tồn tại
         '500':
           description: Lỗi hệ thống
+  /api/v1/admin/pages/{page_id}:
+    x-code-files:
+      - apps/backend/internal/controller/page_controller.go
+      - apps/backend/internal/usecases/page/service/page_service.go
+      - apps/backend/internal/infrastructure/repository/page_repo.go
+      - apps/backend/internal/usecases/page/dto/page_dto.go
+    get:
+      summary: Lấy chi tiết trang tĩnh
+      tags:
+        - Admin Pages
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: page_id
+          required: true
+          schema: { type: integer, minimum: 1 }
+      responses:
+        '200':
+          description: Lấy chi tiết thành công
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  data:
+                    $ref: '#/components/schemas/PageResponse'
+        '400': { description: ID trang không hợp lệ }
+        '401': { description: Unauthorized hoặc token bị blacklist }
+        '403': { description: Không có quyền truy cập }
+        '404': { description: Không tìm thấy trang }
+        '500': { description: Lỗi hệ thống }
+    put:
+      summary: Cập nhật trang tĩnh
+      tags:
+        - Admin Pages
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: page_id
+          required: true
+          schema: { type: integer, minimum: 1 }
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UpdatePageRequest'
+      responses:
+        '200':
+          description: Cập nhật trang thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UpdatePageResponse'
+        '400': { description: Dữ liệu đầu vào không hợp lệ }
+        '401': { description: Unauthorized hoặc token bị blacklist }
+        '403': { description: Không có quyền truy cập }
+        '404': { description: Không tìm thấy trang }
+        '409': { description: Slug trang đã tồn tại }
+        '500': { description: Lỗi hệ thống }
+    delete:
+      summary: Xóa mềm trang tĩnh
+      tags:
+        - Admin Pages
+      security:
+        - BearerAuth: []
+      parameters:
+        - in: path
+          name: page_id
+          required: true
+          schema: { type: integer, minimum: 1 }
+      responses:
+        '200':
+          description: Xóa trang thành công
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/DeletePageResponse'
+        '400': { description: ID trang không hợp lệ }
+        '401': { description: Unauthorized hoặc token bị blacklist }
+        '403': { description: Không có quyền truy cập }
+        '404': { description: Không tìm thấy trang }
+        '500': { description: Lỗi hệ thống }
   /api/v1/admin/seo-meta/{entityType}/{entityId}:
     get:
       summary: Lấy SEO Meta của entity
@@ -1385,6 +1506,48 @@ components:
         authorId: { type: integer }
         createdAt: { type: string, format: date-time }
         updatedAt: { type: string, format: date-time }
+    PageListItemResponse:
+      type: object
+      properties:
+        id: { type: integer }
+        title: { type: string }
+        slug: { type: string }
+        status: { type: string, enum: [DRAFT, PUBLISHED] }
+        authorId: { type: integer }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+    PaginatedPageResponse:
+      type: object
+      required: [data, total]
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/PageListItemResponse'
+        total: { type: integer, format: int64 }
+    DeletePageResponse:
+      type: object
+      required: [message]
+      properties:
+        message: { type: string }
+    UpdatePageRequest:
+      type: object
+      required: [title, slug, content, status]
+      properties:
+        title: { type: string, maxLength: 255 }
+        slug:
+          type: string
+          maxLength: 255
+          pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$'
+        content: { type: string }
+        status: { type: string, enum: [DRAFT, PUBLISHED] }
+    UpdatePageResponse:
+      type: object
+      required: [data, message]
+      properties:
+        data:
+          $ref: '#/components/schemas/PageResponse'
+        message: { type: string }
     UpdatePostRequest:
       type: object
       required:

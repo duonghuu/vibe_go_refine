@@ -226,7 +226,11 @@ func main() {
 	pages := admin.Group("/pages")
 	pages.Use(middleware.RoleMiddleware("ADMIN", "STAFF"))
 	{
+		pages.GET("", pageController.GetPages)
 		pages.POST("", pageController.CreatePage)
+		pages.GET("/:page_id", pageController.GetPageByID)
+		pages.PUT("/:page_id", pageController.UpdatePage)
+		pages.DELETE("/:page_id", pageController.DeletePage)
 	}
 
 	// 5. Start Server
