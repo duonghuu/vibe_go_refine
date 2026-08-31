@@ -34,7 +34,7 @@ export interface UsePostMediaResult extends PostMediaState {
   markDirty: () => void;
 }
 
-export const usePostMedia = (postId?: number): UsePostMediaResult => {
+export const usePostMedia = (postId?: number, entityPath = "posts"): UsePostMediaResult => {
   const { open } = useNotification();
   const [thumbnail, setThumbnail] = useState<IUploadedMedia | null>(null);
   const [gallery, setGallery] = useState<IUploadedMedia[]>([]);
@@ -150,7 +150,7 @@ export const usePostMedia = (postId?: number): UsePostMediaResult => {
     setIsLoading(true);
     setError(null);
     try {
-      const response = await getPostMedia(postId);
+      const response = await getPostMedia(postId, undefined, entityPath);
       const thumbnailItem = response.data.find((item) => item.collection === "thumbnail");
       const galleryItems = response.data
         .filter((item) => item.collection === "gallery")
@@ -165,7 +165,7 @@ export const usePostMedia = (postId?: number): UsePostMediaResult => {
     } finally {
       setIsLoading(false);
     }
-  }, [notifyError, postId]);
+  }, [entityPath, notifyError, postId]);
 
   useEffect(() => {
     void load();
@@ -179,11 +179,14 @@ export const usePostMedia = (postId?: number): UsePostMediaResult => {
         targetPostId,
         "thumbnail",
         thumbnail ? [{ id: thumbnail.id, sortOrder: 0 }] : [],
+        entityPath,
       );
       await syncPostMedia(
         targetPostId,
         "gallery",
-        gallery.map((item, index) => ({ id: item.id, sortOrder: index + 1 })),
+        // Backend validates sort_order as a contiguous zero-based index.
+        gallery.map((item, index) => ({ id: item.id, sortOrder: index })),
+        entityPath,
       );
       setIsDirty(false);
     } catch (syncError) {
@@ -193,7 +196,7 @@ export const usePostMedia = (postId?: number): UsePostMediaResult => {
     } finally {
       setIsSyncing(false);
     }
-  }, [gallery, thumbnail]);
+  }, [entityPath, gallery, thumbnail]);
 
   const markDirty = useCallback(() => setIsDirty(true), []);
 

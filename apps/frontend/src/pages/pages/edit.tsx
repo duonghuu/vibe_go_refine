@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { Edit } from "@refinedev/mui";
 import { useForm } from "@refinedev/react-hook-form";
 import { HttpError, useGo, useNotification } from "@refinedev/core";
@@ -6,9 +6,12 @@ import { useParams } from "react-router";
 import { Alert, Box, Button, Card, CardContent, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, FormControl, FormHelperText, Grid, InputLabel, MenuItem, Select, Skeleton, Stack, Typography } from "@mui/material";
 import { IPageResponse, IPageUpdatePayload, PageStatus } from "./page-form-types";
 import { PageBasicInfoCard } from "./page-basic-info-card";
-import { PagePostCreateNotice } from "./page-post-create-notice";
 import { PagePublicUrlPreview } from "./page-public-url-preview";
 import { PageEditActions } from "./page-edit-actions";
+import { PostMediaCard } from "../posts/post-media-components";
+import { usePostMedia } from "../posts/use-post-media";
+import { PostSeoCard } from "../posts/post-seo-components";
+import { UsePostSeoResult, usePostSeo } from "../posts/use-post-seo";
 
 const getErrorMessage = (error: unknown, fallback: string): string =>
   error instanceof Error && error.message ? error.message : fallback;
@@ -19,6 +22,12 @@ export const PageEdit: React.FC = () => {
   const { open } = useNotification();
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
   const pageId = id && Number.isInteger(Number(id)) && Number(id) > 0 ? Number(id) : undefined;
+  const pageMedia = usePostMedia(pageId, "pages");
+  const pageSeoRef = useRef<UsePostSeoResult | null>(null);
+  const syncPageChildren = async (): Promise<void> => {
+    if (pageId && pageMedia.isDirty) await pageMedia.sync(pageId);
+    if (pageId && pageSeoRef.current?.isDirty) await pageSeoRef.current.save(pageId);
+  };
 
   const form = useForm<IPageResponse, HttpError, IPageUpdatePayload, object, IPageResponse, IPageResponse>({
     mode: "onBlur",
@@ -27,10 +36,20 @@ export const PageEdit: React.FC = () => {
       resource: "pages",
       redirect: false,
       id: pageId,
-      meta: { method: "put" },
-      onMutationSuccess: () => {
-        open?.({ type: "success", message: "Cập nhật trang thành công", description: "Các thay đổi đã được lưu." });
-        go({ to: "/pages" });
+      // The REST provider defaults update mutations to PATCH. Keep the
+      // method on mutationMeta so only the Page update request is overridden.
+      meta: {
+        method: "put",
+      },
+      mutationMeta: { method: "put" },
+      onMutationSuccess: async () => {
+        try {
+          await syncPageChildren();
+          open?.({ type: "success", message: "Cập nhật trang thành công", description: "Các thay đổi đã được lưu." });
+          go({ to: "/pages" });
+        } catch (saveError) {
+          open?.({ type: "error", message: "Trang đã lưu, Media/SEO chưa đồng bộ", description: getErrorMessage(saveError, "Vui lòng thử lại phần còn lỗi.") });
+        }
       },
       onMutationError: (error) => {
         if (error.statusCode === 409) {
@@ -44,6 +63,8 @@ export const PageEdit: React.FC = () => {
 
   const { register, handleSubmit, watch, setValue, formState: { errors, isDirty }, refineCore: { formLoading, query: pageQuery, onFinish } } = form;
   const page = pageQuery?.data?.data;
+  const pageSeo = usePostSeo(pageId, { title: page?.title ?? "", slug: page?.slug ?? "", content: page?.content ?? "", thumbnailUrl: pageMedia.thumbnail?.thumbnailUrl ?? pageMedia.thumbnail?.originalUrl }, "page");
+  pageSeoRef.current = pageSeo;
   const slug = watch("slug") ?? "";
   const status = watch("status") ?? "DRAFT";
 
@@ -55,7 +76,7 @@ export const PageEdit: React.FC = () => {
   }, [go, open, pageId]);
 
   const handleCancel = () => {
-    if (isDirty) setCancelDialogOpen(true);
+    if (isDirty || pageMedia.isDirty || pageSeo.isDirty) setCancelDialogOpen(true);
     else go({ to: "/pages" });
   };
 
@@ -73,13 +94,16 @@ export const PageEdit: React.FC = () => {
     <Box>
       <Typography variant="h4" fontWeight={700} letterSpacing="-0.02em" mb={0.5}>Chỉnh sửa trang</Typography>
       <Typography variant="body2" color="text.secondary" mb={3}>Trang chủ / Quản trị nội dung / Trang / Chỉnh sửa</Typography>
-      <Edit title="" isLoading={formLoading} wrapperProps={{ sx: { bgcolor: "transparent", boxShadow: "none", p: 0 } }} headerProps={{ sx: { display: "none" } }} footerButtons={<PageEditActions disabled={formLoading} onCancel={handleCancel} onSubmit={() => { void handleSubmit((values) => onFinish(values))(); }} />}>
+      <Edit title="" isLoading={formLoading || pageMedia.isSyncing || pageSeo.isSaving} wrapperProps={{ sx: { bgcolor: "transparent", boxShadow: "none", p: 0 } }} headerProps={{ sx: { display: "none" } }} footerButtons={<PageEditActions disabled={formLoading || pageMedia.isUploading || pageMedia.isSyncing || pageSeo.isSaving} onCancel={handleCancel} onSubmit={() => { void handleSubmit(async (values) => { if (!(await pageSeo.form.trigger())) return; if (isDirty) { await onFinish(values); return; } try { await syncPageChildren(); open?.({ type: "success", message: "Cập nhật trang thành công", description: "Các thay đổi đã được lưu." }); go({ to: "/pages" }); } catch (saveError) { open?.({ type: "error", message: "Trang đã lưu, Media/SEO chưa đồng bộ", description: getErrorMessage(saveError, "Vui lòng thử lại phần còn lỗi.") }); } })(); }} />}>
         <Box component="form" autoComplete="off">
           <Grid container spacing={3}>
             <Grid item xs={12} md={8}><PageBasicInfoCard register={register} errors={errors} watch={watch} onSlugChange={(value) => setValue("slug", value, { shouldDirty: true, shouldValidate: true })} /><Box mt={3}><PagePublicUrlPreview slug={slug} /></Box></Grid>
             <Grid item xs={12} md={4}>
               <Card sx={{ border: 1, borderColor: "divider", borderRadius: 2, boxShadow: "none", mb: 3 }}><CardContent sx={{ p: { xs: 2, md: 3 } }}><Typography variant="h6" fontWeight={700} mb={1.5}>Trạng thái</Typography><FormControl fullWidth error={Boolean(errors.status)}><InputLabel id="page-status-label">Trạng thái</InputLabel><Select<IPageUpdatePayload["status"]> {...form.register("status", { required: "Trạng thái là bắt buộc" })} labelId="page-status-label" label="Trạng thái" value={status} onChange={(event) => setValue("status", event.target.value as PageStatus, { shouldDirty: true, shouldValidate: true })}><MenuItem value="DRAFT">Bản nháp</MenuItem><MenuItem value="PUBLISHED">Đã xuất bản</MenuItem></Select><FormHelperText>{errors.status?.message ?? (status === "PUBLISHED" ? "Trang đang ở trạng thái công khai." : "Trang đang ở trạng thái bản nháp.")}</FormHelperText></FormControl></CardContent></Card>
-              <Stack spacing={3}><PagePostCreateNotice icon="media" title="Hình ảnh" description="Media Page sẽ được quản lý theo ID trang hiện tại." /><PagePostCreateNotice icon="seo" title="SEO" description="SEO Meta sẽ được cấu hình theo ID trang hiện tại." /></Stack>
+              <Stack spacing={3}>
+                <PostMediaCard entityLabel="trang" thumbnail={pageMedia.thumbnail} gallery={pageMedia.gallery} isUploading={pageMedia.isUploading} uploadingCount={pageMedia.uploadingCount} isLoading={pageMedia.isLoading} error={pageMedia.error} onUploadThumbnail={(file) => { void pageMedia.uploadThumbnail(file); }} onUploadGallery={(files) => { void pageMedia.uploadGallery(files); }} onRemoveThumbnail={() => { void pageMedia.removeThumbnail(); }} onRemoveGalleryItem={(mediaId) => { void pageMedia.removeGalleryItem(mediaId); }} onReorderGallery={pageMedia.reorderGallery} onRetry={() => { void pageMedia.load(); }} />
+                <PostSeoCard entityLabel="trang" form={pageSeo.form} preview={pageSeo.preview} isLoading={pageSeo.isLoading} isSaving={pageSeo.isSaving} error={pageSeo.error} onRetry={pageSeo.retry} />
+              </Stack>
             </Grid>
           </Grid>
         </Box>

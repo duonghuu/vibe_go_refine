@@ -51,3 +51,4 @@
 - [2026-08-31 15:00:29] Hoàn thành API quản trị Page List và Page Edit: phân trang, tìm kiếm, soft delete, detail, cập nhật, kiểm tra slug, cache invalidation, RBAC, Wire DI và OpenAPI.
 - [2026-08-31 15:10:31] Hoàn thành DB schema và API quản lý Page Media: CRUD liên kết thumbnail/gallery, transaction locking, ownership ADMIN/STAFF, cache invalidation, Wire DI và OpenAPI.
 - [2026-08-31 15:19:54] Hoàn thành backend seeder cho pages và page_media, bao gồm media mẫu, liên kết thumbnail/gallery và cơ chế chạy idempotent.
+- [2026-08-31 17:00:06] Hoàn thành tích hợp Page Edit với API Page, Media, SEO; chuẩn hóa sort order gallery, cấu hình PUT mutation và bổ sung EntityRegistry cho SEO Page.

@@ -128,19 +128,20 @@ interface PostMediaCardProps {
   onRemoveGalleryItem: (mediaId: number) => void;
   onReorderGallery: (fromIndex: number, toIndex: number) => void;
   onRetry: () => void;
+  entityLabel?: string;
 }
 
 export const PostMediaCard: React.FC<PostMediaCardProps> = ({
   thumbnail, gallery, isUploading, uploadingCount, isLoading, error,
   onUploadThumbnail, onUploadGallery, onRemoveThumbnail, onRemoveGalleryItem,
-  onReorderGallery, onRetry,
+  onReorderGallery, onRetry, entityLabel = "bài viết",
 }) => {
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
 
   return (
     <Card sx={{ borderRadius: 1.75, border: 1, borderColor: "divider", boxShadow: "none" }}>
       <CardContent sx={{ p: 3 }}>
-        <Typography variant="h6" fontWeight={600} mb={3}>Hình ảnh bài viết</Typography>
+        <Typography variant="h6" fontWeight={600} mb={3}>Hình ảnh {entityLabel}</Typography>
         {isLoading ? (
           <Stack spacing={1.5}>
             <Skeleton variant="rectangular" height={92} />

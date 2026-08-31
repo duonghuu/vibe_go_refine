@@ -74,6 +74,7 @@ const getPreview = (
 export const usePostSeo = (
   postId: number | undefined,
   context: IPostSeoContext,
+  entityType: "post" | "page" = "post",
 ): UsePostSeoResult => {
   const form = useForm<IPostSeoFormValues>({
     defaultValues: emptyPostSeoValues,
@@ -82,7 +83,7 @@ export const usePostSeo = (
   const { open } = useNotification();
   const seoQuery = useOne<RawPostSeo, HttpError>({
     resource: "seo-meta",
-    id: postId ? `post/${postId}` : undefined,
+    id: postId ? `${entityType}/${postId}` : undefined,
     queryOptions: { enabled: Boolean(postId), retry: false },
   });
   const seoMutation = useUpdate<RawPostSeo, HttpError, ReturnType<typeof toPostSeoPayload>>();
@@ -91,11 +92,11 @@ export const usePostSeo = (
 
   useEffect(() => {
     if (seoQuery.result) {
-      const normalized = normalizePostSeo(seoQuery.result);
+      const normalized = normalizePostSeo(seoQuery.result, entityType);
       setData(normalized);
       form.reset(responseToFormValues(normalized));
     }
-  }, [form, seoQuery.result]);
+  }, [entityType, form, seoQuery.result]);
 
   useEffect(() => {
     if (seoQuery.query.error) {
@@ -112,10 +113,13 @@ export const usePostSeo = (
     try {
       const result = await seoMutation.mutateAsync({
         resource: "seo-meta",
-        id: `post/${targetPostId}`,
+        meta: {
+          method: "put",
+        },
+        id: `${entityType}/${targetPostId}`,
         values: toPostSeoPayload(form.getValues()),
       });
-      const normalized = normalizePostSeo(result.data);
+      const normalized = normalizePostSeo(result.data, entityType);
       setData(normalized);
       form.reset(responseToFormValues(normalized));
       open?.({ type: "success", message: "Đã lưu thông tin SEO." });
@@ -125,7 +129,7 @@ export const usePostSeo = (
       open?.({ type: "error", message: "Không thể lưu thông tin SEO.", description: normalizedError.message });
       throw normalizedError;
     }
-  }, [form, open, seoMutation]);
+  }, [entityType, form, open, seoMutation]);
 
   const preview = useMemo(
     () => getPreview(values, context, data),

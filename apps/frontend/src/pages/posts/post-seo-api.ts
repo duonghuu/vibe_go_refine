@@ -74,8 +74,8 @@ const asTwitterCard = (value: string | null | undefined): SeoTwitterCard | null 
   return null;
 };
 
-export const normalizePostSeo = (raw: RawPostSeo): IPostSeoResponse => ({
-  entityType: raw.entityType === "post" ? "post" : "post",
+export const normalizePostSeo = (raw: RawPostSeo, entityType: "post" | "page" = "post"): IPostSeoResponse => ({
+  entityType,
   entityId: raw.entityId ?? raw.entity_id ?? 0,
   metaTitle: raw.metaTitle ?? raw.meta_title ?? null,
   metaDescription: raw.metaDescription ?? raw.meta_description ?? null,

@@ -30,7 +30,7 @@ export interface IPostSeoFormValues {
 }
 
 export interface IPostSeoResponse {
-  entityType: "post";
+  entityType: "post" | "page";
   entityId: number;
   metaTitle: string | null;
   metaDescription: string | null;
@@ -100,4 +100,3 @@ export const emptyPostSeoValues: IPostSeoFormValues = {
   robots: "index,follow",
   schemaJsonText: "",
 };
-

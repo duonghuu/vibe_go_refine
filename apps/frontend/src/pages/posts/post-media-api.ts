@@ -110,9 +110,10 @@ export const uploadPostMedia = async (file: File): Promise<IUploadedMedia> => {
 export const getPostMedia = async (
   postId: number,
   collection?: PostMediaCollection,
+  entityPath = "posts",
 ): Promise<IPostMediaResponse> => {
   const query = collection ? `?collection=${encodeURIComponent(collection)}` : "";
-  const response = await customRequest({ url: `${API_URL}/admin/posts/${postId}/media${query}` });
+  const response = await customRequest({ url: `${API_URL}/admin/${entityPath}/${postId}/media${query}` });
 
   if (!response.ok) {
     throw new Error(await getErrorMessage(response, "Không thể tải hình ảnh bài viết."));
@@ -133,9 +134,10 @@ export const syncPostMedia = async (
   postId: number,
   collection: PostMediaCollection,
   items: IMediaSyncItem[],
+  entityPath = "posts",
 ): Promise<void> => {
   const response = await customRequest({
-    url: `${API_URL}/admin/posts/${postId}/media/${collection}`,
+    url: `${API_URL}/admin/${entityPath}/${postId}/media/${collection}`,
     method: "PUT",
     payload: { media: items.map((item) => ({ id: item.id, sort_order: item.sortOrder })) },
   });

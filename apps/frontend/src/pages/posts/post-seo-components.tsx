@@ -36,6 +36,7 @@ interface PostSeoCardProps {
   isSaving: boolean;
   error: Error | null;
   onRetry: () => Promise<void>;
+  entityLabel?: string;
 }
 
 const isValidUrl = (value: string): boolean => {
@@ -83,7 +84,7 @@ export const PostSeoCard: React.FC<PostSeoCardProps> = ({
   isLoading,
   isSaving,
   error,
-  onRetry,
+  onRetry, entityLabel = "bài viết",
 }) => {
   const {
     register,
@@ -112,7 +113,7 @@ export const PostSeoCard: React.FC<PostSeoCardProps> = ({
       <CardContent sx={{ p: 3 }}>
         <Stack direction="row" justifyContent="space-between" alignItems="center" mb={1}>
           <Typography variant="h6" fontWeight={600} color="text.primary">
-            SEO Meta
+            SEO Meta {entityLabel}
           </Typography>
           {isSaving && (
             <Typography variant="caption" color="text.secondary">
@@ -397,4 +398,3 @@ export const PostSeoCard: React.FC<PostSeoCardProps> = ({
     </Card>
   );
 };
-

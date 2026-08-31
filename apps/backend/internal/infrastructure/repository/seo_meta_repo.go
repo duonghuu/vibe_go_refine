@@ -77,7 +77,12 @@ func (r *entityRegistry) Resolve(ctx context.Context, entityType EntityType, ent
 		err = r.db.WithContext(ctx).Table("categories").Select("id, name, slug, description, image_url").Where("id = ? AND deleted_at IS NULL", entityID).First(&row).Error
 		ref.Title, ref.Slug, ref.Description, ref.ThumbnailURL = row.Name, row.Slug, row.Description, row.ImageURL
 	case EntityPage:
-		return nil, ErrEntityTypeNotConfigured
+		var row struct {
+			ID                   uint
+			Title, Slug, Content string
+		}
+		err = r.db.WithContext(ctx).Table("pages").Select("id, title, slug, content").Where("id = ? AND deleted_at IS NULL", entityID).First(&row).Error
+		ref.Title, ref.Slug, ref.Content = row.Title, row.Slug, row.Content
 	default:
 		return nil, ErrEntityTypeNotSupported
 	}
