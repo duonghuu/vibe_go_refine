@@ -12,6 +12,7 @@ import { PostMediaCard } from "../posts/post-media-components";
 import { usePostMedia } from "../posts/use-post-media";
 import { PostSeoCard } from "../posts/post-seo-components";
 import { UsePostSeoResult, usePostSeo } from "../posts/use-post-seo";
+import { PageSectionsManager, PageSectionsManagerState } from "./sections/page-sections-manager";
 
 const getErrorMessage = (error: unknown, fallback: string): string =>
   error instanceof Error && error.message ? error.message : fallback;
@@ -21,6 +22,7 @@ export const PageEdit: React.FC = () => {
   const go = useGo();
   const { open } = useNotification();
   const [cancelDialogOpen, setCancelDialogOpen] = useState(false);
+  const [sectionState, setSectionState] = useState<PageSectionsManagerState>({ hasDraftChanges: false, isMutating: false });
   const pageId = id && Number.isInteger(Number(id)) && Number(id) > 0 ? Number(id) : undefined;
   const pageMedia = usePostMedia(pageId, "pages");
   const pageSeoRef = useRef<UsePostSeoResult | null>(null);
@@ -76,7 +78,7 @@ export const PageEdit: React.FC = () => {
   }, [go, open, pageId]);
 
   const handleCancel = () => {
-    if (isDirty || pageMedia.isDirty || pageSeo.isDirty) setCancelDialogOpen(true);
+    if (isDirty || pageMedia.isDirty || pageSeo.isDirty || sectionState.hasDraftChanges) setCancelDialogOpen(true);
     else go({ to: "/pages" });
   };
 
@@ -94,7 +96,7 @@ export const PageEdit: React.FC = () => {
     <Box>
       <Typography variant="h4" fontWeight={700} letterSpacing="-0.02em" mb={0.5}>Chỉnh sửa trang</Typography>
       <Typography variant="body2" color="text.secondary" mb={3}>Trang chủ / Quản trị nội dung / Trang / Chỉnh sửa</Typography>
-      <Edit title="" isLoading={formLoading || pageMedia.isSyncing || pageSeo.isSaving} wrapperProps={{ sx: { bgcolor: "transparent", boxShadow: "none", p: 0 } }} headerProps={{ sx: { display: "none" } }} footerButtons={<PageEditActions disabled={formLoading || pageMedia.isUploading || pageMedia.isSyncing || pageSeo.isSaving} onCancel={handleCancel} onSubmit={() => { void handleSubmit(async (values) => { if (!(await pageSeo.form.trigger())) return; if (isDirty) { await onFinish(values); return; } try { await syncPageChildren(); open?.({ type: "success", message: "Cập nhật trang thành công", description: "Các thay đổi đã được lưu." }); go({ to: "/pages" }); } catch (saveError) { open?.({ type: "error", message: "Trang đã lưu, Media/SEO chưa đồng bộ", description: getErrorMessage(saveError, "Vui lòng thử lại phần còn lỗi.") }); } })(); }} />}>
+      <Edit title="" isLoading={formLoading || pageMedia.isSyncing || pageSeo.isSaving || sectionState.isMutating} wrapperProps={{ sx: { bgcolor: "transparent", boxShadow: "none", p: 0 } }} headerProps={{ sx: { display: "none" } }} footerButtons={<PageEditActions disabled={formLoading || pageMedia.isUploading || pageMedia.isSyncing || pageSeo.isSaving || sectionState.isMutating} onCancel={handleCancel} onSubmit={() => { void handleSubmit(async (values) => { if (!(await pageSeo.form.trigger())) return; if (isDirty) { await onFinish(values); return; } try { await syncPageChildren(); open?.({ type: "success", message: "Cập nhật trang thành công", description: "Các thay đổi đã được lưu." }); go({ to: "/pages" }); } catch (saveError) { open?.({ type: "error", message: "Trang đã lưu, Media/SEO chưa đồng bộ", description: getErrorMessage(saveError, "Vui lòng thử lại phần còn lỗi.") }); } })(); }} />}>
         <Box component="form" autoComplete="off">
           <Grid container spacing={3}>
             <Grid item xs={12} md={8}><PageBasicInfoCard register={register} errors={errors} watch={watch} onSlugChange={(value) => setValue("slug", value, { shouldDirty: true, shouldValidate: true })} /><Box mt={3}><PagePublicUrlPreview slug={slug} /></Box></Grid>
@@ -106,6 +108,7 @@ export const PageEdit: React.FC = () => {
               </Stack>
             </Grid>
           </Grid>
+          <PageSectionsManager pageId={pageId} onStateChange={setSectionState} />
         </Box>
       </Edit>
       <Dialog open={cancelDialogOpen} onClose={() => setCancelDialogOpen(false)}>

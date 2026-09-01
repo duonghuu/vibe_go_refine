@@ -100,6 +100,7 @@ export const PageCreate: React.FC = () => {
               <Stack spacing={3}>
                 <PagePostCreateNotice icon="media" title="Hình ảnh" description="Lưu trang trước để quản lý thumbnail và gallery." />
                 <PagePostCreateNotice icon="seo" title="SEO" description="Lưu trang trước để cấu hình thông tin SEO." />
+                <PagePostCreateNotice icon="sections" title="Sections" description="Lưu trang trước để quản lý các Section." />
               </Stack>
             </Grid>
           </Grid>

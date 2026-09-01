@@ -40,6 +40,7 @@ import { PostCreate, PostEdit, PostList } from "./pages/posts";
 import { PostCategoryCreate, PostCategoryList, PostCategoryEdit } from "./pages/post-categories";
 import { PageCreate, PageEdit, PageList } from "./pages/pages";
 import { dataProvider } from "./providers/data";
+import { pageSectionMockDataProvider } from "./providers/page-section-mock-provider";
 import { AdminMasterLayout } from "./components/layout";
 
 function App() {
@@ -52,7 +53,7 @@ function App() {
           <RefineSnackbarProvider>
             <DevtoolsProvider>
               <Refine
-                dataProvider={dataProvider}
+                dataProvider={{ default: dataProvider, pageSections: pageSectionMockDataProvider }}
                 authProvider={authProvider}
                 notificationProvider={useNotificationProvider}
                 routerProvider={routerProvider}

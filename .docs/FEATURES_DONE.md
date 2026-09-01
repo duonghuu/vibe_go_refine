@@ -52,3 +52,4 @@
 - [2026-08-31 15:10:31] Hoàn thành DB schema và API quản lý Page Media: CRUD liên kết thumbnail/gallery, transaction locking, ownership ADMIN/STAFF, cache invalidation, Wire DI và OpenAPI.
 - [2026-08-31 15:19:54] Hoàn thành backend seeder cho pages và page_media, bao gồm media mẫu, liên kết thumbnail/gallery và cơ chế chạy idempotent.
 - [2026-08-31 17:00:06] Hoàn thành tích hợp Page Edit với API Page, Media, SEO; chuẩn hóa sort order gallery, cấu hình PUT mutation và bổ sung EntityRegistry cho SEO Page.
+- [2026-09-01 14:19:00] Hoàn thành UI quản lý Section của Page: CRUD, bật/tắt, reorder, Stepper form, Media picker, collection CATEGORY/POST/MEDIA, debounce tìm kiếm, dirty state và mock Refine data provider.
