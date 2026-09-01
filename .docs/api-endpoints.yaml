@@ -1570,6 +1570,66 @@ paths:
         '403': { description: Forbidden }
         '404': { description: Entity không tồn tại hoặc đã bị xóa mềm }
         '500': { description: Internal Server Error }
+  /api/v1/admin/pages/{page_id}/sections:
+    get:
+      summary: List sections của Page
+      security: [{ BearerAuth: [] }]
+      parameters:
+        - { in: path, name: page_id, required: true, schema: { type: integer } }
+        - { in: query, name: current, schema: { type: integer, minimum: 1, default: 1 } }
+        - { in: query, name: pageSize, schema: { type: integer, minimum: 1, maximum: 100, default: 100 } }
+        - { in: query, name: status, schema: { type: string, enum: [ACTIVE, INACTIVE] } }
+      responses: { '200': { description: Success, content: { application/json: { schema: { $ref: '#/components/schemas/PageSectionListResponse' } } } }, '404': { $ref: '#/components/responses/PageNotFound' } }
+    post:
+      summary: Tạo section cho Page
+      security: [{ BearerAuth: [] }]
+      parameters: [{ in: path, name: page_id, required: true, schema: { type: integer } }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/CreatePageSectionRequest' } } } }
+      responses: { '201': { description: Created }, '400': { $ref: '#/components/responses/ValidationError' }, '409': { $ref: '#/components/responses/SectionConflict' } }
+  /api/v1/admin/pages/{page_id}/sections/{section_id}:
+    get:
+      summary: Chi tiết section
+      security: [{ BearerAuth: [] }]
+      parameters: [{ $ref: '#/components/parameters/PageId' }, { $ref: '#/components/parameters/SectionId' }]
+      responses: { '200': { description: Success }, '404': { $ref: '#/components/responses/SectionNotFound' } }
+    put:
+      summary: Cập nhật section
+      security: [{ BearerAuth: [] }]
+      parameters: [{ $ref: '#/components/parameters/PageId' }, { $ref: '#/components/parameters/SectionId' }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/UpdatePageSectionRequest' } } } }
+      responses: { '200': { description: Updated }, '400': { $ref: '#/components/responses/ValidationError' }, '409': { $ref: '#/components/responses/SectionConflict' } }
+    delete:
+      summary: Xóa section (soft delete)
+      security: [{ BearerAuth: [] }]
+      parameters: [{ $ref: '#/components/parameters/PageId' }, { $ref: '#/components/parameters/SectionId' }]
+      responses: { '204': { description: Deleted }, '404': { $ref: '#/components/responses/SectionNotFound' } }
+  /api/v1/admin/pages/{page_id}/section-order:
+    put:
+      summary: Reorder sections
+      security: [{ BearerAuth: [] }]
+      parameters: [{ $ref: '#/components/parameters/PageId' }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/ReorderPageSectionsRequest' } } } }
+      responses: { '200': { description: Success }, '409': { description: SECTION_ORDER_CONFLICT } }
+  /api/v1/admin/pages/{page_id}/sections/{section_id}/items:
+    get:
+      summary: List item theo collection
+      security: [{ BearerAuth: [] }]
+      parameters: [{ $ref: '#/components/parameters/PageId' }, { $ref: '#/components/parameters/SectionId' }, { in: query, name: collection, required: true, schema: { type: string } }]
+      responses: { '200': { description: Success } }
+  /api/v1/admin/pages/{page_id}/sections/{section_id}/items/{collection}:
+    put:
+      summary: Đồng bộ collection item
+      security: [{ BearerAuth: [] }]
+      parameters: [{ $ref: '#/components/parameters/PageId' }, { $ref: '#/components/parameters/SectionId' }, { in: path, name: collection, required: true, schema: { type: string } }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/SyncSectionCollectionRequest' } } } }
+      responses: { '200': { description: Success }, '409': { description: COLLECTION_TYPE_CONFLICT or SECTION_ITEM_CONFLICT } }
+  /api/v1/admin/media:
+    get:
+      summary: Media Library picker
+      security: [{ BearerAuth: [] }]
+      parameters: [{ in: query, name: current, schema: { type: integer } }, { in: query, name: pageSize, schema: { type: integer, maximum: 100 } }, { in: query, name: q, schema: { type: string } }, { in: query, name: mimeType, schema: { type: string, enum: [image] } }, { in: query, name: status, schema: { type: string, enum: [temporary, attached] } }]
+      responses: { '200': { description: Success } }
+
 components:
   schemas:
     CreatePageMediaRequest:
@@ -1792,6 +1852,40 @@ components:
       properties:
         data: { $ref: '#/components/schemas/SEOMetaResponse' }
         message: { type: string }
+    PageSectionListResponse:
+      type: object
+      properties: { data: { type: array, items: { $ref: '#/components/schemas/PageSectionResponse' } }, total: { type: integer } }
+    PageSectionResponse:
+      type: object
+      properties: { id: { type: integer }, pageId: { type: integer }, key: { type: string }, name: { type: string }, title: { type: string }, description: { type: string }, sortOrder: { type: integer }, status: { type: string }, collections: { type: array, items: { type: object } } }
+    CreatePageSectionRequest:
+      type: object
+      required: [key, name, status]
+      properties: { key: { type: string, pattern: '^[a-z0-9]+(?:_[a-z0-9]+)*$' }, name: { type: string }, title: { type: string }, description: { type: string }, backgroundColor: { type: string }, backgroundMediaId: { type: integer, nullable: true }, featureMediaId: { type: integer, nullable: true }, sortOrder: { type: integer }, status: { type: string, enum: [ACTIVE, INACTIVE] } }
+    UpdatePageSectionRequest:
+      allOf: [{ $ref: '#/components/schemas/CreatePageSectionRequest' }]
+    ReorderPageSectionsRequest:
+      type: object
+      required: [sections]
+      properties: { sections: { type: array, maxItems: 100, items: { type: object, required: [id, sortOrder], properties: { id: { type: integer }, sortOrder: { type: integer } } } } }
+    SyncSectionCollectionRequest:
+      type: object
+      required: [itemType]
+      properties: { itemType: { type: string, enum: [CATEGORY, POST, MEDIA] }, items: { type: array, maxItems: 100, items: { type: object, required: [itemId, sortOrder], properties: { itemId: { type: integer }, sortOrder: { type: integer } } } } }
+    MediaListResponse:
+      type: object
+      properties: { data: { type: array, items: { $ref: '#/components/schemas/MediaListItem' } }, total: { type: integer } }
+    MediaListItem:
+      type: object
+      properties: { id: { type: integer }, fileName: { type: string }, originalUrl: { type: string }, thumbnailUrl: { type: string }, mediumUrl: { type: string }, mimeType: { type: string }, size: { type: integer }, status: { type: string }, createdAt: { type: string, format: date-time } }
+  parameters:
+    PageId: { in: path, name: page_id, required: true, schema: { type: integer, minimum: 1 } }
+    SectionId: { in: path, name: section_id, required: true, schema: { type: integer, minimum: 1 } }
+  responses:
+    PageNotFound: { description: PAGE_NOT_FOUND }
+    SectionNotFound: { description: SECTION_NOT_FOUND }
+    ValidationError: { description: VALIDATION_ERROR }
+    SectionConflict: { description: SECTION_KEY_CONFLICT or SECTION_ITEM_CONFLICT }
   securitySchemes:
     BearerAuth:
       type: http

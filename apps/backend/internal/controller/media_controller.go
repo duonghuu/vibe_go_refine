@@ -5,6 +5,7 @@ import (
 	"net/http"
 	"strconv"
 
+	"go_refine_dashboard_be/internal/usecases/media/dto"
 	"go_refine_dashboard_be/internal/usecases/media/service"
 
 	"github.com/gin-gonic/gin"
@@ -12,6 +13,25 @@ import (
 
 type MediaController struct {
 	mediaService service.MediaService
+}
+
+func (c *MediaController) ListMedia(ctx *gin.Context) {
+	var query dto.GetMediaListQuery
+	if err := ctx.ShouldBindQuery(&query); err != nil {
+		ctx.JSON(http.StatusBadRequest, gin.H{"error": "VALIDATION_ERROR", "code": "VALIDATION_ERROR"})
+		return
+	}
+	userID, role, err := mediaIdentity(ctx)
+	if err != nil {
+		ctx.JSON(http.StatusUnauthorized, gin.H{"error": "UNAUTHORIZED", "code": "UNAUTHORIZED"})
+		return
+	}
+	result, err := c.mediaService.ListMedia(ctx.Request.Context(), query, userID, role)
+	if err != nil {
+		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "INTERNAL_ERROR", "code": "INTERNAL_ERROR"})
+		return
+	}
+	ctx.JSON(http.StatusOK, result)
 }
 
 func NewMediaController(mediaService service.MediaService) *MediaController {

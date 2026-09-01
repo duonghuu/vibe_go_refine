@@ -16,6 +16,7 @@ import (
 	service2 "go_refine_dashboard_be/internal/usecases/media/service"
 	service12 "go_refine_dashboard_be/internal/usecases/page/service"
 	service13 "go_refine_dashboard_be/internal/usecases/pagemedia/service"
+	service14 "go_refine_dashboard_be/internal/usecases/pagesection/service"
 	service9 "go_refine_dashboard_be/internal/usecases/post/service"
 	service10 "go_refine_dashboard_be/internal/usecases/postcategory/service"
 	service7 "go_refine_dashboard_be/internal/usecases/postmedia/service"
@@ -122,6 +123,13 @@ func InitializePageMediaController(db *gorm.DB, redisClient *redis.Client) *cont
 	return pageMediaController
 }
 
+func InitializePageSectionController(db *gorm.DB, redisClient *redis.Client) *controller.PageSectionController {
+	pageSectionRepository := repository.NewPageSectionRepository(db)
+	pageSectionService := service14.NewPageSectionService(pageSectionRepository, db, redisClient)
+	pageSectionController := controller.NewPageSectionController(pageSectionService)
+	return pageSectionController
+}
+
 // wire.go:
 
 var ProductSet = wire.NewSet(repository.NewProductRepository, service.NewProductService, controller.NewProductController)
@@ -149,3 +157,5 @@ var SEOMetaSet = wire.NewSet(repository.NewSEOMetaRepository, repository.NewEnti
 var PageSet = wire.NewSet(repository.NewPageRepository, service12.NewPageService, controller.NewPageController)
 
 var PageMediaSet = wire.NewSet(repository.NewPageMediaRepository, service13.NewPageMediaService, controller.NewPageMediaController)
+
+var PageSectionSet = wire.NewSet(repository.NewPageSectionRepository, service14.NewPageSectionService, controller.NewPageSectionController)

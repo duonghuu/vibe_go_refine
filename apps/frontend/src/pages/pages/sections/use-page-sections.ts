@@ -40,7 +40,7 @@ export const usePageSections = (pageId: number) => {
     open?.({ type: "success", message: "Đã cập nhật Section." });
   }, [open, reload, update]);
   const deleteSection = useCallback(async (id: number) => {
-    await remove.mutateAsync({ resource: "page-sections", id, dataProviderName: "pageSections" });
+    await remove.mutateAsync({ resource: "page-sections", id, dataProviderName: "pageSections", meta: { pageId } });
     await reload();
     open?.({ type: "success", message: "Đã xóa Section." });
   }, [open, reload, remove]);

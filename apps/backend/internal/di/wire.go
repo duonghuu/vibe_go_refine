@@ -12,6 +12,7 @@ import (
 	mediaService "go_refine_dashboard_be/internal/usecases/media/service"
 	pageService "go_refine_dashboard_be/internal/usecases/page/service"
 	pageMediaService "go_refine_dashboard_be/internal/usecases/pagemedia/service"
+	pageSectionService "go_refine_dashboard_be/internal/usecases/pagesection/service"
 	postService "go_refine_dashboard_be/internal/usecases/post/service"
 	postCategoryService "go_refine_dashboard_be/internal/usecases/postcategory/service"
 	postMediaService "go_refine_dashboard_be/internal/usecases/postmedia/service"
@@ -105,6 +106,12 @@ var PageMediaSet = wire.NewSet(
 	controller.NewPageMediaController,
 )
 
+var PageSectionSet = wire.NewSet(
+	repository.NewPageSectionRepository,
+	pageSectionService.NewPageSectionService,
+	controller.NewPageSectionController,
+)
+
 func InitializeProductController(db *gorm.DB) *controller.ProductController {
 	wire.Build(ProductSet)
 	return &controller.ProductController{}
@@ -168,4 +175,9 @@ func InitializePageController(db *gorm.DB, redisClient *redis.Client) *controlle
 func InitializePageMediaController(db *gorm.DB, redisClient *redis.Client) *controller.PageMediaController {
 	wire.Build(PageMediaSet)
 	return &controller.PageMediaController{}
+}
+
+func InitializePageSectionController(db *gorm.DB, redisClient *redis.Client) *controller.PageSectionController {
+	wire.Build(PageSectionSet)
+	return &controller.PageSectionController{}
 }

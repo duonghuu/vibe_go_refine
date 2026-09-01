@@ -93,6 +93,7 @@ func main() {
 	seoMetaController := di.InitializeSEOMetaController(db, redisClient)
 	pageController := di.InitializePageController(db, redisClient)
 	pageMediaController := di.InitializePageMediaController(db, redisClient)
+	pageSectionController := di.InitializePageSectionController(db, redisClient)
 
 	// 3. Setup Router
 	r := gin.Default()
@@ -116,6 +117,7 @@ func main() {
 	mediaGroup := api.Group("/media")
 	mediaGroup.Use(middleware.AuthMiddleware(redisClient))
 	{
+		mediaGroup.GET("", middleware.RoleMiddleware("ADMIN", "STAFF"), mediaController.ListMedia)
 		mediaGroup.POST("/upload", mediaController.UploadFile)
 		mediaGroup.DELETE("/:id", mediaController.DeleteFile)
 	}
@@ -130,6 +132,9 @@ func main() {
 	// Auth Protected Routes
 	admin := api.Group("/admin")
 	admin.Use(middleware.AuthMiddleware(redisClient))
+	adminMedia := admin.Group("/media")
+	adminMedia.Use(middleware.RoleMiddleware("ADMIN", "STAFF"))
+	adminMedia.GET("", mediaController.ListMedia)
 
 	// Protected Auth Endpoints
 	authProtected := api.Group("/auth")
@@ -241,6 +246,19 @@ func main() {
 		pageMedia.POST("", pageMediaController.CreatePageMedia)
 		pageMedia.PUT("/:collection", pageMediaController.SyncPageMedia)
 		pageMedia.DELETE("/:media_id", pageMediaController.DeletePageMedia)
+	}
+
+	pageSections := admin.Group("/pages/:page_id")
+	pageSections.Use(middleware.RoleMiddleware("ADMIN", "STAFF"))
+	{
+		pageSections.GET("/sections", pageSectionController.GetSections)
+		pageSections.POST("/sections", pageSectionController.CreateSection)
+		pageSections.GET("/sections/:section_id", pageSectionController.GetSection)
+		pageSections.PUT("/sections/:section_id", pageSectionController.UpdateSection)
+		pageSections.DELETE("/sections/:section_id", pageSectionController.DeleteSection)
+		pageSections.PUT("/section-order", pageSectionController.ReorderSections)
+		pageSections.GET("/sections/:section_id/items", pageSectionController.GetItems)
+		pageSections.PUT("/sections/:section_id/items/:collection", pageSectionController.SyncItems)
 	}
 
 	// 5. Start Server

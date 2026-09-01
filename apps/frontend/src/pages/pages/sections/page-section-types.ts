@@ -118,6 +118,7 @@ export interface ISectionPickerOption extends BaseRecord {
 }
 
 export interface ISyncSectionCollectionPayload {
+  pageId: number;
   sectionId: number;
   collection: string;
   itemType: PageSectionItemType;

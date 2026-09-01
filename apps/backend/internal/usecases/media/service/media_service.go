@@ -27,6 +27,30 @@ var (
 type MediaService interface {
 	UploadFile(ctx context.Context, file *multipart.FileHeader, userId uint) (*dto.UploadMediaResponse, error)
 	DeleteFile(ctx context.Context, id uint, userId uint, role string) error
+	ListMedia(ctx context.Context, query dto.GetMediaListQuery, userID uint, role string) (*dto.MediaListResponse, error)
+}
+
+func (s *mediaService) ListMedia(ctx context.Context, query dto.GetMediaListQuery, userID uint, role string) (*dto.MediaListResponse, error) {
+	current := query.Current
+	if current < 1 {
+		current = 1
+	}
+	size := query.PageSize
+	if size < 1 {
+		size = 20
+	}
+	if size > 100 {
+		size = 100
+	}
+	rows, total, err := s.mediaRepo.FindAndCount(ctx, userID, role == "ADMIN", query.Q, query.MimeType, query.Status, (current-1)*size, size)
+	if err != nil {
+		return nil, err
+	}
+	data := make([]dto.MediaListItemResponse, 0, len(rows))
+	for _, m := range rows {
+		data = append(data, dto.MediaListItemResponse{ID: m.ID, FileName: m.FileName, OriginalURL: m.OriginalUrl, ThumbnailURL: m.ThumbnailUrl, MediumURL: m.MediumUrl, MimeType: m.MimeType, Size: m.Size, Status: string(m.Status), CreatedAt: m.CreatedAt})
+	}
+	return &dto.MediaListResponse{Data: data, Total: total}, nil
 }
 
 type mediaService struct {
