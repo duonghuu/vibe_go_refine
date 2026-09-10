@@ -1,27 +1,153 @@
 {
+  "header": {
+    "brand": { "name": "Mega", "accent": "kit.", "href": "/" },
+    "socialLinks": [
+      { "label": "Facebook", "href": "https://www.facebook.com/themefisher", "icon": "ti-facebook", "ariaLabel": "Facebook" },
+      { "label": "Twitter", "href": "https://twitter.com/themefisher", "icon": "ti-twitter", "ariaLabel": "Twitter" },
+      { "label": "GitHub", "href": "https://github.com/themefisher/", "icon": "ti-github", "ariaLabel": "GitHub" }
+    ],
+    "phoneLabel": "Call Us :",
+    "phone": { "label": "+23-345-67890", "href": "tel:+23-345-67890" },
+    "email": { "label": "support@gmail.com", "href": "mailto:support@gmail.com" },
+    "navigation": [
+      { "kind": "link", "label": "Home", "href": "/" },
+      {
+        "kind": "dropdown",
+        "label": "About",
+        "children": [
+          { "label": "Our company", "href": "#about" },
+          { "label": "Pricing", "href": "#quote" }
+        ]
+      },
+      { "kind": "link", "label": "Services", "href": "#services" },
+      { "kind": "link", "label": "Portfolio", "href": "#portfolio" },
+      {
+        "kind": "dropdown",
+        "label": "Blog",
+        "children": [
+          { "label": "Blog Grid", "href": "#latest-news" },
+          { "label": "Blog with Sidebar", "href": "#latest-news" },
+          { "label": "Blog Single", "href": "#latest-news" }
+        ]
+      },
+      { "kind": "link", "label": "Contact", "href": "#contact" }
+    ],
+    "quoteCta": { "label": "Get a Quote", "href": "#contact" }
+  },
+  "hero": {
+    "backgroundImage": "/images/bg/home-1.jpg",
+    "eyebrow": "Prepare for new future",
+    "titleLines": ["Our work is", "presentation of our", "capabilities."],
+    "cta": { "label": "Get started", "href": "#contact" }
+  },
+  "intro": {
+    "heading": {
+      "eyebrow": "We are creative & expert people",
+      "title": "We work with business & provide solution to client with their business problem"
+    },
+    "benefits": [
+      { "icon": "ti-desktop", "title": "Modern & Responsive design", "description": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Odit, ducimus." },
+      { "icon": "ti-medall", "title": "Awarded licensed company", "description": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Odit, ducimus." },
+      { "icon": "ti-layers-alt", "title": "Build your website Professionally", "description": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Odit, ducimus." }
+    ]
+  },
+  "about": {
+    "image": { "src": "/images/about/home-8.jpg", "alt": "" },
+    "heading": { "eyebrow": "What we are", "title": "We are dynamic team of creative people" },
+    "featureTitle": "We are Perfect Solution",
+    "description": "We provide consulting services in the area of IFRS and management reporting, helping companies to reach their highest level. We optimize business processes, making them easier.",
+    "cta": { "label": "Get started", "href": "#contact" }
+  },
   "stats": [
     { "value": 1730, "suffix": "+", "label": "Project Done" },
     { "value": 125, "suffix": "M", "label": "User Worldwide" },
     { "value": 39, "suffix": "", "label": "Availble Country" },
     { "value": 14, "suffix": "", "label": "Award Winner" }
   ],
-  "services": [
-    { "icon": "ti-desktop", "title": "Web development.", "description": "A digital agency isn't here to replace your internal team, we're here to partner" },
-    { "icon": "ti-layers", "title": "Interface Design.", "description": "A digital agency isn't here to replace your internal team, we're here to partner" },
-    { "icon": "ti-bar-chart", "title": "Business Consulting.", "description": "A digital agency isn't here to replace your internal team, we're here to partner" },
-    { "icon": "ti-vector", "title": "Branding.", "description": "A digital agency isn't here to replace your internal team, we're here to partner" },
-    { "icon": "ti-android", "title": "App development.", "description": "A digital agency isn't here to replace your internal team, we're here to partner" },
-    { "icon": "ti-pencil-alt", "title": "Content creation.", "description": "A digital agency isn't here to replace your internal team, we're here to partner" }
-  ],
-  "testimonials": [
-    { "quote": "Quam maiores perspiciatis temporibus odio reiciendis error alias debitis atque consequuntur natus iusto recusandae numquam corrupti facilis blanditiis.", "name": "Thomas Johnson", "role": "Excutive Director, themefisher" },
-    { "quote": "Consectetur adipisicing elit. Quam maiores perspiciatis temporibus odio reiciendis error alias debitis atque consequuntur natus iusto recusandae.", "name": "Mickel hussy", "role": "Excutive Director, themefisher" },
-    { "quote": "Quam maiores perspiciatis temporibus odio reiciendis error alias debitis atque consequuntur natus iusto recusandae numquam corrupti.", "name": "James Watson", "role": "Excutive Director, themefisher" },
-    { "quote": "Consectetur adipisicing elit. Quam maiores perspiciatis temporibus odio reiciendis error alias debitis atque consequuntur natus iusto recusandae.", "name": "Mickel hussy", "role": "Excutive Director, themefisher" }
-  ],
-  "articles": [
-    { "image": "/images/blog/1.jpg", "title": "How to improve design with typography?" },
-    { "image": "/images/blog/2.jpg", "title": "Interactivity design may connect consumer" },
-    { "image": "/images/blog/3.jpg", "title": "Marketing Strategy to bring more affect" }
-  ]
+  "services": {
+    "heading": { "eyebrow": "Our Services", "title": "We provide a wide range of creative services" },
+    "items": [
+      { "icon": "ti-desktop", "title": "Web development.", "description": "A digital agency isn't here to replace your internal team, we're here to partner" },
+      { "icon": "ti-layers", "title": "Interface Design.", "description": "A digital agency isn't here to replace your internal team, we're here to partner" },
+      { "icon": "ti-bar-chart", "title": "Business Consulting.", "description": "A digital agency isn't here to replace your internal team, we're here to partner" },
+      { "icon": "ti-vector", "title": "Branding.", "description": "A digital agency isn't here to replace your internal team, we're here to partner" },
+      { "icon": "ti-android", "title": "App development.", "description": "A digital agency isn't here to replace your internal team, we're here to partner" },
+      { "icon": "ti-pencil-alt", "title": "Content creation.", "description": "A digital agency isn't here to replace your internal team, we're here to partner" }
+    ]
+  },
+  "contactCta": {
+    "backgroundImage": "/images/bg/home-3.jpg",
+    "heading": { "eyebrow": "We create for you", "title": "Entrust Your Project to Our Best Team of Professionals" },
+    "description": "Have any project on mind? For immidiate support :",
+    "phoneIcon": "ti-mobile",
+    "phone": { "label": "+23 876 65 455", "href": "tel:+23-876-65-455" }
+  },
+  "testimonials": {
+    "heading": { "eyebrow": "Clients testimonial", "title": "Check what's our clients say about us" },
+    "items": [
+      { "quote": "Quam maiores perspiciatis temporibus odio reiciendis error alias debitis atque consequuntur natus iusto recusandae numquam corrupti facilis blanditiis.", "name": "Thomas Johnson", "role": "Excutive Director, themefisher" },
+      { "quote": "Consectetur adipisicing elit. Quam maiores perspiciatis temporibus odio reiciendis error alias debitis atque consequuntur natus iusto recusandae.", "name": "Mickel hussy", "role": "Excutive Director, themefisher" },
+      { "quote": "Quam maiores perspiciatis temporibus odio reiciendis error alias debitis atque consequuntur natus iusto recusandae numquam corrupti.", "name": "James Watson", "role": "Excutive Director, themefisher" },
+      { "quote": "Consectetur adipisicing elit. Quam maiores perspiciatis temporibus odio reiciendis error alias debitis atque consequuntur natus iusto recusandae.", "name": "Mickel hussy", "role": "Excutive Director, themefisher" }
+    ]
+  },
+  "latestArticles": {
+    "backgroundImage": "/images/bg/home-5.jpg",
+    "heading": { "eyebrow": "Latest News", "title": "Latest articles to enrich knowledge" },
+    "items": [
+      { "image": { "src": "/images/blog/1.jpg", "alt": "" }, "title": "How to improve design with typography?", "categories": ["Design", "Ui/Ux"], "authorName": "admin", "href": "#latest-news", "cta": { "label": "Learn More", "href": "#latest-news" } },
+      { "image": { "src": "/images/blog/2.jpg", "alt": "" }, "title": "Interactivity design may connect consumer", "categories": ["Design", "Ui/Ux"], "authorName": "admin", "href": "#latest-news", "cta": { "label": "Learn More", "href": "#latest-news" } },
+      { "image": { "src": "/images/blog/3.jpg", "alt": "" }, "title": "Marketing Strategy to bring more affect", "categories": ["Design", "Ui/Ux"], "authorName": "admin", "href": "#latest-news", "cta": { "label": "Learn More", "href": "#latest-news" } }
+    ]
+  },
+  "quoteCta": {
+    "heading": { "eyebrow": "For Every type business", "title": "Entrust Your Project to Our Best Team of Professionals" },
+    "cta": { "label": "Contact Us", "href": "#contact" }
+  },
+  "footer": {
+    "brand": { "name": "Mega", "accent": "kit.", "href": "/" },
+    "linkGroups": [
+      {
+        "title": "Company",
+        "links": [
+          { "label": "Terms & Conditions", "href": "#" },
+          { "label": "Privacy Policy", "href": "#" },
+          { "label": "Support", "href": "#contact" },
+          { "label": "FAQ", "href": "#" }
+        ]
+      },
+      {
+        "title": "Quick Links",
+        "links": [
+          { "label": "About", "href": "#about" },
+          { "label": "Services", "href": "#services" },
+          { "label": "Team", "href": "#" },
+          { "label": "Contact", "href": "#contact" }
+        ]
+      }
+    ],
+    "subscribe": {
+      "title": "Subscribe Us",
+      "description": "Subscribe to get latest news article and resources",
+      "placeholder": "Subscribe Now ...",
+      "buttonLabel": "Subscribe"
+    },
+    "email": { "label": "Support@megakit.com", "href": "mailto:support@gmail.com" },
+    "phone": { "label": "+23-456-6588", "href": "tel:+23-456-6588" },
+    "copyright": {
+      "prefix": "© Copyright Reserved to",
+      "brand": "Megakit.",
+      "by": "by",
+      "link": { "label": "Themefisher", "href": "https://themefisher.com/" }
+    },
+    "distributedBy": {
+      "prefix": "Distributed by",
+      "link": { "label": "Themewagon", "href": "https://themewagon.com/" }
+    },
+    "socialLinks": [
+      { "label": "Facebook", "href": "https://www.facebook.com/themefisher", "icon": "ti-facebook", "ariaLabel": "Facebook" },
+      { "label": "Twitter", "href": "https://twitter.com/themefisher", "icon": "ti-twitter", "ariaLabel": "Twitter" },
+      { "label": "Linkedin", "href": "https://www.pinterest.com/themefisher/", "icon": "ti-linkedin", "ariaLabel": "Linkedin" }
+    ]
+  }
 }
