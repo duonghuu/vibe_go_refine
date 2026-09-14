@@ -1,0 +1,32 @@
+[
+  {
+    "id": 1,
+    "code": "SLIDER",
+    "name": "Banner Slider",
+    "status": "ACTIVE",
+    "sortOrder": 0,
+    "maxItems": 10,
+    "itemCount": 3,
+    "fieldConfig": {
+      "name": { "enabled": true, "required": true },
+      "description": { "enabled": true, "required": false },
+      "secondaryDescription": { "enabled": false, "required": false },
+      "url": { "enabled": true, "required": false }
+    }
+  },
+  {
+    "id": 2,
+    "code": "LOGO",
+    "name": "Logo thương hiệu",
+    "status": "ACTIVE",
+    "sortOrder": 1,
+    "maxItems": 1,
+    "itemCount": 1,
+    "fieldConfig": {
+      "name": { "enabled": true, "required": false },
+      "description": { "enabled": false, "required": false },
+      "secondaryDescription": { "enabled": false, "required": false },
+      "url": { "enabled": false, "required": false }
+    }
+  }
+]

@@ -94,6 +94,7 @@ func main() {
 	pageController := di.InitializePageController(db, redisClient)
 	pageMediaController := di.InitializePageMediaController(db, redisClient)
 	pageSectionController := di.InitializePageSectionController(db, redisClient)
+	imageContentController := di.InitializeImageContentController(db, redisClient)
 
 	// 3. Setup Router
 	r := gin.Default()
@@ -260,6 +261,30 @@ func main() {
 		pageSections.GET("/sections/:section_id/items", pageSectionController.GetItems)
 		pageSections.PUT("/sections/:section_id/items/:collection", pageSectionController.SyncItems)
 	}
+
+	imageContentTypes := admin.Group("/image-content-types")
+	imageContentTypes.Use(middleware.RoleMiddleware("ADMIN"))
+	{
+		imageContentTypes.GET("", imageContentController.GetTypes)
+		imageContentTypes.POST("", imageContentController.CreateType)
+		imageContentTypes.GET("/:id", imageContentController.GetType)
+		imageContentTypes.PUT("/:id", imageContentController.UpdateType)
+		imageContentTypes.DELETE("/:id", imageContentController.DeleteType)
+	}
+
+	imageContents := admin.Group("/image-contents")
+	imageContents.Use(middleware.RoleMiddleware("ADMIN", "STAFF"))
+	{
+		imageContents.GET("", imageContentController.GetContents)
+		imageContents.POST("", imageContentController.CreateContent)
+		imageContents.PUT("/order", imageContentController.ReorderContents)
+		imageContents.GET("/:id", imageContentController.GetContent)
+		imageContents.PUT("/:id", imageContentController.UpdateContent)
+		imageContents.DELETE("/:id", imageContentController.DeleteContent)
+	}
+
+	public := api.Group("/public")
+	public.GET("/image-contents", imageContentController.GetPublicContents)
 
 	// 5. Start Server
 	serverPort := os.Getenv("PORT")

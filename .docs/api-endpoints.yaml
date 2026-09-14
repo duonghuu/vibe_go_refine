@@ -1630,8 +1630,378 @@ paths:
       parameters: [{ in: query, name: current, schema: { type: integer } }, { in: query, name: pageSize, schema: { type: integer, maximum: 100 } }, { in: query, name: q, schema: { type: string } }, { in: query, name: mimeType, schema: { type: string, enum: [image] } }, { in: query, name: status, schema: { type: string, enum: [temporary, attached] } }]
       responses: { '200': { description: Success } }
 
+  /api/v1/admin/image-content-types:
+    get:
+      summary: Lấy danh sách loại ImageContent
+      tags: [Admin ImageContent Type]
+      security: [{ BearerAuth: [] }]
+      x-code-files:
+        - apps/backend/internal/controller/image_content_controller.go
+        - apps/backend/internal/infrastructure/queryservice/image_content_query_service.go
+        - apps/backend/internal/infrastructure/repository/image_content_repository.go
+        - apps/backend/internal/usecases/imagecontent/dto/image_content_dto.go
+      parameters:
+        - { in: query, name: _start, schema: { type: integer, minimum: 0, default: 0 } }
+        - { in: query, name: _end, schema: { type: integer, minimum: 1, maximum: 1000, default: 20 } }
+        - { in: query, name: q, schema: { type: string, maxLength: 100 } }
+        - { in: query, name: status, schema: { type: string, enum: [ACTIVE, INACTIVE] } }
+        - { in: query, name: _sort, schema: { type: string, enum: [id, code, name, status, sortOrder, createdAt, updatedAt] } }
+        - { in: query, name: _order, schema: { type: string, enum: [ASC, DESC, asc, desc] } }
+      responses:
+        '200': { description: Thành công, content: { application/json: { schema: { $ref: '#/components/schemas/ImageContentTypeListResponse' } } } }
+        '400': { description: VALIDATION_ERROR }
+        '401': { description: UNAUTHORIZED }
+        '403': { description: FORBIDDEN }
+        '500': { description: INTERNAL_ERROR }
+    post:
+      summary: Tạo loại ImageContent
+      tags: [Admin ImageContent Type]
+      security: [{ BearerAuth: [] }]
+      x-code-files:
+        - apps/backend/internal/controller/image_content_controller.go
+        - apps/backend/internal/usecases/imagecontent/service/image_content_service.go
+        - apps/backend/internal/infrastructure/repository/image_content_repository.go
+        - apps/backend/internal/usecases/imagecontent/dto/image_content_dto.go
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/CreateImageContentTypeRequest' } } } }
+      responses:
+        '201': { description: Tạo thành công, content: { application/json: { schema: { $ref: '#/components/schemas/ImageContentTypeEnvelope' } } } }
+        '400': { description: VALIDATION_ERROR }
+        '401': { description: UNAUTHORIZED }
+        '403': { description: FORBIDDEN }
+        '409': { description: TYPE_CODE_CONFLICT }
+        '500': { description: INTERNAL_ERROR }
+
+  /api/v1/admin/image-content-types/{id}:
+    get:
+      summary: Lấy chi tiết loại ImageContent
+      tags: [Admin ImageContent Type]
+      security: [{ BearerAuth: [] }]
+      x-code-files:
+        - apps/backend/internal/controller/image_content_controller.go
+        - apps/backend/internal/infrastructure/queryservice/image_content_query_service.go
+      parameters: [{ in: path, name: id, required: true, schema: { type: integer, minimum: 1 } }]
+      responses:
+        '200': { description: Thành công, content: { application/json: { schema: { $ref: '#/components/schemas/ImageContentTypeEnvelope' } } } }
+        '400': { description: VALIDATION_ERROR }
+        '401': { description: UNAUTHORIZED }
+        '403': { description: FORBIDDEN }
+        '404': { description: TYPE_NOT_FOUND }
+        '500': { description: INTERNAL_ERROR }
+    put:
+      summary: Cập nhật loại ImageContent
+      tags: [Admin ImageContent Type]
+      security: [{ BearerAuth: [] }]
+      x-code-files:
+        - apps/backend/internal/controller/image_content_controller.go
+        - apps/backend/internal/usecases/imagecontent/service/image_content_service.go
+        - apps/backend/internal/infrastructure/repository/image_content_repository.go
+      parameters: [{ in: path, name: id, required: true, schema: { type: integer, minimum: 1 } }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/UpdateImageContentTypeRequest' } } } }
+      responses:
+        '200': { description: Cập nhật thành công, content: { application/json: { schema: { $ref: '#/components/schemas/ImageContentTypeEnvelope' } } } }
+        '400': { description: VALIDATION_ERROR }
+        '401': { description: UNAUTHORIZED }
+        '403': { description: FORBIDDEN }
+        '404': { description: TYPE_NOT_FOUND }
+        '409': { description: TYPE_CONFIG_CONFLICT }
+        '500': { description: INTERNAL_ERROR }
+    delete:
+      summary: Xóa mềm loại ImageContent
+      tags: [Admin ImageContent Type]
+      security: [{ BearerAuth: [] }]
+      x-code-files:
+        - apps/backend/internal/controller/image_content_controller.go
+        - apps/backend/internal/usecases/imagecontent/service/image_content_service.go
+      parameters: [{ in: path, name: id, required: true, schema: { type: integer, minimum: 1 } }]
+      responses:
+        '204': { description: No Content }
+        '401': { description: UNAUTHORIZED }
+        '403': { description: FORBIDDEN }
+        '404': { description: TYPE_NOT_FOUND }
+        '409': { description: TYPE_IN_USE }
+        '500': { description: INTERNAL_ERROR }
+
+  /api/v1/admin/image-contents:
+    get:
+      summary: Lấy danh sách ImageContent
+      tags: [Admin ImageContent]
+      security: [{ BearerAuth: [] }]
+      x-code-files:
+        - apps/backend/internal/controller/image_content_controller.go
+        - apps/backend/internal/infrastructure/queryservice/image_content_query_service.go
+        - apps/backend/internal/infrastructure/repository/image_content_repository.go
+        - apps/backend/internal/usecases/imagecontent/dto/image_content_dto.go
+      parameters:
+        - { in: query, name: _start, schema: { type: integer, minimum: 0, default: 0 } }
+        - { in: query, name: _end, schema: { type: integer, minimum: 1, maximum: 1000, default: 20 } }
+        - { in: query, name: q, schema: { type: string, maxLength: 255 } }
+        - { in: query, name: typeCode, schema: { type: string, maxLength: 50 } }
+        - { in: query, name: status, schema: { type: string, enum: [ACTIVE, INACTIVE] } }
+        - { in: query, name: _sort, schema: { type: string, enum: [id, typeCode, name, status, sortOrder, createdAt, updatedAt] } }
+        - { in: query, name: _order, schema: { type: string, enum: [ASC, DESC, asc, desc] } }
+      responses:
+        '200': { description: Thành công, content: { application/json: { schema: { $ref: '#/components/schemas/ImageContentListResponse' } } } }
+        '400': { description: VALIDATION_ERROR }
+        '401': { description: UNAUTHORIZED }
+        '403': { description: FORBIDDEN }
+        '500': { description: INTERNAL_ERROR }
+    post:
+      summary: Tạo ImageContent
+      tags: [Admin ImageContent]
+      security: [{ BearerAuth: [] }]
+      x-code-files:
+        - apps/backend/internal/controller/image_content_controller.go
+        - apps/backend/internal/usecases/imagecontent/service/image_content_service.go
+        - apps/backend/internal/infrastructure/repository/image_content_repository.go
+        - apps/backend/internal/usecases/imagecontent/dto/image_content_dto.go
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/CreateImageContentRequest' } } } }
+      responses:
+        '201': { description: Tạo thành công, content: { application/json: { schema: { $ref: '#/components/schemas/ImageContentEnvelope' } } } }
+        '400': { description: 'VALIDATION_ERROR, MEDIA_TYPE_INVALID, FIELD_REQUIRED or FIELD_NOT_ENABLED' }
+        '401': { description: UNAUTHORIZED }
+        '403': { description: FORBIDDEN }
+        '404': { description: TYPE_NOT_FOUND or MEDIA_NOT_FOUND }
+        '409': { description: MAX_ITEMS_EXCEEDED }
+        '500': { description: INTERNAL_ERROR }
+
+  /api/v1/admin/image-contents/order:
+    put:
+      summary: Sắp xếp ImageContent
+      tags: [Admin ImageContent]
+      security: [{ BearerAuth: [] }]
+      x-code-files:
+        - apps/backend/internal/controller/image_content_controller.go
+        - apps/backend/internal/usecases/imagecontent/service/image_content_service.go
+        - apps/backend/internal/infrastructure/repository/image_content_repository.go
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/ReorderImageContentsRequest' } } } }
+      responses:
+        '200': { description: Sắp xếp thành công }
+        '400': { description: VALIDATION_ERROR }
+        '401': { description: UNAUTHORIZED }
+        '403': { description: FORBIDDEN }
+        '404': { description: TYPE_NOT_FOUND }
+        '409': { description: ORDER_CONFLICT }
+        '500': { description: INTERNAL_ERROR }
+
+  /api/v1/admin/image-contents/{id}:
+    get:
+      summary: Lấy chi tiết ImageContent
+      tags: [Admin ImageContent]
+      security: [{ BearerAuth: [] }]
+      x-code-files:
+        - apps/backend/internal/controller/image_content_controller.go
+        - apps/backend/internal/infrastructure/queryservice/image_content_query_service.go
+      parameters: [{ in: path, name: id, required: true, schema: { type: integer, minimum: 1 } }]
+      responses:
+        '200': { description: Thành công, content: { application/json: { schema: { $ref: '#/components/schemas/ImageContentEnvelope' } } } }
+        '400': { description: VALIDATION_ERROR }
+        '401': { description: UNAUTHORIZED }
+        '403': { description: FORBIDDEN }
+        '404': { description: IMAGE_CONTENT_NOT_FOUND }
+        '500': { description: INTERNAL_ERROR }
+    put:
+      summary: Cập nhật ImageContent
+      tags: [Admin ImageContent]
+      security: [{ BearerAuth: [] }]
+      x-code-files:
+        - apps/backend/internal/controller/image_content_controller.go
+        - apps/backend/internal/usecases/imagecontent/service/image_content_service.go
+        - apps/backend/internal/infrastructure/repository/image_content_repository.go
+      parameters: [{ in: path, name: id, required: true, schema: { type: integer, minimum: 1 } }]
+      requestBody: { required: true, content: { application/json: { schema: { $ref: '#/components/schemas/UpdateImageContentRequest' } } } }
+      responses:
+        '200': { description: Cập nhật thành công, content: { application/json: { schema: { $ref: '#/components/schemas/ImageContentEnvelope' } } } }
+        '400': { description: 'VALIDATION_ERROR, MEDIA_TYPE_INVALID, FIELD_REQUIRED or FIELD_NOT_ENABLED' }
+        '401': { description: UNAUTHORIZED }
+        '403': { description: FORBIDDEN }
+        '404': { description: IMAGE_CONTENT_NOT_FOUND or MEDIA_NOT_FOUND }
+        '500': { description: INTERNAL_ERROR }
+    delete:
+      summary: Xóa mềm ImageContent
+      tags: [Admin ImageContent]
+      security: [{ BearerAuth: [] }]
+      x-code-files:
+        - apps/backend/internal/controller/image_content_controller.go
+        - apps/backend/internal/usecases/imagecontent/service/image_content_service.go
+      parameters: [{ in: path, name: id, required: true, schema: { type: integer, minimum: 1 } }]
+      responses:
+        '204': { description: No Content }
+        '401': { description: UNAUTHORIZED }
+        '403': { description: FORBIDDEN }
+        '404': { description: IMAGE_CONTENT_NOT_FOUND }
+        '500': { description: INTERNAL_ERROR }
+
+  /api/v1/public/image-contents:
+    get:
+      summary: Lấy projection ImageContent public
+      tags: [Public ImageContent]
+      x-code-files:
+        - apps/backend/internal/controller/image_content_controller.go
+        - apps/backend/internal/infrastructure/queryservice/image_content_query_service.go
+        - apps/backend/internal/infrastructure/repository/image_content_repository.go
+      parameters:
+        - { in: query, name: typeCodes, schema: { type: string, maxLength: 1024 }, description: Danh sách code phân tách bằng dấu phẩy, tối đa 20 code }
+      responses:
+        '200': { description: Thành công, content: { application/json: { schema: { $ref: '#/components/schemas/PublicImageContentResponse' } } } }
+        '400': { description: VALIDATION_ERROR }
+        '500': { description: INTERNAL_ERROR }
+
 components:
   schemas:
+    ImageContentFieldRule:
+      type: object
+      required: [enabled, required]
+      properties:
+        enabled: { type: boolean }
+        required: { type: boolean }
+    ImageContentFieldConfig:
+      type: object
+      required: [name, description, secondaryDescription, url]
+      properties:
+        name: { $ref: '#/components/schemas/ImageContentFieldRule' }
+        description: { $ref: '#/components/schemas/ImageContentFieldRule' }
+        secondaryDescription: { $ref: '#/components/schemas/ImageContentFieldRule' }
+        url: { $ref: '#/components/schemas/ImageContentFieldRule' }
+    CreateImageContentTypeRequest:
+      type: object
+      required: [code, name, status, fieldConfig]
+      properties:
+        code: { type: string, maxLength: 50, pattern: '^[A-Z][A-Z0-9_]{0,49}$' }
+        name: { type: string, maxLength: 100 }
+        status: { type: string, enum: [ACTIVE, INACTIVE] }
+        sortOrder: { type: integer, minimum: 0 }
+        maxItems: { type: integer, minimum: 1, maximum: 1000, nullable: true }
+        fieldConfig: { $ref: '#/components/schemas/ImageContentFieldConfig' }
+    UpdateImageContentTypeRequest:
+      type: object
+      required: [name, status, fieldConfig]
+      properties:
+        name: { type: string, maxLength: 100 }
+        status: { type: string, enum: [ACTIVE, INACTIVE] }
+        sortOrder: { type: integer, minimum: 0 }
+        maxItems: { type: integer, minimum: 1, maximum: 1000, nullable: true }
+        fieldConfig: { $ref: '#/components/schemas/ImageContentFieldConfig' }
+    ImageContentTypeResponse:
+      type: object
+      properties:
+        id: { type: integer }
+        code: { type: string }
+        name: { type: string }
+        status: { type: string, enum: [ACTIVE, INACTIVE] }
+        sortOrder: { type: integer }
+        maxItems: { type: integer, nullable: true }
+        fieldConfig: { $ref: '#/components/schemas/ImageContentFieldConfig' }
+        itemCount: { type: integer, format: int64 }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+    ImageContentTypeEnvelope:
+      type: object
+      properties: { data: { $ref: '#/components/schemas/ImageContentTypeResponse' } }
+    ImageContentTypeListResponse:
+      type: object
+      properties:
+        data: { type: array, items: { $ref: '#/components/schemas/ImageContentTypeResponse' } }
+        total: { type: integer, format: int64 }
+    CreateImageContentRequest:
+      type: object
+      required: [typeCode, mediaId, status]
+      properties:
+        typeCode: { type: string, maxLength: 50 }
+        mediaId: { type: integer, minimum: 1 }
+        name: { type: string, maxLength: 255, nullable: true }
+        description: { type: string, maxLength: 5000, nullable: true }
+        secondaryDescription: { type: string, maxLength: 5000, nullable: true }
+        url: { type: string, maxLength: 500, nullable: true }
+        sortOrder: { type: integer, minimum: 0, nullable: true }
+        status: { type: string, enum: [ACTIVE, INACTIVE] }
+    UpdateImageContentRequest:
+      type: object
+      required: [mediaId, status]
+      properties:
+        mediaId: { type: integer, minimum: 1 }
+        name: { type: string, maxLength: 255, nullable: true }
+        description: { type: string, maxLength: 5000, nullable: true }
+        secondaryDescription: { type: string, maxLength: 5000, nullable: true }
+        url: { type: string, maxLength: 500, nullable: true }
+        status: { type: string, enum: [ACTIVE, INACTIVE] }
+    AdminImageContentMediaResponse:
+      type: object
+      properties:
+        id: { type: integer }
+        fileName: { type: string }
+        originalUrl: { type: string }
+        thumbnailUrl: { type: string }
+        mediumUrl: { type: string }
+        mimeType: { type: string }
+        status: { type: string, enum: [temporary, attached] }
+    ImageContentResponse:
+      type: object
+      properties:
+        id: { type: integer }
+        typeCode: { type: string }
+        typeName: { type: string }
+        fieldConfig: { $ref: '#/components/schemas/ImageContentFieldConfig' }
+        mediaId: { type: integer }
+        media: { $ref: '#/components/schemas/AdminImageContentMediaResponse' }
+        name: { type: string, nullable: true }
+        description: { type: string, nullable: true }
+        secondaryDescription: { type: string, nullable: true }
+        url: { type: string, nullable: true }
+        sortOrder: { type: integer }
+        status: { type: string, enum: [ACTIVE, INACTIVE] }
+        createdBy: { type: integer }
+        createdAt: { type: string, format: date-time }
+        updatedAt: { type: string, format: date-time }
+    ImageContentEnvelope:
+      type: object
+      properties: { data: { $ref: '#/components/schemas/ImageContentResponse' } }
+    ImageContentListResponse:
+      type: object
+      properties:
+        data: { type: array, items: { $ref: '#/components/schemas/ImageContentResponse' } }
+        total: { type: integer, format: int64 }
+    ReorderImageContentsRequest:
+      type: object
+      required: [typeCode, items]
+      properties:
+        typeCode: { type: string, maxLength: 50 }
+        items:
+          type: array
+          maxItems: 1000
+          items:
+            type: object
+            required: [id, sortOrder]
+            properties:
+              id: { type: integer, minimum: 1 }
+              sortOrder: { type: integer, minimum: 0 }
+    PublicImageContentMediaResponse:
+      type: object
+      properties:
+        id: { type: integer }
+        originalUrl: { type: string }
+        thumbnailUrl: { type: string }
+        mediumUrl: { type: string }
+        mimeType: { type: string }
+    PublicImageContentItemResponse:
+      type: object
+      properties:
+        id: { type: integer }
+        name: { type: string, nullable: true }
+        description: { type: string, nullable: true }
+        secondaryDescription: { type: string, nullable: true }
+        url: { type: string, nullable: true }
+        sortOrder: { type: integer }
+        media: { $ref: '#/components/schemas/PublicImageContentMediaResponse' }
+    PublicImageContentGroupResponse:
+      type: object
+      properties:
+        typeCode: { type: string }
+        name: { type: string }
+        items: { type: array, items: { $ref: '#/components/schemas/PublicImageContentItemResponse' } }
+    PublicImageContentResponse:
+      type: object
+      properties:
+        data: { type: array, items: { $ref: '#/components/schemas/PublicImageContentGroupResponse' } }
     CreatePageMediaRequest:
       type: object
       required: [media_id, collection]

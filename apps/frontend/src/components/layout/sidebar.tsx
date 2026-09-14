@@ -6,7 +6,7 @@ import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
 import Typography from "@mui/material/Typography";
-import { useLogout, useMenu } from "@refinedev/core";
+import { useGetIdentity, useLogout, useMenu } from "@refinedev/core";
 import { useThemedLayoutContext } from "@refinedev/mui";
 import React from "react";
 import { NavLink } from "react-router";
@@ -17,6 +17,7 @@ const drawerWidth = 240;
 
 export const CustomSidebar: React.FC = () => {
   const { menuItems, selectedKey } = useMenu();
+  const { data: identity } = useGetIdentity<{ role?: string }>();
   const { siderCollapsed, mobileSiderOpen, setMobileSiderOpen } =
     useThemedLayoutContext();
   const { mutate: logout } = useLogout();
@@ -73,7 +74,10 @@ export const CustomSidebar: React.FC = () => {
         }}
       >
         <List sx={{ pt: 0 }}>
-          {menuItems.map((item) => {
+          {menuItems.filter((item) => {
+            const meta = item.meta as { requiredRoles?: string[] } | undefined;
+            return !meta?.requiredRoles || (identity?.role ? meta.requiredRoles.includes(identity.role) : false);
+          }).map((item) => {
             const isSelected = item.key === selectedKey;
 
             return (

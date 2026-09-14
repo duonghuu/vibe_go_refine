@@ -10,9 +10,11 @@ import (
 	"github.com/google/wire"
 	"github.com/redis/go-redis/v9"
 	"go_refine_dashboard_be/internal/controller"
+	"go_refine_dashboard_be/internal/infrastructure/queryservice"
 	"go_refine_dashboard_be/internal/infrastructure/repository"
 	service5 "go_refine_dashboard_be/internal/usecases/auth/service"
 	service3 "go_refine_dashboard_be/internal/usecases/category/service"
+	service15 "go_refine_dashboard_be/internal/usecases/imagecontent/service"
 	service2 "go_refine_dashboard_be/internal/usecases/media/service"
 	service12 "go_refine_dashboard_be/internal/usecases/page/service"
 	service13 "go_refine_dashboard_be/internal/usecases/pagemedia/service"
@@ -130,6 +132,14 @@ func InitializePageSectionController(db *gorm.DB, redisClient *redis.Client) *co
 	return pageSectionController
 }
 
+func InitializeImageContentController(db *gorm.DB, redisClient *redis.Client) *controller.ImageContentController {
+	imageContentRepository := repository.NewImageContentRepository(db)
+	imageContentService := service15.NewImageContentService(imageContentRepository, db, redisClient)
+	imageContentQueryService := queryservice.NewImageContentQueryService(imageContentRepository, redisClient)
+	imageContentController := controller.NewImageContentController(imageContentService, imageContentQueryService)
+	return imageContentController
+}
+
 // wire.go:
 
 var ProductSet = wire.NewSet(repository.NewProductRepository, service.NewProductService, controller.NewProductController)
@@ -159,3 +169,5 @@ var PageSet = wire.NewSet(repository.NewPageRepository, service12.NewPageService
 var PageMediaSet = wire.NewSet(repository.NewPageMediaRepository, service13.NewPageMediaService, controller.NewPageMediaController)
 
 var PageSectionSet = wire.NewSet(repository.NewPageSectionRepository, service14.NewPageSectionService, controller.NewPageSectionController)
+
+var ImageContentSet = wire.NewSet(repository.NewImageContentRepository, queryservice.NewImageContentQueryService, service15.NewImageContentService, controller.NewImageContentController)

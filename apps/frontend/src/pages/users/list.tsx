@@ -288,7 +288,7 @@ export const UserList = () => {
           },
         }}
         title=""
-        headerButtons={(props) => (
+        headerButtons={() => (
           <Stack direction="row" spacing={2}>
             <TextField
               placeholder="Tìm theo tên, email..."

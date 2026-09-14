@@ -6,9 +6,11 @@ package di
 import (
 	"github.com/redis/go-redis/v9"
 	"go_refine_dashboard_be/internal/controller"
+	imageContentQuery "go_refine_dashboard_be/internal/infrastructure/queryservice"
 	"go_refine_dashboard_be/internal/infrastructure/repository"
 	authService "go_refine_dashboard_be/internal/usecases/auth/service"
 	categoryService "go_refine_dashboard_be/internal/usecases/category/service"
+	imageContentService "go_refine_dashboard_be/internal/usecases/imagecontent/service"
 	mediaService "go_refine_dashboard_be/internal/usecases/media/service"
 	pageService "go_refine_dashboard_be/internal/usecases/page/service"
 	pageMediaService "go_refine_dashboard_be/internal/usecases/pagemedia/service"
@@ -112,6 +114,13 @@ var PageSectionSet = wire.NewSet(
 	controller.NewPageSectionController,
 )
 
+var ImageContentSet = wire.NewSet(
+	repository.NewImageContentRepository,
+	imageContentQuery.NewImageContentQueryService,
+	imageContentService.NewImageContentService,
+	controller.NewImageContentController,
+)
+
 func InitializeProductController(db *gorm.DB) *controller.ProductController {
 	wire.Build(ProductSet)
 	return &controller.ProductController{}
@@ -180,4 +189,9 @@ func InitializePageMediaController(db *gorm.DB, redisClient *redis.Client) *cont
 func InitializePageSectionController(db *gorm.DB, redisClient *redis.Client) *controller.PageSectionController {
 	wire.Build(PageSectionSet)
 	return &controller.PageSectionController{}
+}
+
+func InitializeImageContentController(db *gorm.DB, redisClient *redis.Client) *controller.ImageContentController {
+	wire.Build(ImageContentSet)
+	return &controller.ImageContentController{}
 }

@@ -55,3 +55,4 @@
 - [2026-09-01 14:19:00] Hoàn thành UI quản lý Section của Page: CRUD, bật/tắt, reorder, Stepper form, Media picker, collection CATEGORY/POST/MEDIA, debounce tìm kiếm, dirty state và mock Refine data provider.
 - [2026-09-01 15:07:01] Đã hoàn thành DB schema, API và tích hợp UI quản lý Section của Page với CRUD, reorder, collection sync, Media picker thực và route Media Library.
 - [2026-09-10 15:06:41] Hoàn thành refactor Home Webview thành composition root, tách site shell và các section typed, mở rộng fixture HomeContent, giữ ba client leaf; lint, TypeScript và production build đều pass.
+- [2026-09-14 15:06:12] Hoàn thành UI Refine/MUI quản lý Image Content: CRUD Type/Item, metadata động, Media picker/upload, capacity, reorder, RBAC, typed provider, routes và mock data; frontend build pass.

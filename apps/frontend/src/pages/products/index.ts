@@ -1,3 +1,3 @@
-export * from "./list";
-export * from "./create";
-export * from "./edit";
+export { ProductList } from "./list";
+export { ProductCreate } from "./create";
+export { ProductEdit } from "./edit";

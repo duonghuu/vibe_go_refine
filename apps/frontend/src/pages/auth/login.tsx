@@ -17,7 +17,7 @@ export const Login: React.FC = () => {
   const [password, setPassword] = useState("");
   const [remember, setRemember] = useState(false);
 
-  const { mutate: login, isLoading, error } = useLogin();
+  const { mutate: login, isPending: isLoading, error } = useLogin();
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();

@@ -1,0 +1,22 @@
+[
+  {
+    "id": 101,
+    "typeCode": "SLIDER",
+    "typeName": "Banner Slider",
+    "mediaId": 501,
+    "media": {
+      "id": 501,
+      "fileName": "summer-sale.webp",
+      "originalUrl": "https://images.unsplash.com/photo-1529139574466-a303027c1d8b",
+      "thumbnailUrl": "https://images.unsplash.com/photo-1529139574466-a303027c1d8b?w=320",
+      "mimeType": "image/webp",
+      "status": "attached"
+    },
+    "name": "Summer Sale",
+    "description": "Khuyến mãi mùa hè",
+    "secondaryDescription": null,
+    "url": "/summer-sale",
+    "sortOrder": 0,
+    "status": "ACTIVE"
+  }
+]

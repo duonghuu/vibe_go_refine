@@ -41,7 +41,10 @@ import { PostCategoryCreate, PostCategoryList, PostCategoryEdit } from "./pages/
 import { PageCreate, PageEdit, PageList } from "./pages/pages";
 import { dataProvider } from "./providers/data";
 import { pageSectionDataProvider } from "./providers/page-section-data-provider";
+import { imageContentDataProvider } from "./providers/image-content-data-provider";
 import { AdminMasterLayout } from "./components/layout";
+import { ImageContentCreate, ImageContentEdit, ImageContentList, ImageContentTypeCreate, ImageContentTypeEdit, ImageContentTypeList } from "./pages/image-contents";
+import { RoleGuard } from "./pages/image-contents/role-guard";
 
 function App() {
   return (
@@ -53,7 +56,7 @@ function App() {
           <RefineSnackbarProvider>
             <DevtoolsProvider>
               <Refine
-                dataProvider={{ default: dataProvider, pageSections: pageSectionDataProvider }}
+                dataProvider={{ default: dataProvider, pageSections: pageSectionDataProvider, imageContent: imageContentDataProvider }}
                 authProvider={authProvider}
                 notificationProvider={useNotificationProvider}
                 routerProvider={routerProvider}
@@ -133,6 +136,20 @@ function App() {
                       canDelete: true,
                     },
                   },
+                  {
+                    name: "image-content-types",
+                    list: "/image-content-types",
+                    create: "/image-content-types/create",
+                    edit: "/image-content-types/edit/:id",
+                    meta: { label: "Loại nội dung hình ảnh", canDelete: true, requiredRoles: ["ADMIN"] },
+                  },
+                  {
+                    name: "image-contents",
+                    list: "/image-contents",
+                    create: "/image-contents/create",
+                    edit: "/image-contents/edit/:id",
+                    meta: { label: "Nội dung hình ảnh", canDelete: true, requiredRoles: ["ADMIN", "STAFF"] },
+                  },
                 ]}
                 options={{
                   syncWithLocation: true,
@@ -189,6 +206,16 @@ function App() {
                       <Route index element={<PageList />} />
                       <Route path="create" element={<PageCreate />} />
                       <Route path="edit/:id" element={<PageEdit />} />
+                    </Route>
+                    <Route path="/image-content-types">
+                      <Route index element={<RoleGuard roles={["ADMIN"]}><ImageContentTypeList /></RoleGuard>} />
+                      <Route path="create" element={<RoleGuard roles={["ADMIN"]}><ImageContentTypeCreate /></RoleGuard>} />
+                      <Route path="edit/:id" element={<RoleGuard roles={["ADMIN"]}><ImageContentTypeEdit /></RoleGuard>} />
+                    </Route>
+                    <Route path="/image-contents">
+                      <Route index element={<RoleGuard roles={["ADMIN", "STAFF"]}><ImageContentList /></RoleGuard>} />
+                      <Route path="create" element={<RoleGuard roles={["ADMIN", "STAFF"]}><ImageContentCreate /></RoleGuard>} />
+                      <Route path="edit/:id" element={<RoleGuard roles={["ADMIN", "STAFF"]}><ImageContentEdit /></RoleGuard>} />
                     </Route>
                     <Route path="*" element={<ErrorComponent />} />
                   </Route>
