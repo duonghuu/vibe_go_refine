@@ -88,8 +88,8 @@ export const ImageContentList = () => {
           <Avatar
             variant="rounded"
             sx={{
-              height: 64,
               width: 64,
+              marginTop: "8px"
             }}
             src={mediaPreviewUrl(row.media)}
             alt={row.name || `${row.typeName} #${row.id}`}
@@ -125,6 +125,7 @@ export const ImageContentList = () => {
               height: "100%",
               alignItems: "center",
               alignContent: "center",
+              marginTop: "8px"
             }}>
             <Typography variant="body2">{row.typeName}</Typography>
             <Typography variant="caption" color="text.secondary">

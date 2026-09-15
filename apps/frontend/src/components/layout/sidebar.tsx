@@ -97,14 +97,8 @@ export const CustomSidebar: React.FC = () => {
                   },
                 }}
               >
-                <ListItemIcon
-                  sx={{
-                    minWidth: "40px",
-                    color: isSelected ? "white" : "action.active",
-                    opacity: isSelected ? 1 : 0.7,
-                  }}
-                >
-                  {item.icon}
+                <ListItemIcon sx={{ minWidth: "40px", opacity: 0.7 }}>
+                  <SettingsIcon />
                 </ListItemIcon>
                 <ListItemText
                   primary={item.label}

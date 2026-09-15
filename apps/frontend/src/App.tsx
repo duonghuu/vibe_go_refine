@@ -141,7 +141,7 @@ function App() {
                     list: "/image-content-types",
                     create: "/image-content-types/create",
                     edit: "/image-content-types/edit/:id",
-                    meta: { label: "Loại nội dung hình ảnh", canDelete: true, requiredRoles: ["ADMIN"] },
+                    meta: { label: "Loại hình ảnh", canDelete: true, requiredRoles: ["ADMIN"] },
                   },
                   {
                     name: "image-contents",
