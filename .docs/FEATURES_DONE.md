@@ -56,3 +56,4 @@
 - [2026-09-01 15:07:01] Đã hoàn thành DB schema, API và tích hợp UI quản lý Section của Page với CRUD, reorder, collection sync, Media picker thực và route Media Library.
 - [2026-09-10 15:06:41] Hoàn thành refactor Home Webview thành composition root, tách site shell và các section typed, mở rộng fixture HomeContent, giữ ba client leaf; lint, TypeScript và production build đều pass.
 - [2026-09-14 15:06:12] Hoàn thành UI Refine/MUI quản lý Image Content: CRUD Type/Item, metadata động, Media picker/upload, capacity, reorder, RBAC, typed provider, routes và mock data; frontend build pass.
+- [2026-09-15 15:06:36] Hoàn thiện Image Content UI: chuyển mutation edit sang PUT và căn giữa nội dung DataGrid theo ngang/dọc, gồm fieldConfig.
