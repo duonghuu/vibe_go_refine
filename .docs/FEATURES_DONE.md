@@ -57,3 +57,4 @@
 - [2026-09-10 15:06:41] Hoàn thành refactor Home Webview thành composition root, tách site shell và các section typed, mở rộng fixture HomeContent, giữ ba client leaf; lint, TypeScript và production build đều pass.
 - [2026-09-14 15:06:12] Hoàn thành UI Refine/MUI quản lý Image Content: CRUD Type/Item, metadata động, Media picker/upload, capacity, reorder, RBAC, typed provider, routes và mock data; frontend build pass.
 - [2026-09-15 15:06:36] Hoàn thiện Image Content UI: chuyển mutation edit sang PUT và căn giữa nội dung DataGrid theo ngang/dọc, gồm fieldConfig.
+- [2026-09-16 09:05:02] Sửa Image Content Type dùng PUT, cố định label MUI bị che và đồng bộ Image Content form với imageContent provider để selectedMedia hiển thị đúng ảnh.

@@ -239,6 +239,7 @@ export const ImageContentCreate = () => {
     refineCoreProps: {
       resource: "image-contents",
       action: "create",
+      dataProviderName: "imageContent",
       redirect: false,
       onMutationSuccess: () => list("image-contents"),
     },
@@ -286,6 +287,7 @@ export const ImageContentEdit = () => {
     refineCoreProps: {
       resource: "image-contents",
       action: "edit",
+      dataProviderName: "imageContent",
       redirect: false,
       mutationMeta: { method: "put" },
       onMutationSuccess: () => list("image-contents"),
