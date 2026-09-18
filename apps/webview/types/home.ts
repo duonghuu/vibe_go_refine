@@ -74,10 +74,14 @@ export interface HeaderContent {
 }
 
 export interface HeroContent {
-  backgroundImage: string;
-  eyebrow: string;
-  titleLines: string[];
   cta: LinkContent;
+}
+
+export interface HeroSectionContent {
+  eyebrow?: string | null;
+  title?: string | null;
+  description?: string | null;
+  cta?: LinkContent | null;
 }
 
 export interface BenefitItem {

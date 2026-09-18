@@ -9,16 +9,24 @@ import StatisticsSection from "@/components/home/statistics-section";
 import TestimonialsSection from "@/components/home/testimonials-section";
 import SiteFooter from "@/components/site/site-footer";
 import SiteHeader from "@/components/site/site-header";
+import { getHeroContent } from "@/lib/home/get-hero-content";
 import { getHomeContent } from "@/lib/home/get-home-content";
 
-export default function HomePage() {
+export const dynamic = "force-dynamic";
+
+export default async function HomePage() {
   const content = getHomeContent();
+  const hero = await getHeroContent(content.hero);
 
   return (
     <>
       <SiteHeader content={content.header} />
       <main>
-        <HeroSection content={content.hero} />
+        <HeroSection
+          content={hero.content}
+          backgroundImage={hero.backgroundImage}
+          imageState={hero.state}
+        />
         <IntroSection content={content.intro} />
         <AboutSection content={content.about} />
         <StatisticsSection items={content.stats} />

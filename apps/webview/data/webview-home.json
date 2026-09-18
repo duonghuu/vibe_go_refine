@@ -35,9 +35,6 @@
     "quoteCta": { "label": "Get a Quote", "href": "#contact" }
   },
   "hero": {
-    "backgroundImage": "/images/bg/home-1.jpg",
-    "eyebrow": "Prepare for new future",
-    "titleLines": ["Our work is", "presentation of our", "capabilities."],
     "cta": { "label": "Get started", "href": "#contact" }
   },
   "intro": {
