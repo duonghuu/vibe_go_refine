@@ -61,6 +61,8 @@ services:
       - "3000:3000"
     environment:
       NODE_ENV: development
+      WEBVIEW_API_URL: http://backend:8080/api/v1
+      WEBVIEW_PUBLIC_API_URL: http://localhost:8081
     networks:
       - vibe_network
     restart: always
