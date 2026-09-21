@@ -8,7 +8,9 @@ import (
 	"regexp"
 	"strings"
 
+	pageEntity "go_refine_dashboard_be/internal/domain/page/entity"
 	"go_refine_dashboard_be/internal/domain/post/entity"
+	"go_refine_dashboard_be/internal/infrastructure/cache"
 	"go_refine_dashboard_be/internal/infrastructure/repository"
 	"go_refine_dashboard_be/internal/usecases/post/dto"
 
@@ -35,20 +37,23 @@ type PostService interface {
 }
 
 type postService struct {
-	postRepo     repository.PostRepository
-	categoryRepo repository.PostCategoryRepository
-	redisClient  *redis.Client
+	postRepo        repository.PostRepository
+	categoryRepo    repository.PostCategoryRepository
+	redisClient     *redis.Client
+	publicPageCache cache.PublicPageCacheInvalidator
 }
 
 func NewPostService(
 	postRepo repository.PostRepository,
 	categoryRepo repository.PostCategoryRepository,
 	redisClient *redis.Client,
+	publicPageCache cache.PublicPageCacheInvalidator,
 ) PostService {
 	return &postService{
-		postRepo:     postRepo,
-		categoryRepo: categoryRepo,
-		redisClient:  redisClient,
+		postRepo:        postRepo,
+		categoryRepo:    categoryRepo,
+		redisClient:     redisClient,
+		publicPageCache: publicPageCache,
 	}
 }
 
@@ -183,6 +188,7 @@ func (s *postService) UpdatePost(ctx context.Context, id uint, req *dto.UpdatePo
 	}
 
 	s.invalidateCache(ctx, post.ID, post.TypeCode)
+	s.publicPageCache.InvalidateSource(ctx, pageEntity.PageSectionItemTypePost, post.ID)
 	return mapPostToResponse(post), nil
 }
 
@@ -231,6 +237,7 @@ func (s *postService) DeletePost(ctx context.Context, id uint) error {
 	if err := s.postRepo.Delete(ctx, id); err != nil {
 		return fmt.Errorf("không thể xóa bài viết: %v", err)
 	}
+	s.publicPageCache.InvalidateSource(ctx, pageEntity.PageSectionItemTypePost, id)
 
 	s.invalidateCache(ctx, id, "")
 	return nil

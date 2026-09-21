@@ -13,6 +13,7 @@ import (
 
 	"github.com/redis/go-redis/v9"
 	"go_refine_dashboard_be/internal/domain/seometa/entity"
+	"go_refine_dashboard_be/internal/infrastructure/cache"
 	"go_refine_dashboard_be/internal/infrastructure/repository"
 	"go_refine_dashboard_be/internal/usecases/seometa/dto"
 )
@@ -25,13 +26,14 @@ type SEOService interface {
 	Delete(ctx context.Context, entityType string, entityID uint) error
 }
 type seoService struct {
-	repo     repository.SEOMetaRepository
-	registry repository.EntityRegistry
-	redis    *redis.Client
+	repo            repository.SEOMetaRepository
+	registry        repository.EntityRegistry
+	redis           *redis.Client
+	publicPageCache cache.PublicPageCacheInvalidator
 }
 
-func NewSEOService(repo repository.SEOMetaRepository, registry repository.EntityRegistry, redisClient *redis.Client) SEOService {
-	return &seoService{repo: repo, registry: registry, redis: redisClient}
+func NewSEOService(repo repository.SEOMetaRepository, registry repository.EntityRegistry, redisClient *redis.Client, publicPageCache cache.PublicPageCacheInvalidator) SEOService {
+	return &seoService{repo: repo, registry: registry, redis: redisClient, publicPageCache: publicPageCache}
 }
 func cacheKey(t string, id uint) string { return fmt.Sprintf("seo:%s:%d", t, id) }
 
@@ -87,12 +89,16 @@ func (s *seoService) Upsert(ctx context.Context, entityType string, entityID uin
 			log.Printf("seo cache invalidation failed: %v", err)
 		}
 	}
+	if t == repository.EntityPage {
+		s.publicPageCache.InvalidateSlugs(ctx, ref.Slug)
+	}
 	return &dto.UpsertResponse{Data: resolve(item, ref), Message: "Cập nhật SEO thành công"}, nil
 }
 
 func (s *seoService) Delete(ctx context.Context, entityType string, entityID uint) error {
 	t := repository.EntityType(strings.ToLower(strings.TrimSpace(entityType)))
-	if _, err := s.registry.Resolve(ctx, t, entityID); err != nil {
+	ref, err := s.registry.Resolve(ctx, t, entityID)
+	if err != nil {
 		return err
 	}
 	if err := s.repo.DeleteByEntity(ctx, string(t), entityID); err != nil {
@@ -102,6 +108,9 @@ func (s *seoService) Delete(ctx context.Context, entityType string, entityID uin
 		if err := s.redis.Del(ctx, cacheKey(string(t), entityID)).Err(); err != nil {
 			log.Printf("seo cache invalidation failed: %v", err)
 		}
+	}
+	if t == repository.EntityPage {
+		s.publicPageCache.InvalidateSlugs(ctx, ref.Slug)
 	}
 	return nil
 }

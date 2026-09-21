@@ -1,7 +1,7 @@
 import { BaseRecord, CreateParams, DataProvider, DeleteOneParams, GetListParams, GetOneParams, HttpError, UpdateParams } from "@refinedev/core";
 import { API_URL } from "./constants";
 import { customRequest } from "./data";
-import { PageSectionItemType } from "../pages/pages/sections/page-section-types";
+import { IPageSectionItem, PageSectionItemType } from "../pages/pages/sections/page-section-types";
 
 type JsonRecord = Record<string, unknown>;
 const isRecord = (value: unknown): value is JsonRecord => typeof value === "object" && value !== null;
@@ -10,6 +10,19 @@ const stringMeta = (params: GetListParams, key: string): string | undefined => {
 const filterValue = (params: GetListParams, field: string): string => { const found = params.filters?.find((item) => "field" in item && item.field === field); return found && "value" in found && typeof found.value === "string" ? found.value : ""; };
 const pageParams = (params: GetListParams): string => { const current = params.pagination?.currentPage ?? 1; const pageSize = params.pagination?.pageSize ?? 100; return `current=${current}&pageSize=${pageSize}`; };
 const unwrap = (body: unknown): unknown => isRecord(body) && "data" in body ? body.data : body;
+const stringField = (record: JsonRecord, key: string): string => typeof record[key] === "string" ? record[key] : "";
+const numberField = (record: JsonRecord, key: string): number | undefined => typeof record[key] === "number" ? record[key] : undefined;
+const isPageSectionItemType = (value: unknown): value is PageSectionItemType => value === "CATEGORY" || value === "POST" || value === "MEDIA";
+const normalizePageSectionItem = (value: unknown): IPageSectionItem | null => {
+  if (!isRecord(value) || !isRecord(value.data) || !isPageSectionItemType(value.itemType)) return null;
+  const id = numberField(value, "id"); const sectionId = numberField(value, "sectionId"); const itemId = numberField(value, "itemId"); const sortOrder = numberField(value, "sortOrder"); const collection = stringField(value, "collection");
+  if (id === undefined || sectionId === undefined || itemId === undefined || sortOrder === undefined || !collection) return null;
+  const data = value.data; const dataId = numberField(data, "id") || itemId;
+  const base = { id, sectionId, itemId, collection, sortOrder };
+  if (value.itemType === "CATEGORY") return { ...base, itemType: "CATEGORY", data: { id: dataId, name: stringField(data, "name"), description: stringField(data, "description") || undefined, slug: stringField(data, "slug"), imageUrl: stringField(data, "imageUrl") || undefined, status: stringField(data, "status") === "HIDDEN" ? "HIDDEN" : "ACTIVE" } };
+  if (value.itemType === "POST") return { ...base, itemType: "POST", data: { id: dataId, title: stringField(data, "title"), description: stringField(data, "description") || undefined, slug: stringField(data, "slug"), typeCode: stringField(data, "typeCode"), thumbnailUrl: stringField(data, "thumbnailUrl") || undefined } };
+  return { ...base, itemType: "MEDIA", data: { id: dataId, fileName: stringField(data, "fileName"), originalUrl: stringField(data, "originalUrl"), thumbnailUrl: stringField(data, "thumbnailUrl") || undefined, mediumUrl: stringField(data, "mediumUrl") || undefined, mimeType: stringField(data, "mimeType"), status: stringField(data, "status") === "temporary" ? "temporary" : "attached" } };
+};
 const readJson = async (response: Response): Promise<unknown> => {
   const body: unknown = await response.json().catch(() => ({}));
   if (!response.ok) { const record = isRecord(body) ? body : {}; const message = typeof record.message === "string" ? record.message : "Không thể xử lý yêu cầu."; const error: HttpError = { message, statusCode: response.status }; throw error; }
@@ -40,11 +53,12 @@ export const pageSectionDataProvider: DataProvider = {
       return { data: (Array.isArray(data) ? data : []) as TData[], total: typeof record.total === "number" ? record.total : Array.isArray(data) ? data.length : 0 };
     }
     if (params.resource === "page-section-items" && pageId !== undefined) {
-      const sectionId = numberMeta(params, "sectionId"); const collection = stringMeta(params, "collection");
+      const sectionId = numberMeta(params, "sectionId"); const collection = stringMeta(params, "collection"); const expectedItemType = stringMeta(params, "itemType");
       if (sectionId === undefined || collection === undefined) return { data: [] as TData[], total: 0 };
       const response = await customRequest({ url: `${pageSectionPath(pageId)}/${sectionId}/items?collection=${encodeURIComponent(collection)}&${pageParams(params)}` });
-      const body = await readJson(response); const data = unwrap(body); const record = isRecord(body) ? body : {};
-      return { data: (Array.isArray(data) ? data : []) as TData[], total: typeof record.total === "number" ? record.total : Array.isArray(data) ? data.length : 0 };
+      const body = await readJson(response); const data = unwrap(body);
+      const items = Array.isArray(data) ? data.map(normalizePageSectionItem).filter((item): item is IPageSectionItem => item !== null && (!isPageSectionItemType(expectedItemType) || item.itemType === expectedItemType)) : [];
+      return { data: items as unknown as TData[], total: items.length };
     }
     if (params.resource === "section-picker-options") {
       const itemType = stringMeta(params, "itemType") as PageSectionItemType | undefined; const search = filterValue(params, "search");

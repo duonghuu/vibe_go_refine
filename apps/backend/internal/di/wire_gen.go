@@ -10,6 +10,7 @@ import (
 	"github.com/google/wire"
 	"github.com/redis/go-redis/v9"
 	"go_refine_dashboard_be/internal/controller"
+	"go_refine_dashboard_be/internal/infrastructure/cache"
 	"go_refine_dashboard_be/internal/infrastructure/queryservice"
 	"go_refine_dashboard_be/internal/infrastructure/repository"
 	service5 "go_refine_dashboard_be/internal/usecases/auth/service"
@@ -25,6 +26,7 @@ import (
 	service8 "go_refine_dashboard_be/internal/usecases/postmeta/service"
 	service6 "go_refine_dashboard_be/internal/usecases/posttype/service"
 	"go_refine_dashboard_be/internal/usecases/product/service"
+	service16 "go_refine_dashboard_be/internal/usecases/publicpage/service"
 	service11 "go_refine_dashboard_be/internal/usecases/seometa/service"
 	service4 "go_refine_dashboard_be/internal/usecases/user/service"
 	"gorm.io/gorm"
@@ -39,16 +41,20 @@ func InitializeProductController(db *gorm.DB) *controller.ProductController {
 	return productController
 }
 
-func InitializeMediaController(db *gorm.DB) *controller.MediaController {
+func InitializeMediaController(db *gorm.DB, redisClient *redis.Client) *controller.MediaController {
 	mediaRepository := repository.NewMediaRepository(db)
-	mediaService := service2.NewMediaService(mediaRepository)
+	publicPageCacheRepository := repository.NewPublicPageCacheRepository(db)
+	publicPageCacheInvalidator := cache.NewPublicPageCacheInvalidator(redisClient, publicPageCacheRepository)
+	mediaService := service2.NewMediaService(mediaRepository, publicPageCacheInvalidator)
 	mediaController := controller.NewMediaController(mediaService)
 	return mediaController
 }
 
-func InitializeCategoryController(db *gorm.DB) *controller.CategoryController {
+func InitializeCategoryController(db *gorm.DB, redisClient *redis.Client) *controller.CategoryController {
 	categoryRepository := repository.NewCategoryRepository(db)
-	categoryService := service3.NewCategoryService(categoryRepository)
+	publicPageCacheRepository := repository.NewPublicPageCacheRepository(db)
+	publicPageCacheInvalidator := cache.NewPublicPageCacheInvalidator(redisClient, publicPageCacheRepository)
+	categoryService := service3.NewCategoryService(categoryRepository, publicPageCacheInvalidator)
 	categoryController := controller.NewCategoryController(categoryService)
 	return categoryController
 }
@@ -76,7 +82,9 @@ func InitializePostTypeController(db *gorm.DB, redisClient *redis.Client) *contr
 
 func InitializePostMediaController(db *gorm.DB, redisClient *redis.Client) *controller.PostMediaController {
 	postMediaRepository := repository.NewPostMediaRepository(db)
-	postMediaService := service7.NewPostMediaService(postMediaRepository, redisClient)
+	publicPageCacheRepository := repository.NewPublicPageCacheRepository(db)
+	publicPageCacheInvalidator := cache.NewPublicPageCacheInvalidator(redisClient, publicPageCacheRepository)
+	postMediaService := service7.NewPostMediaService(postMediaRepository, redisClient, publicPageCacheInvalidator)
 	postMediaController := controller.NewPostMediaController(postMediaService)
 	return postMediaController
 }
@@ -91,7 +99,9 @@ func InitializePostMetaController(db *gorm.DB, redisClient *redis.Client) *contr
 func InitializePostController(db *gorm.DB, redisClient *redis.Client) *controller.PostController {
 	postRepository := repository.NewPostRepository(db)
 	postCategoryRepository := repository.NewPostCategoryRepository(db)
-	postService := service9.NewPostService(postRepository, postCategoryRepository, redisClient)
+	publicPageCacheRepository := repository.NewPublicPageCacheRepository(db)
+	publicPageCacheInvalidator := cache.NewPublicPageCacheInvalidator(redisClient, publicPageCacheRepository)
+	postService := service9.NewPostService(postRepository, postCategoryRepository, redisClient, publicPageCacheInvalidator)
 	postController := controller.NewPostController(postService)
 	return postController
 }
@@ -106,28 +116,36 @@ func InitializePostCategoryController(db *gorm.DB, redisClient *redis.Client) *c
 func InitializeSEOMetaController(db *gorm.DB, redisClient *redis.Client) *controller.SEOMetaController {
 	seoMetaRepository := repository.NewSEOMetaRepository(db)
 	entityRegistry := repository.NewEntityRegistry(db)
-	seoService := service11.NewSEOService(seoMetaRepository, entityRegistry, redisClient)
+	publicPageCacheRepository := repository.NewPublicPageCacheRepository(db)
+	publicPageCacheInvalidator := cache.NewPublicPageCacheInvalidator(redisClient, publicPageCacheRepository)
+	seoService := service11.NewSEOService(seoMetaRepository, entityRegistry, redisClient, publicPageCacheInvalidator)
 	seoMetaController := controller.NewSEOMetaController(seoService)
 	return seoMetaController
 }
 
 func InitializePageController(db *gorm.DB, redisClient *redis.Client) *controller.PageController {
 	pageRepository := repository.NewPageRepository(db)
-	pageService := service12.NewPageService(pageRepository, redisClient)
+	publicPageCacheRepository := repository.NewPublicPageCacheRepository(db)
+	publicPageCacheInvalidator := cache.NewPublicPageCacheInvalidator(redisClient, publicPageCacheRepository)
+	pageService := service12.NewPageService(pageRepository, redisClient, publicPageCacheInvalidator)
 	pageController := controller.NewPageController(pageService)
 	return pageController
 }
 
 func InitializePageMediaController(db *gorm.DB, redisClient *redis.Client) *controller.PageMediaController {
 	pageMediaRepository := repository.NewPageMediaRepository(db)
-	pageMediaService := service13.NewPageMediaService(pageMediaRepository, db, redisClient)
+	publicPageCacheRepository := repository.NewPublicPageCacheRepository(db)
+	publicPageCacheInvalidator := cache.NewPublicPageCacheInvalidator(redisClient, publicPageCacheRepository)
+	pageMediaService := service13.NewPageMediaService(pageMediaRepository, db, redisClient, publicPageCacheInvalidator)
 	pageMediaController := controller.NewPageMediaController(pageMediaService)
 	return pageMediaController
 }
 
 func InitializePageSectionController(db *gorm.DB, redisClient *redis.Client) *controller.PageSectionController {
 	pageSectionRepository := repository.NewPageSectionRepository(db)
-	pageSectionService := service14.NewPageSectionService(pageSectionRepository, db, redisClient)
+	publicPageCacheRepository := repository.NewPublicPageCacheRepository(db)
+	publicPageCacheInvalidator := cache.NewPublicPageCacheInvalidator(redisClient, publicPageCacheRepository)
+	pageSectionService := service14.NewPageSectionService(pageSectionRepository, db, publicPageCacheInvalidator)
 	pageSectionController := controller.NewPageSectionController(pageSectionService)
 	return pageSectionController
 }
@@ -140,13 +158,22 @@ func InitializeImageContentController(db *gorm.DB, redisClient *redis.Client) *c
 	return imageContentController
 }
 
+func InitializePublicPageController(db *gorm.DB, redisClient *redis.Client, publicSiteURL string) *controller.PublicPageController {
+	publicPageRepository := repository.NewPublicPageRepository(db)
+	publicPageService := service16.NewPublicPageService(publicPageRepository, redisClient, publicSiteURL)
+	publicPageController := controller.NewPublicPageController(publicPageService)
+	return publicPageController
+}
+
 // wire.go:
 
 var ProductSet = wire.NewSet(repository.NewProductRepository, service.NewProductService, controller.NewProductController)
 
-var MediaSet = wire.NewSet(repository.NewMediaRepository, service2.NewMediaService, controller.NewMediaController)
+var PublicPageCacheSet = wire.NewSet(repository.NewPublicPageCacheRepository, cache.NewPublicPageCacheInvalidator)
 
-var CategorySet = wire.NewSet(repository.NewCategoryRepository, service3.NewCategoryService, controller.NewCategoryController)
+var MediaSet = wire.NewSet(repository.NewMediaRepository, PublicPageCacheSet, service2.NewMediaService, controller.NewMediaController)
+
+var CategorySet = wire.NewSet(repository.NewCategoryRepository, PublicPageCacheSet, service3.NewCategoryService, controller.NewCategoryController)
 
 var UserSet = wire.NewSet(repository.NewUserRepository, service4.NewUserService, controller.NewUserController)
 
@@ -154,20 +181,22 @@ var AuthSet = wire.NewSet(repository.NewUserRepository, service5.NewAuthService,
 
 var PostTypeSet = wire.NewSet(repository.NewPostTypeRepository, service6.NewPostTypeService, controller.NewPostTypeController)
 
-var PostMediaSet = wire.NewSet(repository.NewPostMediaRepository, service7.NewPostMediaService, controller.NewPostMediaController)
+var PostMediaSet = wire.NewSet(repository.NewPostMediaRepository, PublicPageCacheSet, service7.NewPostMediaService, controller.NewPostMediaController)
 
 var PostMetaSet = wire.NewSet(repository.NewPostMetaRepository, service8.NewPostMetaService, controller.NewPostMetaController)
 
-var PostSet = wire.NewSet(repository.NewPostRepository, repository.NewPostCategoryRepository, service9.NewPostService, controller.NewPostController)
+var PostSet = wire.NewSet(repository.NewPostRepository, repository.NewPostCategoryRepository, PublicPageCacheSet, service9.NewPostService, controller.NewPostController)
 
 var PostCategorySet = wire.NewSet(repository.NewPostCategoryRepository, service10.NewPostCategoryService, controller.NewPostCategoryController)
 
-var SEOMetaSet = wire.NewSet(repository.NewSEOMetaRepository, repository.NewEntityRegistry, service11.NewSEOService, controller.NewSEOMetaController)
+var SEOMetaSet = wire.NewSet(repository.NewSEOMetaRepository, repository.NewEntityRegistry, PublicPageCacheSet, service11.NewSEOService, controller.NewSEOMetaController)
 
-var PageSet = wire.NewSet(repository.NewPageRepository, service12.NewPageService, controller.NewPageController)
+var PageSet = wire.NewSet(repository.NewPageRepository, PublicPageCacheSet, service12.NewPageService, controller.NewPageController)
 
-var PageMediaSet = wire.NewSet(repository.NewPageMediaRepository, service13.NewPageMediaService, controller.NewPageMediaController)
+var PageMediaSet = wire.NewSet(repository.NewPageMediaRepository, PublicPageCacheSet, service13.NewPageMediaService, controller.NewPageMediaController)
 
-var PageSectionSet = wire.NewSet(repository.NewPageSectionRepository, service14.NewPageSectionService, controller.NewPageSectionController)
+var PageSectionSet = wire.NewSet(repository.NewPageSectionRepository, PublicPageCacheSet, service14.NewPageSectionService, controller.NewPageSectionController)
 
 var ImageContentSet = wire.NewSet(repository.NewImageContentRepository, queryservice.NewImageContentQueryService, service15.NewImageContentService, controller.NewImageContentController)
+
+var PublicPageSet = wire.NewSet(repository.NewPublicPageRepository, service16.NewPublicPageService, controller.NewPublicPageController)

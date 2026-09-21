@@ -85,7 +85,7 @@ export interface HeroSectionContent {
 }
 
 export interface BenefitItem {
-  icon: string;
+  image: ImageContent;
   title: string;
   description: string;
 }
@@ -164,7 +164,6 @@ export interface FooterContent {
 export interface HomeContent {
   header: HeaderContent;
   hero: HeroContent;
-  intro: IntroContent;
   about: AboutContent;
   stats: StatItem[];
   services: ServicesContent;

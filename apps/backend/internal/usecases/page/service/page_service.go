@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"go_refine_dashboard_be/internal/domain/page/entity"
+	"go_refine_dashboard_be/internal/infrastructure/cache"
 	"go_refine_dashboard_be/internal/infrastructure/repository"
 	"go_refine_dashboard_be/internal/usecases/page/dto"
 
@@ -33,12 +34,13 @@ type PageService interface {
 }
 
 type pageService struct {
-	pageRepo    repository.PageRepository
-	redisClient *redis.Client
+	pageRepo        repository.PageRepository
+	redisClient     *redis.Client
+	publicPageCache cache.PublicPageCacheInvalidator
 }
 
-func NewPageService(pageRepo repository.PageRepository, redisClient *redis.Client) PageService {
-	return &pageService{pageRepo: pageRepo, redisClient: redisClient}
+func NewPageService(pageRepo repository.PageRepository, redisClient *redis.Client, publicPageCache cache.PublicPageCacheInvalidator) PageService {
+	return &pageService{pageRepo: pageRepo, redisClient: redisClient, publicPageCache: publicPageCache}
 }
 
 func (s *pageService) invalidateCache(ctx context.Context, patterns ...string) {
@@ -216,10 +218,9 @@ func (s *pageService) UpdatePage(ctx context.Context, id uint, req *dto.UpdatePa
 
 	s.invalidateCache(ctx,
 		"admin:pages:list:*",
-		"public:pages:slug:"+oldSlug,
-		"public:pages:slug:"+slug,
 		fmt.Sprintf("seo:page:%d", id),
 	)
+	s.publicPageCache.InvalidateSlugs(ctx, oldSlug, slug)
 	return mapPageToResponse(page), nil
 }
 
@@ -238,9 +239,9 @@ func (s *pageService) DeletePage(ctx context.Context, id uint) error {
 
 	s.invalidateCache(ctx,
 		"admin:pages:list:*",
-		"public:pages:slug:"+page.Slug,
 		fmt.Sprintf("seo:page:%d", id),
 	)
+	s.publicPageCache.InvalidateSlugs(ctx, page.Slug)
 	return nil
 }
 

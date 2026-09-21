@@ -50,6 +50,7 @@ export const PageBasicInfoCard: React.FC<PageBasicInfoCardProps> = ({
         error={Boolean(errors.slug)}
         helperText={errors.slug?.message ?? "Đường dẫn public của trang"}
         margin="normal"
+        InputLabelProps={{ shrink: !!watch("slug") || undefined }}
         value={watch("slug")}
         InputProps={{ sx: { borderRadius: 1 } }}
       />

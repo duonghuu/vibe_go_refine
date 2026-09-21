@@ -99,6 +99,7 @@ type SectionItemDataResponse struct {
 	ID           uint   `json:"id"`
 	Name         string `json:"name,omitempty"`
 	Title        string `json:"title,omitempty"`
+	Description  string `json:"description"`
 	Slug         string `json:"slug,omitempty"`
 	TypeCode     string `json:"typeCode,omitempty"`
 	ImageURL     string `json:"imageUrl,omitempty"`

@@ -6,6 +6,7 @@ package di
 import (
 	"github.com/redis/go-redis/v9"
 	"go_refine_dashboard_be/internal/controller"
+	publicPageCache "go_refine_dashboard_be/internal/infrastructure/cache"
 	imageContentQuery "go_refine_dashboard_be/internal/infrastructure/queryservice"
 	"go_refine_dashboard_be/internal/infrastructure/repository"
 	authService "go_refine_dashboard_be/internal/usecases/auth/service"
@@ -21,6 +22,7 @@ import (
 	postMetaService "go_refine_dashboard_be/internal/usecases/postmeta/service"
 	postTypeService "go_refine_dashboard_be/internal/usecases/posttype/service"
 	"go_refine_dashboard_be/internal/usecases/product/service"
+	publicPageService "go_refine_dashboard_be/internal/usecases/publicpage/service"
 	seoMetaService "go_refine_dashboard_be/internal/usecases/seometa/service"
 	userService "go_refine_dashboard_be/internal/usecases/user/service"
 	"gorm.io/gorm"
@@ -34,14 +36,21 @@ var ProductSet = wire.NewSet(
 	controller.NewProductController,
 )
 
+var PublicPageCacheSet = wire.NewSet(
+	repository.NewPublicPageCacheRepository,
+	publicPageCache.NewPublicPageCacheInvalidator,
+)
+
 var MediaSet = wire.NewSet(
 	repository.NewMediaRepository,
+	PublicPageCacheSet,
 	mediaService.NewMediaService,
 	controller.NewMediaController,
 )
 
 var CategorySet = wire.NewSet(
 	repository.NewCategoryRepository,
+	PublicPageCacheSet,
 	categoryService.NewCategoryService,
 	controller.NewCategoryController,
 )
@@ -66,6 +75,7 @@ var PostTypeSet = wire.NewSet(
 
 var PostMediaSet = wire.NewSet(
 	repository.NewPostMediaRepository,
+	PublicPageCacheSet,
 	postMediaService.NewPostMediaService,
 	controller.NewPostMediaController,
 )
@@ -79,6 +89,7 @@ var PostMetaSet = wire.NewSet(
 var PostSet = wire.NewSet(
 	repository.NewPostRepository,
 	repository.NewPostCategoryRepository,
+	PublicPageCacheSet,
 	postService.NewPostService,
 	controller.NewPostController,
 )
@@ -92,24 +103,28 @@ var PostCategorySet = wire.NewSet(
 var SEOMetaSet = wire.NewSet(
 	repository.NewSEOMetaRepository,
 	repository.NewEntityRegistry,
+	PublicPageCacheSet,
 	seoMetaService.NewSEOService,
 	controller.NewSEOMetaController,
 )
 
 var PageSet = wire.NewSet(
 	repository.NewPageRepository,
+	PublicPageCacheSet,
 	pageService.NewPageService,
 	controller.NewPageController,
 )
 
 var PageMediaSet = wire.NewSet(
 	repository.NewPageMediaRepository,
+	PublicPageCacheSet,
 	pageMediaService.NewPageMediaService,
 	controller.NewPageMediaController,
 )
 
 var PageSectionSet = wire.NewSet(
 	repository.NewPageSectionRepository,
+	PublicPageCacheSet,
 	pageSectionService.NewPageSectionService,
 	controller.NewPageSectionController,
 )
@@ -121,17 +136,23 @@ var ImageContentSet = wire.NewSet(
 	controller.NewImageContentController,
 )
 
+var PublicPageSet = wire.NewSet(
+	repository.NewPublicPageRepository,
+	publicPageService.NewPublicPageService,
+	controller.NewPublicPageController,
+)
+
 func InitializeProductController(db *gorm.DB) *controller.ProductController {
 	wire.Build(ProductSet)
 	return &controller.ProductController{}
 }
 
-func InitializeMediaController(db *gorm.DB) *controller.MediaController {
+func InitializeMediaController(db *gorm.DB, redisClient *redis.Client) *controller.MediaController {
 	wire.Build(MediaSet)
 	return &controller.MediaController{}
 }
 
-func InitializeCategoryController(db *gorm.DB) *controller.CategoryController {
+func InitializeCategoryController(db *gorm.DB, redisClient *redis.Client) *controller.CategoryController {
 	wire.Build(CategorySet)
 	return &controller.CategoryController{}
 }
@@ -194,4 +215,9 @@ func InitializePageSectionController(db *gorm.DB, redisClient *redis.Client) *co
 func InitializeImageContentController(db *gorm.DB, redisClient *redis.Client) *controller.ImageContentController {
 	wire.Build(ImageContentSet)
 	return &controller.ImageContentController{}
+}
+
+func InitializePublicPageController(db *gorm.DB, redisClient *redis.Client, publicSiteURL string) *controller.PublicPageController {
+	wire.Build(PublicPageSet)
+	return &controller.PublicPageController{}
 }

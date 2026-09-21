@@ -59,3 +59,4 @@
 - [2026-09-15 15:06:36] Hoàn thiện Image Content UI: chuyển mutation edit sang PUT và căn giữa nội dung DataGrid theo ngang/dọc, gồm fieldConfig.
 - [2026-09-16 09:05:02] Sửa Image Content Type dùng PUT, cố định label MUI bị che và đồng bộ Image Content form với imageContent provider để selectedMedia hiển thị đúng ảnh.
 - [2026-09-18 09:57:50] Hoàn thiện tích hợp API ImageContent HERO vào HeroSection Webview, xử lý media public URL và ba trạng thái loading/error/empty.
+- [2026-09-21 13:42:30] Hoàn thành Backend API Public Page theo slug kèm cache Redis và tích hợp API Page Section (home_creative) vào IntroSection Webview với đầy đủ trạng thái dữ liệu.

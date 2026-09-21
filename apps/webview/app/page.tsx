@@ -1,7 +1,9 @@
+import { Suspense } from "react";
 import AboutSection from "@/components/home/about-section";
 import ContactCtaSection from "@/components/home/contact-cta-section";
 import HeroSection from "@/components/home/hero-section";
-import IntroSection from "@/components/home/intro-section";
+import IntroSectionContainer from "@/components/home/intro-section-container";
+import IntroSectionSkeleton from "@/components/home/intro-section-skeleton";
 import LatestArticlesSection from "@/components/home/latest-articles-section";
 import QuoteCtaSection from "@/components/home/quote-cta-section";
 import ServicesSection from "@/components/home/services-section";
@@ -27,7 +29,9 @@ export default async function HomePage() {
           backgroundImage={hero.backgroundImage}
           imageState={hero.state}
         />
-        <IntroSection content={content.intro} />
+        <Suspense fallback={<IntroSectionSkeleton />}>
+          <IntroSectionContainer />
+        </Suspense>
         <AboutSection content={content.about} />
         <StatisticsSection items={content.stats} />
         <ServicesSection content={content.services} />

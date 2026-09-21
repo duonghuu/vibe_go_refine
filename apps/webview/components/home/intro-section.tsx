@@ -1,3 +1,4 @@
+import Image from "next/image";
 import type { IntroContent } from "@/types/home";
 import SectionHeading from "./section-heading";
 
@@ -13,7 +14,7 @@ export default function IntroSection({ content }: IntroSectionProps) {
         <div className="grid gap-10 md:grid-cols-3">
           {content.benefits.map((benefit) => (
             <article key={benefit.title}>
-              <i className={`${benefit.icon} text-6xl text-[#f75757]`} />
+              <Image src={benefit.image.src} alt={benefit.image.alt} width={64} height={64} unoptimized className="h-16 w-16 object-contain" />
               <h3 className="mt-6 mb-3 text-xl font-semibold text-[#242424]">{benefit.title}</h3>
               <p className="leading-8 text-black/65">{benefit.description}</p>
             </article>

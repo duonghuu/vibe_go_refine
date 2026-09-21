@@ -3,13 +3,12 @@ package service
 import (
 	"context"
 	"errors"
-	"log"
 	"regexp"
 	"strings"
 
-	"github.com/redis/go-redis/v9"
 	mediaEntity "go_refine_dashboard_be/internal/domain/media/entity"
 	pageEntity "go_refine_dashboard_be/internal/domain/page/entity"
+	"go_refine_dashboard_be/internal/infrastructure/cache"
 	"go_refine_dashboard_be/internal/infrastructure/repository"
 	"go_refine_dashboard_be/internal/usecases/pagesection/dto"
 	"gorm.io/gorm"
@@ -42,24 +41,13 @@ type PageSectionService interface {
 	SyncItems(context.Context, uint, uint, string, *dto.SyncSectionCollectionRequest, uint, string) (*dto.PageSectionItemListResponse, error)
 }
 type pageSectionService struct {
-	repo        repository.PageSectionRepository
-	db          *gorm.DB
-	redisClient *redis.Client
+	repo            repository.PageSectionRepository
+	db              *gorm.DB
+	publicPageCache cache.PublicPageCacheInvalidator
 }
 
-func NewPageSectionService(repo repository.PageSectionRepository, db *gorm.DB, redisClient *redis.Client) PageSectionService {
-	return &pageSectionService{repo: repo, db: db, redisClient: redisClient}
-}
-func (s *pageSectionService) invalidate(ctx context.Context, pageID uint) {
-	if s.redisClient == nil {
-		return
-	}
-	var p struct{ Slug string }
-	if s.db.WithContext(ctx).Table("pages").Select("slug").Where("id = ?", pageID).Scan(&p).Error == nil && p.Slug != "" {
-		if err := s.redisClient.Del(ctx, "public:pages:slug:"+p.Slug).Err(); err != nil {
-			log.Printf("section cache invalidation failed: %v", err)
-		}
-	}
+func NewPageSectionService(repo repository.PageSectionRepository, db *gorm.DB, publicPageCache cache.PublicPageCacheInvalidator) PageSectionService {
+	return &pageSectionService{repo: repo, db: db, publicPageCache: publicPageCache}
 }
 func ensurePage(repo repository.PageSectionRepository, ctx context.Context, tx *gorm.DB, id uint) error {
 	_, err := repo.FindPageForUpdate(ctx, tx, id)
@@ -208,7 +196,7 @@ func (s *pageSectionService) CreateSection(ctx context.Context, pageID uint, req
 	if err != nil {
 		return nil, err
 	}
-	s.invalidate(ctx, pageID)
+	s.publicPageCache.InvalidatePage(ctx, pageID)
 	return s.GetSection(ctx, pageID, created.ID)
 }
 func (s *pageSectionService) UpdateSection(ctx context.Context, pageID, sectionID uint, req *dto.UpdatePageSectionRequest, userID uint, role string) (*dto.PageSectionResponse, error) {
@@ -255,7 +243,7 @@ func (s *pageSectionService) UpdateSection(ctx context.Context, pageID, sectionI
 		}
 		return nil, err
 	}
-	s.invalidate(ctx, pageID)
+	s.publicPageCache.InvalidatePage(ctx, pageID)
 	return s.GetSection(ctx, pageID, sectionID)
 }
 func (s *pageSectionService) DeleteSection(ctx context.Context, pageID, sectionID uint) error {
@@ -282,7 +270,7 @@ func (s *pageSectionService) DeleteSection(ctx context.Context, pageID, sectionI
 		return s.repo.BulkUpdateSectionOrder(ctx, tx, pageID, updates)
 	})
 	if err == nil {
-		s.invalidate(ctx, pageID)
+		s.publicPageCache.InvalidatePage(ctx, pageID)
 	}
 	return err
 }
@@ -320,7 +308,7 @@ func (s *pageSectionService) ReorderSections(ctx context.Context, pageID uint, r
 		return nil
 	})
 	if err == nil {
-		s.invalidate(ctx, pageID)
+		s.publicPageCache.InvalidatePage(ctx, pageID)
 	}
 	return err
 }
@@ -425,7 +413,7 @@ func (s *pageSectionService) SyncItems(ctx context.Context, pageID, sectionID ui
 	if err != nil {
 		return nil, err
 	}
-	s.invalidate(ctx, pageID)
+	s.publicPageCache.InvalidatePage(ctx, pageID)
 	return s.GetItems(ctx, pageID, sectionID, dto.GetSectionItemsQuery{Collection: collection, PageSize: 100})
 }
 func (s *pageSectionService) mapItems(ctx context.Context, rows []pageEntity.PageSectionItem) ([]dto.PageSectionItemResponse, error) {
@@ -461,5 +449,5 @@ func mapMedia(v *mediaEntity.Media) *dto.SectionMediaResponse {
 	return &dto.SectionMediaResponse{ID: v.ID, FileName: v.FileName, OriginalURL: v.OriginalUrl, ThumbnailURL: v.ThumbnailUrl, MediumURL: v.MediumUrl, MimeType: v.MimeType}
 }
 func mapSource(v repository.SourceData) dto.SectionItemDataResponse {
-	return dto.SectionItemDataResponse{ID: v.ID, Name: v.Name, Title: v.Title, Slug: v.Slug, TypeCode: v.TypeCode, ImageURL: v.ImageURL, Status: v.Status, FileName: v.FileName, OriginalURL: v.OriginalURL, ThumbnailURL: v.ThumbnailURL, MediumURL: v.MediumURL, MimeType: v.MimeType}
+	return dto.SectionItemDataResponse{ID: v.ID, Name: v.Name, Title: v.Title, Description: v.Description, Slug: v.Slug, TypeCode: v.TypeCode, ImageURL: v.ImageURL, Status: v.Status, FileName: v.FileName, OriginalURL: v.OriginalURL, ThumbnailURL: v.ThumbnailURL, MediumURL: v.MediumURL, MimeType: v.MimeType}
 }

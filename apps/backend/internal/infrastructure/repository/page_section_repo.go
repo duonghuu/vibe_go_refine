@@ -41,8 +41,8 @@ type SectionSummary struct {
 	Total      int64
 }
 type SourceData struct {
-	ID                                                                                                      uint
-	Name, Title, Slug, TypeCode, ImageURL, Status, FileName, OriginalURL, ThumbnailURL, MediumURL, MimeType string
+	ID                                                                                                                   uint
+	Name, Title, Description, Slug, TypeCode, ImageURL, Status, FileName, OriginalURL, ThumbnailURL, MediumURL, MimeType string
 }
 type pageSectionRepository struct{ db *gorm.DB }
 
@@ -198,41 +198,23 @@ func (r *pageSectionRepository) FindSourceData(ctx context.Context, typ pageEnti
 	if len(ids) == 0 {
 		return out, nil
 	}
-	var table string
+	query := r.db.WithContext(ctx)
 	switch typ {
 	case pageEntity.PageSectionItemTypeCategory:
-		table = "categories"
+		query = query.Table("categories").Select("id, name, description, slug, image_url, status")
 	case pageEntity.PageSectionItemTypePost:
-		table = "posts"
+		query = query.Table("posts").Select("id, title, content AS description, slug, type_code")
 	case pageEntity.PageSectionItemTypeMedia:
-		table = "media"
+		query = query.Table("media").Select("id, file_name, original_url, thumbnail_url, medium_url, mime_type, status")
 	default:
 		return out, fmt.Errorf("invalid source type")
 	}
-	var rows []map[string]interface{}
-	if err := r.db.WithContext(ctx).Table(table).Where("id IN ? AND deleted_at IS NULL", ids).Find(&rows).Error; err != nil {
+	var rows []SourceData
+	if err := query.Where("id IN ? AND deleted_at IS NULL", ids).Scan(&rows).Error; err != nil {
 		return out, err
 	}
 	for _, row := range rows {
-		v := SourceData{}
-		switch id := row["id"].(type) {
-		case uint64:
-			v.ID = uint(id)
-		case int64:
-			v.ID = uint(id)
-		case uint:
-			v.ID = id
-		}
-		fields := []struct {
-			key string
-			dst *string
-		}{{"name", &v.Name}, {"title", &v.Title}, {"slug", &v.Slug}, {"type_code", &v.TypeCode}, {"image_url", &v.ImageURL}, {"status", &v.Status}, {"file_name", &v.FileName}, {"original_url", &v.OriginalURL}, {"thumbnail_url", &v.ThumbnailURL}, {"medium_url", &v.MediumURL}, {"mime_type", &v.MimeType}}
-		for _, field := range fields {
-			if value, ok := row[field.key].(string); ok {
-				*field.dst = value
-			}
-		}
-		out[v.ID] = v
+		out[row.ID] = row
 	}
 	return out, nil
 }

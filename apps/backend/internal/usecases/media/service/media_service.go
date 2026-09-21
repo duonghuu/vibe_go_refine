@@ -7,6 +7,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"log"
 	"mime/multipart"
 	"net/http"
 	"os"
@@ -14,6 +15,7 @@ import (
 	"time"
 
 	"go_refine_dashboard_be/internal/domain/media/entity"
+	"go_refine_dashboard_be/internal/infrastructure/cache"
 	"go_refine_dashboard_be/internal/infrastructure/repository"
 	"go_refine_dashboard_be/internal/usecases/media/dto"
 )
@@ -54,12 +56,14 @@ func (s *mediaService) ListMedia(ctx context.Context, query dto.GetMediaListQuer
 }
 
 type mediaService struct {
-	mediaRepo repository.MediaRepository
+	mediaRepo       repository.MediaRepository
+	publicPageCache cache.PublicPageCacheInvalidator
 }
 
-func NewMediaService(mediaRepo repository.MediaRepository) MediaService {
+func NewMediaService(mediaRepo repository.MediaRepository, publicPageCache cache.PublicPageCacheInvalidator) MediaService {
 	return &mediaService{
-		mediaRepo: mediaRepo,
+		mediaRepo:       mediaRepo,
+		publicPageCache: publicPageCache,
 	}
 }
 
@@ -154,10 +158,18 @@ func (s *mediaService) DeleteFile(ctx context.Context, id uint, userId uint, rol
 		return ErrMediaForbidden
 	}
 
+	// Resolve affected pages before the hard delete removes direct links, but
+	// invalidate Redis only after the DB mutation succeeds.
+	affectedSlugs, lookupErr := s.publicPageCache.FindMediaSlugs(ctx, id)
+	if lookupErr != nil {
+		log.Printf("public page cache media lookup failed for media %d: %v", id, lookupErr)
+	}
+
 	// Delete from DB
 	if err := s.mediaRepo.Delete(ctx, id); err != nil {
 		return err
 	}
+	s.publicPageCache.InvalidateSlugs(ctx, affectedSlugs...)
 
 	// Delete from Disk
 	uploadDir := "public/uploads"

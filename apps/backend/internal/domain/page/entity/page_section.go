@@ -33,7 +33,7 @@ type PageSection struct {
 	Page            *Page              `gorm:"foreignKey:PageID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE" json:"-"`
 	BackgroundMedia *mediaEntity.Media `gorm:"foreignKey:BackgroundMediaID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL" json:"backgroundMedia,omitempty"`
 	FeatureMedia    *mediaEntity.Media `gorm:"foreignKey:FeatureMediaID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:SET NULL" json:"featureMedia,omitempty"`
-	Items           []PageSectionItem  `gorm:"foreignKey:SectionID;references:ID" json:"-"`
+	Items           []PageSectionItem  `gorm:"foreignKey:SectionID;references:ID;constraint:OnUpdate:CASCADE,OnDelete:CASCADE" json:"-"`
 	CreatedAt       time.Time          `gorm:"column:created_at;autoCreateTime" json:"createdAt"`
 	UpdatedAt       time.Time          `gorm:"column:updated_at;autoUpdateTime" json:"updatedAt"`
 	DeletedAt       gorm.DeletedAt     `gorm:"column:deleted_at;index:idx_page_sections_page_status_sort,priority:4" json:"-"`

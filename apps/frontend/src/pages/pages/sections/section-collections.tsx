@@ -8,10 +8,17 @@ import { IPageSectionCollectionSummary, IPageSectionItem, ISectionPickerOption, 
 import { SectionItemPickerDialog } from "./section-item-picker-dialog";
 import { useSectionCollection } from "./use-section-collection";
 
+const displayText = (value: unknown, fallback: string): string =>
+  typeof value === "string" && value.trim() ? value : fallback;
+
 const itemView = (item: IPageSectionItem): { label: string; secondary: string; image?: string } => {
-  if (item.itemType === "CATEGORY") return { label: item.data.name, secondary: item.data.slug, image: item.data.imageUrl };
-  if (item.itemType === "POST") return { label: item.data.title, secondary: `${item.data.typeCode} · ${item.data.slug}`, image: item.data.thumbnailUrl };
-  return { label: item.data.fileName, secondary: item.data.mimeType, image: item.data.thumbnailUrl ?? item.data.originalUrl };
+  if (item.itemType === "CATEGORY") return { label: displayText(item.data.name, `Danh mục #${item.itemId}`), secondary: displayText(item.data.slug, "Chưa có slug"), image: item.data.imageUrl };
+  if (item.itemType === "POST") {
+    const typeCode = displayText(item.data.typeCode, "");
+    const slug = displayText(item.data.slug, "");
+    return { label: displayText(item.data.title, `Bài viết #${item.itemId}`), secondary: [typeCode, slug].filter(Boolean).join(" · ") || "Chưa có metadata", image: item.data.thumbnailUrl };
+  }
+  return { label: displayText(item.data.fileName, `Media #${item.itemId}`), secondary: displayText(item.data.mimeType, "Chưa rõ định dạng"), image: item.data.thumbnailUrl ?? item.data.originalUrl };
 };
 const toOption = (item: IPageSectionItem): ISectionPickerOption => { const view = itemView(item); if (item.itemType === "CATEGORY") return { id: item.itemId, itemType: "CATEGORY", label: view.label, secondary: view.secondary, imageUrl: view.image, slug: item.data.slug, status: item.data.status }; if (item.itemType === "POST") return { id: item.itemId, itemType: "POST", label: view.label, secondary: view.secondary, imageUrl: view.image, slug: item.data.slug, typeCode: item.data.typeCode }; return { id: item.itemId, itemType: "MEDIA", label: view.label, secondary: view.secondary, imageUrl: view.image, originalUrl: item.data.originalUrl, thumbnailUrl: item.data.thumbnailUrl, mediumUrl: item.data.mediumUrl, mimeType: item.data.mimeType, mediaStatus: item.data.status }; };
 

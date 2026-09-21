@@ -12,6 +12,7 @@ import (
 	"github.com/redis/go-redis/v9"
 	mediaEntity "go_refine_dashboard_be/internal/domain/media/entity"
 	pageEntity "go_refine_dashboard_be/internal/domain/page/entity"
+	"go_refine_dashboard_be/internal/infrastructure/cache"
 	"go_refine_dashboard_be/internal/infrastructure/repository"
 	"go_refine_dashboard_be/internal/usecases/pagemedia/dto"
 	"gorm.io/gorm"
@@ -38,13 +39,14 @@ type PageMediaService interface {
 }
 
 type pageMediaService struct {
-	repo        repository.PageMediaRepository
-	db          *gorm.DB
-	redisClient *redis.Client
+	repo            repository.PageMediaRepository
+	db              *gorm.DB
+	redisClient     *redis.Client
+	publicPageCache cache.PublicPageCacheInvalidator
 }
 
-func NewPageMediaService(repo repository.PageMediaRepository, db *gorm.DB, redisClient *redis.Client) PageMediaService {
-	return &pageMediaService{repo: repo, db: db, redisClient: redisClient}
+func NewPageMediaService(repo repository.PageMediaRepository, db *gorm.DB, redisClient *redis.Client, publicPageCache cache.PublicPageCacheInvalidator) PageMediaService {
+	return &pageMediaService{repo: repo, db: db, redisClient: redisClient, publicPageCache: publicPageCache}
 }
 
 func validCollection(collection string) bool {
@@ -186,6 +188,7 @@ func (s *pageMediaService) CreatePageMedia(ctx context.Context, pageID uint, req
 		return nil, fmt.Errorf("liên kết media: %w", err)
 	}
 	s.invalidateCache(ctx, pageID)
+	s.publicPageCache.InvalidatePage(ctx, pageID)
 	items, _, err := s.GetPageMedia(ctx, pageID, req.Collection)
 	if err != nil {
 		return nil, err
@@ -245,6 +248,7 @@ func (s *pageMediaService) SyncPageMedia(ctx context.Context, pageID uint, colle
 		return nil, fmt.Errorf("đồng bộ media: %w", err)
 	}
 	s.invalidateCache(ctx, pageID)
+	s.publicPageCache.InvalidatePage(ctx, pageID)
 	result, _, err := s.GetPageMedia(ctx, pageID, collection)
 	return result, err
 }
@@ -298,5 +302,6 @@ func (s *pageMediaService) DeletePageMedia(ctx context.Context, pageID, mediaID 
 		return ErrPageMediaNotFound
 	}
 	s.invalidateCache(ctx, pageID)
+	s.publicPageCache.InvalidatePage(ctx, pageID)
 	return nil
 }

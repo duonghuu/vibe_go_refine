@@ -4,7 +4,7 @@ import { IPageSectionItem, ISectionPickerOption, ISyncSectionCollectionPayload, 
 
 export const useSectionCollection = (pageId: number, sectionId: number, collection: string, itemType: PageSectionItemType) => {
   const { open } = useNotification();
-  const list = useList<IPageSectionItem, HttpError>({ resource: "page-section-items", dataProviderName: "pageSections", pagination: { mode: "off" }, meta: { pageId, sectionId, collection } });
+  const list = useList<IPageSectionItem, HttpError>({ resource: "page-section-items", dataProviderName: "pageSections", pagination: { mode: "off" }, meta: { pageId, sectionId, collection, itemType } });
   const mutation = useUpdate<IPageSectionItem, HttpError, ISyncSectionCollectionPayload>({ dataProviderName: "pageSections" });
   const [items, setItems] = useState<IPageSectionItem[]>([]);
   const [savedIds, setSavedIds] = useState<number[]>([]);

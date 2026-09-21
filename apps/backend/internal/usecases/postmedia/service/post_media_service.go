@@ -9,7 +9,9 @@ import (
 	"time"
 
 	"go_refine_dashboard_be/internal/domain/media/entity"
+	pageEntity "go_refine_dashboard_be/internal/domain/page/entity"
 	postEntity "go_refine_dashboard_be/internal/domain/post/entity"
+	"go_refine_dashboard_be/internal/infrastructure/cache"
 	"go_refine_dashboard_be/internal/infrastructure/repository"
 	"go_refine_dashboard_be/internal/usecases/postmedia/dto"
 
@@ -35,12 +37,13 @@ type PostMediaService interface {
 }
 
 type postMediaService struct {
-	repo        repository.PostMediaRepository
-	redisClient *redis.Client
+	repo            repository.PostMediaRepository
+	redisClient     *redis.Client
+	publicPageCache cache.PublicPageCacheInvalidator
 }
 
-func NewPostMediaService(repo repository.PostMediaRepository, redisClient *redis.Client) PostMediaService {
-	return &postMediaService{repo: repo, redisClient: redisClient}
+func NewPostMediaService(repo repository.PostMediaRepository, redisClient *redis.Client, publicPageCache cache.PublicPageCacheInvalidator) PostMediaService {
+	return &postMediaService{repo: repo, redisClient: redisClient, publicPageCache: publicPageCache}
 }
 
 func (s *postMediaService) getCacheKey(postID uint, collection string) string {
@@ -176,6 +179,7 @@ func (s *postMediaService) CreatePostMedia(ctx context.Context, postID uint, req
 		return nil, fmt.Errorf("liên kết media: %w", err)
 	}
 	s.invalidateCache(ctx, postID)
+	s.publicPageCache.InvalidateSource(ctx, pageEntity.PageSectionItemTypePost, postID)
 	items, _, err := s.GetPostMedia(ctx, postID, req.Collection)
 	if err != nil {
 		return nil, err
@@ -212,6 +216,7 @@ func (s *postMediaService) SyncPostMedia(ctx context.Context, postID uint, colle
 		return nil, fmt.Errorf("đồng bộ media: %w", err)
 	}
 	s.invalidateCache(ctx, postID)
+	s.publicPageCache.InvalidateSource(ctx, pageEntity.PageSectionItemTypePost, postID)
 	result, _, err := s.GetPostMedia(ctx, postID, collection)
 	if err != nil {
 		return nil, err
@@ -242,5 +247,6 @@ func (s *postMediaService) DeletePostMedia(ctx context.Context, postID uint, med
 		return fmt.Errorf("gỡ liên kết media: %w", err)
 	}
 	s.invalidateCache(ctx, postID)
+	s.publicPageCache.InvalidateSource(ctx, pageEntity.PageSectionItemTypePost, postID)
 	return nil
 }

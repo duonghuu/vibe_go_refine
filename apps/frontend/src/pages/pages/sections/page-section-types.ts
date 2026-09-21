@@ -71,6 +71,7 @@ export interface IReorderPageSectionsPayload {
 export interface ICategorySectionData {
   id: number;
   name: string;
+  description?: string;
   slug: string;
   imageUrl?: string;
   status: "ACTIVE" | "HIDDEN";
@@ -79,6 +80,7 @@ export interface ICategorySectionData {
 export interface IPostSectionData {
   id: number;
   title: string;
+  description?: string;
   slug: string;
   typeCode: string;
   thumbnailUrl?: string;

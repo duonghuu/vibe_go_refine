@@ -1831,6 +1831,29 @@ paths:
         '404': { description: IMAGE_CONTENT_NOT_FOUND }
         '500': { description: INTERNAL_ERROR }
 
+  /api/v1/pages/{slug}:
+    get:
+      summary: Lấy Page public theo slug
+      tags: [Public Pages]
+      x-code-files:
+        - apps/backend/internal/controller/public_page_controller.go
+        - apps/backend/internal/infrastructure/repository/public_page_repo.go
+        - apps/backend/internal/usecases/publicpage/service/public_page_service.go
+        - apps/backend/internal/usecases/publicpage/dto/public_page_dto.go
+      parameters:
+        - in: path
+          name: slug
+          required: true
+          schema:
+            type: string
+            maxLength: 255
+            pattern: '^[a-z0-9]+(?:-[a-z0-9]+)*$'
+      responses:
+        '200': { description: Thành công, content: { application/json: { schema: { $ref: '#/components/schemas/GetPublicPageResponse' } } } }
+        '400': { description: INVALID_SLUG }
+        '404': { description: PAGE_NOT_FOUND }
+        '500': { description: INTERNAL_ERROR }
+
   /api/v1/public/image-contents:
     get:
       summary: Lấy projection ImageContent public
@@ -2002,6 +2025,91 @@ components:
       type: object
       properties:
         data: { type: array, items: { $ref: '#/components/schemas/PublicImageContentGroupResponse' } }
+    PublicPageMediaResponse:
+      type: object
+      required: [id, originalUrl]
+      properties:
+        id: { type: integer }
+        originalUrl: { type: string }
+        thumbnailUrl: { type: string }
+        mediumUrl: { type: string }
+    PublicPageSEOResponse:
+      type: object
+      required: [resolvedTitle, resolvedDescription, resolvedCanonicalUrl, robots]
+      properties:
+        resolvedTitle: { type: string }
+        resolvedDescription: { type: string }
+        resolvedCanonicalUrl: { type: string }
+        ogTitle: { type: string }
+        ogDescription: { type: string }
+        ogImage: { type: string }
+        ogType: { type: string }
+        twitterTitle: { type: string }
+        twitterDescription: { type: string }
+        twitterImage: { type: string }
+        twitterCard: { type: string }
+        robots: { type: string }
+        schemaJson: { type: object, nullable: true, additionalProperties: true }
+    PublicSectionItemDataResponse:
+      type: object
+      required: [id, description]
+      properties:
+        id: { type: integer }
+        name: { type: string }
+        description: { type: string }
+        title: { type: string }
+        slug: { type: string }
+        typeCode: { type: string }
+        imageUrl: { type: string }
+        originalUrl: { type: string }
+        thumbnailUrl: { type: string }
+        mediumUrl: { type: string }
+    PublicPageSectionItemResponse:
+      type: object
+      required: [itemType, itemId, sortOrder, data]
+      properties:
+        itemType: { type: string, enum: [CATEGORY, POST, MEDIA] }
+        itemId: { type: integer }
+        sortOrder: { type: integer }
+        data: { $ref: '#/components/schemas/PublicSectionItemDataResponse' }
+    PublicPageSectionMediaResponse:
+      allOf:
+        - $ref: '#/components/schemas/PublicPageMediaResponse'
+    PublicPageSectionResponse:
+      type: object
+      required: [id, key, title, description, sortOrder, collections]
+      properties:
+        id: { type: integer }
+        key: { type: string }
+        title: { type: string }
+        description: { type: string }
+        backgroundColor: { type: string, nullable: true }
+        backgroundMedia: { $ref: '#/components/schemas/PublicPageSectionMediaResponse', nullable: true }
+        featureMedia: { $ref: '#/components/schemas/PublicPageSectionMediaResponse', nullable: true }
+        sortOrder: { type: integer }
+        collections:
+          type: object
+          additionalProperties:
+            type: array
+            items: { $ref: '#/components/schemas/PublicPageSectionItemResponse' }
+    PublicPageResponse:
+      type: object
+      required: [id, title, slug, content, updatedAt, thumbnail, gallery, seo, sections]
+      properties:
+        id: { type: integer }
+        title: { type: string }
+        slug: { type: string }
+        content: { type: string }
+        updatedAt: { type: string, format: date-time }
+        thumbnail: { $ref: '#/components/schemas/PublicPageMediaResponse', nullable: true }
+        gallery: { type: array, items: { $ref: '#/components/schemas/PublicPageMediaResponse' } }
+        seo: { $ref: '#/components/schemas/PublicPageSEOResponse' }
+        sections: { type: array, items: { $ref: '#/components/schemas/PublicPageSectionResponse' } }
+    GetPublicPageResponse:
+      type: object
+      required: [data]
+      properties:
+        data: { $ref: '#/components/schemas/PublicPageResponse' }
     CreatePageMediaRequest:
       type: object
       required: [media_id, collection]

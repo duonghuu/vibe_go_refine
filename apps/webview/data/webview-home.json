@@ -37,17 +37,6 @@
   "hero": {
     "cta": { "label": "Get started", "href": "#contact" }
   },
-  "intro": {
-    "heading": {
-      "eyebrow": "We are creative & expert people",
-      "title": "We work with business & provide solution to client with their business problem"
-    },
-    "benefits": [
-      { "icon": "ti-desktop", "title": "Modern & Responsive design", "description": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Odit, ducimus." },
-      { "icon": "ti-medall", "title": "Awarded licensed company", "description": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Odit, ducimus." },
-      { "icon": "ti-layers-alt", "title": "Build your website Professionally", "description": "Lorem ipsum dolor sit amet, consectetur adipisicing elit. Odit, ducimus." }
-    ]
-  },
   "about": {
     "image": { "src": "/images/about/home-8.jpg", "alt": "" },
     "heading": { "eyebrow": "What we are", "title": "We are dynamic team of creative people" },

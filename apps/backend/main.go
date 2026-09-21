@@ -81,8 +81,8 @@ func main() {
 
 	// 2. Initialize Dependency Injection
 	productController := di.InitializeProductController(db)
-	mediaController := di.InitializeMediaController(db)
-	categoryController := di.InitializeCategoryController(db)
+	mediaController := di.InitializeMediaController(db, redisClient)
+	categoryController := di.InitializeCategoryController(db, redisClient)
 	userController := di.InitializeUserController(db)
 	authController := di.InitializeAuthController(db, redisClient)
 	postTypeController := di.InitializePostTypeController(db, redisClient)
@@ -95,6 +95,7 @@ func main() {
 	pageMediaController := di.InitializePageMediaController(db, redisClient)
 	pageSectionController := di.InitializePageSectionController(db, redisClient)
 	imageContentController := di.InitializeImageContentController(db, redisClient)
+	publicPageController := di.InitializePublicPageController(db, redisClient, os.Getenv("PUBLIC_SITE_URL"))
 
 	// 3. Setup Router
 	r := gin.Default()
@@ -285,6 +286,9 @@ func main() {
 
 	public := api.Group("/public")
 	public.GET("/image-contents", imageContentController.GetPublicContents)
+
+	pagesPublic := api.Group("/pages")
+	pagesPublic.GET("/:slug", publicPageController.GetBySlug)
 
 	// 5. Start Server
 	serverPort := os.Getenv("PORT")

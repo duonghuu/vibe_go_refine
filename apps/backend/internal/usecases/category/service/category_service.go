@@ -6,6 +6,8 @@ import (
 	"time"
 
 	"go_refine_dashboard_be/internal/domain/category/entity"
+	pageEntity "go_refine_dashboard_be/internal/domain/page/entity"
+	"go_refine_dashboard_be/internal/infrastructure/cache"
 	"go_refine_dashboard_be/internal/infrastructure/repository"
 	"go_refine_dashboard_be/internal/usecases/category/dto"
 )
@@ -21,12 +23,14 @@ type CategoryService interface {
 }
 
 type categoryService struct {
-	categoryRepo repository.CategoryRepository
+	categoryRepo    repository.CategoryRepository
+	publicPageCache cache.PublicPageCacheInvalidator
 }
 
-func NewCategoryService(categoryRepo repository.CategoryRepository) CategoryService {
+func NewCategoryService(categoryRepo repository.CategoryRepository, publicPageCache cache.PublicPageCacheInvalidator) CategoryService {
 	return &categoryService{
-		categoryRepo: categoryRepo,
+		categoryRepo:    categoryRepo,
+		publicPageCache: publicPageCache,
 	}
 }
 
@@ -140,6 +144,7 @@ func (s *categoryService) UpdateCategory(ctx context.Context, id uint, req *dto.
 	if err := s.categoryRepo.Update(ctx, cat); err != nil {
 		return nil, err
 	}
+	s.publicPageCache.InvalidateSource(ctx, pageEntity.PageSectionItemTypeCategory, cat.ID)
 
 	count, _ := s.categoryRepo.CountProductsByCategoryID(ctx, cat.ID)
 	res := mapEntityToResponse(cat, count)
@@ -154,11 +159,19 @@ func (s *categoryService) DeleteCategory(ctx context.Context, id uint) error {
 	if count > 0 {
 		return errors.New("không thể xóa danh mục đang có sản phẩm liên kết")
 	}
-	return s.categoryRepo.Delete(ctx, id)
+	if err := s.categoryRepo.Delete(ctx, id); err != nil {
+		return err
+	}
+	s.publicPageCache.InvalidateSource(ctx, pageEntity.PageSectionItemTypeCategory, id)
+	return nil
 }
 
 func (s *categoryService) BulkUpdateStatus(ctx context.Context, req *dto.BulkUpdateCategoryStatusRequest) error {
-	return s.categoryRepo.BulkUpdateStatus(ctx, req.IDs, req.Status)
+	if err := s.categoryRepo.BulkUpdateStatus(ctx, req.IDs, req.Status); err != nil {
+		return err
+	}
+	s.publicPageCache.InvalidateSource(ctx, pageEntity.PageSectionItemTypeCategory, req.IDs...)
+	return nil
 }
 
 func (s *categoryService) ReorderCategories(ctx context.Context, req *dto.ReorderCategoriesRequest) error {
